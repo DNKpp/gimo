@@ -8,6 +8,9 @@
 #include <tuple>
 #include <type_traits>
 
+#include "gimo/Common.hpp"
+#include "gimo/algorithm/BasicAlgorithm.hpp"
+
 namespace gimo::testing
 {
     struct as_lvalue_ref
@@ -109,4 +112,95 @@ namespace gimo::testing
 
     template <typename Action>
     using AlgorithmMock = BasicAlgorithm<AlgorithmMockTraits, Action>;
+
+    template <typename T>
+    class ExpectedFake
+    {
+    public:
+        using value_type = T;
+        using error_type = std::string;
+
+        struct null_t
+        {
+            [[nodiscard]]
+            friend constexpr bool operator==(ExpectedFake const& expected, [[maybe_unused]] null_t const tag) noexcept
+            {
+                return !expected;
+            }
+
+            [[nodiscard]]
+            explicit(false) constexpr operator ExpectedFake() const noexcept
+            {
+                return ExpectedFake::from_error({});
+            }
+        };
+
+        [[nodiscard]]
+        explicit constexpr ExpectedFake(T value) noexcept
+            : m_Value{std::move(value)}
+        {
+        }
+
+        [[nodiscard]]
+        static constexpr ExpectedFake from_error(error_type error) noexcept
+        {
+            ExpectedFake expected{};
+            expected.m_Error = std::move(error);
+
+            return expected;
+        }
+
+        [[nodiscard]]
+        constexpr value_type const& operator*() const&
+        {
+            return m_Value.value();
+        }
+
+        [[nodiscard]]
+        constexpr value_type&& operator*() &&
+        {
+            return std::move(m_Value).value();
+        }
+
+        [[nodiscard]]
+        constexpr error_type const& error() const&
+        {
+            return m_Error.value();
+        }
+
+        [[nodiscard]]
+        constexpr error_type&& error() &&
+        {
+            return std::move(m_Error).value();
+        }
+
+        [[nodiscard]]
+        explicit constexpr operator bool() const noexcept
+        {
+            return m_Value.has_value();
+        }
+
+    private:
+        std::optional<value_type> m_Value{};
+        std::optional<error_type> m_Error{};
+
+        [[nodiscard]]
+        ExpectedFake() = default;
+    };
 }
+
+template <typename Value>
+struct gimo::traits<gimo::testing::ExpectedFake<Value>>
+{
+    using expected = testing::ExpectedFake<Value>;
+
+    static constexpr expected::null_t null{};
+
+    template <typename V>
+    using rebind_value = testing::ExpectedFake<V>;
+
+    static constexpr testing::ExpectedFake<Value> rebind_error(expected::error_type error)
+    {
+        return testing::ExpectedFake<Value>::from_error(std::move(error));
+    }
+};

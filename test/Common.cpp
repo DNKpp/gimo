@@ -7,6 +7,8 @@
 #include "gimo_ext/std_expected.hpp"
 #include "gimo_ext/std_optional.hpp"
 
+#include "TestCommons.hpp"
+
 // see: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2445r1.pdf
 TEMPLATE_TEST_CASE_SIG(
     "const_ref_like_t merges const and adapts the value-category of T.",
@@ -99,6 +101,7 @@ TEMPLATE_TEST_CASE_SIG(
     (false, int),
     (false, std::nullopt_t),
     (false, std::optional<int>),
+    (true, gimo::testing::ExpectedFake<int>),
     (true, std::expected<int, std::string>))
 {
     STATIC_CHECK(expected == gimo::expected_like<T>);
