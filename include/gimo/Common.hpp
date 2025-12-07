@@ -46,7 +46,7 @@ namespace gimo::detail
     concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
 
     template <typename T>
-    concept reference = std::is_reference_v<T>;
+    concept transferable = std::constructible_from<std::remove_cvref_t<T>, T&&>;
 
     template <typename B>
     concept boolean_testable =
@@ -102,7 +102,7 @@ namespace gimo
 
     template <typename T>
     concept referencable_value = requires(T&& closure) {
-        { *std::forward<T>(closure) } -> detail::reference;
+        { *std::forward<T>(closure) } -> detail::transferable;
     };
 
     template <referencable_value T>
@@ -154,7 +154,7 @@ namespace gimo
 
     template <typename T>
     concept referencable_error = requires(T&& closure) {
-        { std::forward<T>(closure).error() } -> detail::reference;
+        { std::forward<T>(closure).error() } -> detail::transferable;
     };
 
     template <referencable_error T>
