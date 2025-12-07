@@ -48,7 +48,7 @@ namespace gimo
             detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
     };
 
-    template <unqualified Traits, unqualified Action>
+    template <detail::unqualified Traits, detail::unqualified Action>
     class BasicAlgorithm
     {
     public:
@@ -57,7 +57,8 @@ namespace gimo
 
         template <typename... Args>
             requires std::constructible_from<Action, Args&&...>
-        [[nodiscard]] explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
+        [[nodiscard]] //
+        explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
             : m_Action{std::forward<Args>(args)...}
         {
         }

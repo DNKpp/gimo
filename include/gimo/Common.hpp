@@ -43,6 +43,9 @@ namespace gimo::detail
     }
 
     template <typename T>
+    concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
+
+    template <typename T>
     concept reference = std::is_reference_v<T>;
 
     template <typename B>
@@ -98,9 +101,6 @@ namespace gimo
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
 
     template <typename T>
-    concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
-
-    template <typename T>
     concept referencable_value = requires(T&& closure) {
         { *std::forward<T>(closure) } -> detail::reference;
     };
@@ -123,7 +123,7 @@ namespace gimo
 
     template <typename T, typename Nullable>
     concept adaptable_value_by = nullable<Nullable>
-                              && unqualified<Nullable>
+                              && detail::unqualified<Nullable>
                               && std::constructible_from<Nullable, T&&>;
 
     template <nullable Nullable>
