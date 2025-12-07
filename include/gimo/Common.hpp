@@ -188,9 +188,6 @@ namespace gimo
                                 { forward_error<T&>(obj) } -> detail::referencable;
                             };
 
-    template <expected_like Expected>
-    using error_reference_type_t = decltype(forward_error<Expected>(std::declval<Expected&>()));
-
     namespace detail
     {
         template <expected_like Expected, typename Error>
