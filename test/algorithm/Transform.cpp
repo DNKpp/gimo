@@ -149,8 +149,8 @@ TEMPLATE_LIST_TEST_CASE(
         SCOPED_EXP with_qualification::cast(action).expect_call(1337.f)
             and finally::returns(42);
 
-        Algorithm andThen{std::move(action)};
-        decltype(auto) result = std::invoke(with_qualification::cast(andThen), expected);
+        Algorithm transform{std::move(action)};
+        decltype(auto) result = std::invoke(with_qualification::cast(transform), expected);
         STATIC_REQUIRE(std::same_as<std::expected<int, std::string>, decltype(result)>);
         CHECK(42 == result);
     }
@@ -158,9 +158,9 @@ TEMPLATE_LIST_TEST_CASE(
     SECTION("When input holds an error, the error is forwarded.")
     {
         std::expected<float, std::string> const expected{std::unexpected{"An error."}};
-        Algorithm andThen{std::move(action)};
+        Algorithm transform{std::move(action)};
 
-        decltype(auto) result = std::invoke(with_qualification::cast(andThen), expected);
+        decltype(auto) result = std::invoke(with_qualification::cast(transform), expected);
         STATIC_REQUIRE(std::same_as<std::expected<int, std::string>, decltype(result)>);
         CHECK(!result);
         CHECK_THAT(
