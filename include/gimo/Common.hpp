@@ -160,32 +160,24 @@ namespace gimo
     }
 
     template <typename T>
-    concept referencable_error = requires(std::remove_cvref_t<T> closure) {
-        { closure.error() } -> detail::referencable;
-        { std::as_const(closure).error() } -> detail::referencable;
-        { std::move(closure).error() } -> detail::referencable;
-        { std::move(std::as_const(closure)).error() } -> detail::referencable;
-
-        typename std::common_type_t<
-            decltype(closure.error()),
-            decltype(std::as_const(closure).error()),
-            decltype(std::move(closure).error()),
-            decltype(std::move(std::as_const(closure)).error())>;
+    concept referencable_error = requires(T&& closure) {
+        { std::forward<T>(closure).error() } -> detail::referencable;
     };
 
-    template <referencable_error Expected>
-    constexpr void forward_error(std::remove_reference_t<Expected>&&) = delete;
-
-    template <referencable_error Expected>
-    constexpr auto&& forward_error(std::remove_reference_t<Expected>& expected) noexcept
+    template <referencable_error T>
+    constexpr auto&& error(T&& nullable)
     {
-        return std::forward<Expected>(expected).error();
+        return std::forward<T>(nullable).error();
     }
 
     template <typename T>
     concept expected_like = nullable<T>
-                         && requires(T&& obj) {
-                                { forward_error<T&>(obj) } -> detail::referencable;
+                         && requires(std::remove_cvref_t<T> closure) {
+                                typename std::common_type_t<
+                                    decltype(error(closure)),
+                                    decltype(error(std::as_const(closure))),
+                                    decltype(error(std::move(closure))),
+                                    decltype(error(std::move(std::as_const(closure))))>;
                             };
 
     namespace detail
@@ -197,7 +189,8 @@ namespace gimo
             GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
             using traits = gimo::traits<std::remove_cvref_t<Expected>>;
 
-            return traits::bind_error(forward_error<Source>(source));
+            return traits::bind_error(
+                error(std::forward<Source>(source)));
         }
     }
 }
