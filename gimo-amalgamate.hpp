@@ -174,6 +174,7 @@ namespace gimo
                                         std::forward<T>(obj)}
                                 } -> nullable;
                             };
+
     template <nullable Nullable>
     using reference_type_t = decltype(value(std::declval<Nullable&&>()));
 
@@ -204,6 +205,48 @@ namespace gimo
         constexpr auto rebind_value(Value&& value)
         {
             return rebind_value_t<Nullable, Value>{std::forward<Value>(value)};
+        }
+    }
+
+    template <typename T>
+    concept referencable_error = requires(std::remove_cvref_t<T> closure) {
+        { closure.error() } -> detail::referencable;
+        { std::as_const(closure).error() } -> detail::referencable;
+        { std::move(closure).error() } -> detail::referencable;
+        { std::move(std::as_const(closure)).error() } -> detail::referencable;
+
+        typename std::common_type_t<
+            decltype(closure.error()),
+            decltype(std::as_const(closure).error()),
+            decltype(std::move(closure).error()),
+            decltype(std::move(std::as_const(closure)).error())>;
+    };
+
+    template <referencable_error Expected>
+    constexpr void forward_error(std::remove_reference_t<Expected>&&) = delete;
+
+    template <referencable_error Expected>
+    constexpr auto&& forward_error(std::remove_reference_t<Expected>& expected) noexcept
+    {
+        return std::forward<Expected>(expected).error();
+    }
+
+    template <typename T>
+    concept expected_like = nullable<T>
+                         && requires(T&& obj) {
+                                { forward_error<T&>(obj) } -> detail::referencable;
+                            };
+
+    namespace detail
+    {
+        template <expected_like Expected, expected_like Source>
+        [[nodiscard]]
+        constexpr expected_like auto rebind_error(Source&& source)
+        {
+            GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
+            using traits = gimo::traits<std::remove_cvref_t<Expected>>;
+
+            return traits::bind_error(forward_error<Source>(source));
         }
     }
 }
@@ -383,8 +426,9 @@ namespace gimo
                     std::forward<Steps>(steps)...);
             }
 
-            return Traits::template on_null<Nullable>(
+            return Traits::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
@@ -504,37 +548,49 @@ namespace gimo
 
         template <applicable_on<BasicAlgorithm&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) &
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 m_Action,
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm const&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) const&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 m_Action,
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm&&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) &&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 std::move(m_Action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm const&&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) const&&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 std::move(m_Action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
@@ -590,22 +646,30 @@ namespace gimo::detail::and_then
             std::forward<Steps>(steps)...);
     }
 
-    template <nullable Nullable, typename Action>
+    template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action)
+    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
 
         return detail::construct_empty<Result>();
     }
 
-    template <nullable Nullable, typename Action, typename Next, typename... Steps>
+    template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, Next&& next, Steps&&... steps)
+    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = decltype(on_null<Nullable>(std::forward<Action>(action)));
+        using Result = std::invoke_result_t<Action, reference_type_t<Expected>>;
 
-        return std::forward<Next>(next).template on_null<Result>(
+        return detail::rebind_error<Result, Expected>(expected);
+    }
+
+    template <typename Action, nullable Nullable, typename Next, typename... Steps>
+    [[nodiscard]]
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
+    {
+        return std::forward<Next>(next).on_null(
+            and_then::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
             std::forward<Steps>(steps)...);
     }
 
@@ -629,12 +693,13 @@ namespace gimo::detail::and_then
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return and_then::on_null<Nullable>(
+            return and_then::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };
@@ -702,20 +767,20 @@ namespace gimo::detail::or_else
             std::forward<Steps>(steps)...);
     }
 
-    template <nullable Nullable, typename Action>
+    template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null(Action&& action)
+    constexpr auto on_null(Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         return std::invoke(std::forward<Action>(action));
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
     [[nodiscard]]
-    constexpr auto on_null(Action&& action, Next&& next, Steps&&... steps)
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
     {
         return std::invoke(
             std::forward<Next>(next),
-            or_else::on_null<Nullable>(std::forward<Action>(action)),
+            or_else::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
             std::forward<Steps>(steps)...);
     }
 
@@ -738,12 +803,13 @@ namespace gimo::detail::or_else
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return or_else::on_null<Nullable>(
+            return or_else::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };
@@ -814,22 +880,34 @@ namespace gimo::detail::transform
             std::forward<Steps>(steps)...);
     }
 
-    template <nullable Nullable, typename Action>
+    template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action)
+    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
+        using Result = rebind_value_t<
+            Nullable,
+            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
 
-        return detail::construct_empty<rebind_value_t<Nullable, Result>>();
+        return detail::construct_empty<Result>();
+    }
+
+    template <typename Action, expected_like Expected>
+    [[nodiscard]]
+    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
+    {
+        using Result = rebind_value_t<
+            Expected,
+            std::invoke_result_t<Action, reference_type_t<Expected>>>;
+
+        return detail::rebind_error<Result, Expected>(expected);
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, Next&& next, Steps&&... steps)
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
     {
-        using Result = decltype(transform::on_null<Nullable>(std::forward<Action>(action)));
-
-        return std::forward<Next>(next).template on_null<Result>(
+        return std::forward<Next>(next).on_null(
+            transform::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
             std::forward<Steps>(steps)...);
     }
 
@@ -852,12 +930,13 @@ namespace gimo::detail::transform
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return transform::on_null<Nullable>(
+            return transform::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };
