@@ -58,8 +58,7 @@ namespace gimo::detail::and_then
     {
         using Result = std::invoke_result_t<Action, reference_type_t<Expected>>;
 
-        return detail::rebind_error<Result>(
-            forward_error<Expected>(expected));
+        return detail::rebind_error<Result, Expected>(expected);
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>

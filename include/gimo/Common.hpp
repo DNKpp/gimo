@@ -190,23 +190,16 @@ namespace gimo
 
     namespace detail
     {
-        template <expected_like Expected, typename Error>
+        template <expected_like Expected, expected_like Source>
         [[nodiscard]]
-        constexpr expected_like auto rebind_error(Error&& error)
+        constexpr expected_like auto rebind_error(Source&& source)
         {
+            GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
             using traits = gimo::traits<std::remove_cvref_t<Expected>>;
 
-            return traits::bind_error(std::forward<Error>(error));
+            return traits::bind_error(forward_error<Source>(source));
         }
     }
-
-    template <typename T, typename Expected>
-    concept rebindable_error_to = expected_like<Expected>
-                               && requires(T&& obj) {
-                                      {
-                                          detail::rebind_error<Expected>(std::forward<T>(obj))
-                                      } -> expected_like;
-                                  };
 }
 
 #endif

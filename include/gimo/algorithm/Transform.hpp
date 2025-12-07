@@ -62,8 +62,7 @@ namespace gimo::detail::transform
             Expected,
             std::invoke_result_t<Action, reference_type_t<Expected>>>;
 
-        return detail::rebind_error<Result>(
-            forward_error<Expected>(expected));
+        return detail::rebind_error<Result, Expected>(expected);
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
