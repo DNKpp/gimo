@@ -199,7 +199,7 @@ namespace gimo
         {
             using traits = gimo::traits<std::remove_cvref_t<Expected>>;
 
-            return traits::rebind_error(std::forward<Error>(error));
+            return traits::bind_error(std::forward<Error>(error));
         }
     }
 
