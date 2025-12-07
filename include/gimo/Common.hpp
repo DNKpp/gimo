@@ -101,11 +101,11 @@ namespace gimo
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
 
     template <typename T>
-    concept referencable_value = requires(T&& closure) {
+    concept readable_value = requires(T&& closure) {
         { *std::forward<T>(closure) } -> detail::transferable;
     };
 
-    template <referencable_value T>
+    template <readable_value T>
     constexpr auto&& value(T&& nullable)
     {
         return *std::forward<T>(nullable);
@@ -153,7 +153,7 @@ namespace gimo
     }
 
     template <typename T>
-    concept referencable_error = requires(T&& closure) {
+    concept readable_error = requires(T&& closure) {
         { std::forward<T>(closure).error() } -> detail::transferable;
     };
 
