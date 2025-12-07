@@ -1,9 +1,10 @@
-//          Copyright Dominic (DNKpp) Koepke 2025 - 2025.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          https://www.boost.org/LICENSE_1_0.txt)
+//           Copyright Dominic (DNKpp) Koepke 2025.
+//  Distributed under the Boost Software License, Version 1.0.
+//     (See accompanying file LICENSE_1_0.txt or copy at
+//           https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo/Common.hpp"
+#include "gimo_ext/std_expected.hpp"
 #include "gimo_ext/std_optional.hpp"
 
 // see: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2445r1.pdf
@@ -79,25 +80,32 @@ TEMPLATE_TEST_CASE_SIG(
     "[concept]",
     ((bool expected, typename T), expected, T),
     (false, int),
-    (false, int const),
-    (false, int&),
-    (false, int const&),
-    (false, int&&),
-    (false, int const&&),
-
     (false, std::nullopt_t),
-    (false, std::nullopt_t const),
-    (false, std::nullopt_t&),
-    (false, std::nullopt_t const&),
-    (false, std::nullopt_t&&),
-    (false, std::nullopt_t const&&),
-
     (true, std::optional<int>),
-    (true, std::optional<int> const),
-    (true, std::optional<int>&),
-    (true, std::optional<int> const&),
-    (true, std::optional<int>&&),
-    (true, std::optional<int> const&&))
+    (true, std::expected<int, std::string>))
 {
     STATIC_CHECK(expected == gimo::nullable<T>);
+    STATIC_CHECK(expected == gimo::nullable<T const>);
+    STATIC_CHECK(expected == gimo::nullable<T&>);
+    STATIC_CHECK(expected == gimo::nullable<T const&>);
+    STATIC_CHECK(expected == gimo::nullable<T&&>);
+    STATIC_CHECK(expected == gimo::nullable<T const&&>);
+}
+
+TEMPLATE_TEST_CASE_SIG(
+    "expected_like determines whether the specified type satisfies the requirements.",
+    "[concept]",
+    ((bool expected, typename T), expected, T),
+    (false, int),
+    (false, std::nullopt_t),
+    (false, std::optional<int>),
+    (true, std::expected<int, std::string>))
+{
+    static_assert(gimo::expected_like<std::expected<int, std::string>>);
+    STATIC_CHECK(expected == gimo::expected_like<T>);
+    STATIC_CHECK(expected == gimo::expected_like<T const>);
+    STATIC_CHECK(expected == gimo::expected_like<T&>);
+    STATIC_CHECK(expected == gimo::expected_like<T const&>);
+    STATIC_CHECK(expected == gimo::expected_like<T&&>);
+    STATIC_CHECK(expected == gimo::expected_like<T const&&>);
 }

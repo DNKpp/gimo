@@ -125,6 +125,7 @@ namespace gimo
                                         std::forward<T>(obj)}
                                 } -> nullable;
                             };
+
     template <nullable Nullable>
     using reference_type_t = decltype(value(std::declval<Nullable&&>()));
 
@@ -157,6 +158,49 @@ namespace gimo
             return rebind_value_t<Nullable, Value>{std::forward<Value>(value)};
         }
     }
+
+    template <typename T>
+    concept readable_error = requires(std::remove_cvref_t<T> closure) {
+        { closure.error() } -> detail::referencable;
+        { std::as_const(closure).error() } -> detail::referencable;
+        { std::move(closure).error() } -> detail::referencable;
+        { std::move(std::as_const(closure)).error() } -> detail::referencable;
+    };
+
+    template <readable_error Expected>
+    constexpr decltype(auto) error(Expected&& expected)
+    {
+        return std::forward<Expected>(expected).error();
+    }
+
+    template <typename T>
+    concept expected_like = nullable<T>
+                         && requires(T&& obj) {
+                                { error(std::forward<T>(obj)) } -> detail::referencable;
+                            };
+
+    template <expected_like Expected>
+    using error_reference_type_t = decltype(error(std::declval<Expected&&>()));
+
+    namespace detail
+    {
+        template <expected_like Expected, typename Error>
+        [[nodiscard]]
+        constexpr expected_like auto rebind_error(Error&& error)
+        {
+            using traits = gimo::traits<std::remove_cvref_t<Expected>>;
+
+            return traits::rebind_error(std::forward<Error>(error));
+        }
+    }
+
+    template <typename T, typename Expected>
+    concept rebindable_error_to = expected_like<Expected>
+                               && requires(T&& obj) {
+                                      {
+                                          detail::rebind_error<Expected>(std::forward<T>(obj))
+                                      } -> expected_like;
+                                  };
 }
 
 #endif
