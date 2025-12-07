@@ -91,17 +91,18 @@ namespace gimo::testing
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
-        inline static mimicpp::Mock<Nullable(Action, Steps...) const> on_null_{
+        template <typename Action, nullable Nullable, typename... Steps>
+        inline static mimicpp::Mock<std::remove_cvref_t<output<Nullable>>(Action, Nullable, Steps...) const> on_null_{
             {"AlgorithmMock::on_null", 1u}
         };
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return on_null_<output<Nullable>, Action&&, Steps&&...>(
+            return on_null_<Action&&, Nullable&&, Steps&&...>(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };

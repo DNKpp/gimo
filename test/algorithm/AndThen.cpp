@@ -148,8 +148,8 @@ TEMPLATE_LIST_TEST_CASE(
 
     SECTION("When input is empty.")
     {
-        auto& on_null = testing::AlgorithmMockTraits::on_null_<std::optional<int>, ActionRef, StepRef>;
-        SCOPED_EXP on_null.expect_call(_, matches::instance(step2))
+        auto& on_null = testing::AlgorithmMockTraits::on_null_<ActionRef, std::optional<int>&&, StepRef>;
+        SCOPED_EXP on_null.expect_call(_, std::nullopt, matches::instance(step2))
             and finally::returns(1337);
 
         decltype(auto) result = std::invoke(

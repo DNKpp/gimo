@@ -14,3 +14,6 @@ namespace expect = mimicpp::expect;
 namespace matches = mimicpp::matches;
 
 #include <catch2/catch_all.hpp>
+
+// We disable assertions here on purpose so that they do not interfere with our expectations.
+#define GIMO_ASSERT(condition, msg, ...) (void(0))

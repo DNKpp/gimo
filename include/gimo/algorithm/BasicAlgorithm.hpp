@@ -30,8 +30,9 @@ namespace gimo
                     std::forward<Steps>(steps)...);
             }
 
-            return Traits::template on_null<Nullable>(
+            return Traits::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
@@ -151,37 +152,49 @@ namespace gimo
 
         template <applicable_on<BasicAlgorithm&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) &
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 m_Action,
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm const&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) const&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 m_Action,
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm&&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) &&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 std::move(m_Action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 
         template <applicable_on<BasicAlgorithm const&&> Nullable, typename... Steps>
         [[nodiscard]]
-        constexpr auto on_null(Steps&&... steps) const&&
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&&
         {
-            return Traits::template on_null<Nullable>(
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
                 std::move(m_Action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
 

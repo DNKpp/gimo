@@ -40,20 +40,20 @@ namespace gimo::detail::or_else
             std::forward<Steps>(steps)...);
     }
 
-    template <nullable Nullable, typename Action>
+    template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null(Action&& action)
+    constexpr auto on_null(Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         return std::invoke(std::forward<Action>(action));
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
     [[nodiscard]]
-    constexpr auto on_null(Action&& action, Next&& next, Steps&&... steps)
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
     {
         return std::invoke(
             std::forward<Next>(next),
-            or_else::on_null<Nullable>(std::forward<Action>(action)),
+            or_else::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
             std::forward<Steps>(steps)...);
     }
 
@@ -76,12 +76,13 @@ namespace gimo::detail::or_else
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return or_else::on_null<Nullable>(
+            return or_else::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };

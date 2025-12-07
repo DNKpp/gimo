@@ -43,9 +43,9 @@ namespace gimo::detail::transform
             std::forward<Steps>(steps)...);
     }
 
-    template <nullable Nullable, typename Action>
+    template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action)
+    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
 
@@ -54,11 +54,10 @@ namespace gimo::detail::transform
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, Next&& next, Steps&&... steps)
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
     {
-        using Result = decltype(transform::on_null<Nullable>(std::forward<Action>(action)));
-
-        return std::forward<Next>(next).template on_null<Result>(
+        return std::forward<Next>(next).on_null(
+            transform::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
             std::forward<Steps>(steps)...);
     }
 
@@ -81,12 +80,13 @@ namespace gimo::detail::transform
                 std::forward<Steps>(steps)...);
         }
 
-        template <nullable Nullable, typename Action, typename... Steps>
+        template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
-        static constexpr auto on_null(Action&& action, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return transform::on_null<Nullable>(
+            return transform::on_null(
                 std::forward<Action>(action),
+                std::forward<Nullable>(opt),
                 std::forward<Steps>(steps)...);
         }
     };
