@@ -43,7 +43,7 @@ namespace gimo::detail
     }
 
     template <typename T>
-    concept reference = std::is_reference_v<T&>;
+    concept reference = std::is_reference_v<T>;
 
     template <typename B>
     concept boolean_testable =
