@@ -136,13 +136,13 @@ namespace gimo::testing
         };
 
         [[nodiscard]]
-        explicit constexpr ExpectedFake(T value) noexcept
+        explicit ExpectedFake(T value) noexcept
             : m_Value{std::move(value)}
         {
         }
 
         [[nodiscard]]
-        static constexpr ExpectedFake from_error(error_type error) noexcept
+        static ExpectedFake from_error(error_type error) noexcept
         {
             ExpectedFake expected{};
             expected.m_Error = std::move(error);

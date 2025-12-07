@@ -151,7 +151,7 @@ TEMPLATE_LIST_TEST_CASE(
 
     SECTION("When input holds a value, it is forwarded as-is.")
     {
-        constexpr testing::ExpectedFake expected{1337};
+        testing::ExpectedFake const expected{1337};
         Algorithm orElse{std::move(action)};
 
         decltype(auto) result = std::invoke(with_qualification::cast(orElse), expected);

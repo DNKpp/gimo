@@ -143,7 +143,7 @@ TEMPLATE_LIST_TEST_CASE(
 
     SECTION("When input has a value, the action is invoked.")
     {
-        constexpr testing::ExpectedFake expected{1337.f};
+        testing::ExpectedFake const expected{1337.f};
 
         SCOPED_EXP with_qualification::cast(action).expect_call(1337.f)
             and finally::returns(42);
