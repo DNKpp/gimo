@@ -106,7 +106,7 @@ namespace gimo
     };
 
     template <readable_value T>
-    constexpr auto&& value(T&& nullable)
+    constexpr decltype(auto) value(T&& nullable)
     {
         return *std::forward<T>(nullable);
     }
@@ -158,7 +158,7 @@ namespace gimo
     };
 
     template <readable_error T>
-    constexpr auto&& error(T&& nullable)
+    constexpr decltype(auto) error(T&& nullable)
     {
         return std::forward<T>(nullable).error();
     }
