@@ -160,17 +160,23 @@ namespace gimo
     }
 
     template <typename T>
-    concept readable_error = requires(std::remove_cvref_t<T> closure) {
+    concept referencable_error = requires(std::remove_cvref_t<T> closure) {
         { closure.error() } -> detail::referencable;
         { std::as_const(closure).error() } -> detail::referencable;
         { std::move(closure).error() } -> detail::referencable;
         { std::move(std::as_const(closure)).error() } -> detail::referencable;
+
+        typename std::common_type_t<
+            decltype(closure.error()),
+            decltype(std::as_const(closure).error()),
+            decltype(std::move(closure).error()),
+            decltype(std::move(std::as_const(closure)).error())>;
     };
 
-    template <readable_error Expected>
+    template <referencable_error Expected>
     constexpr void forward_error(std::remove_reference_t<Expected>&&) = delete;
 
-    template <readable_error Expected>
+    template <referencable_error Expected>
     constexpr auto&& forward_error(std::remove_reference_t<Expected>& expected) noexcept
     {
         return std::forward<Expected>(expected).error();
