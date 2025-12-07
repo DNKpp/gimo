@@ -3,7 +3,10 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          https://www.boost.org/LICENSE_1_0.txt)
 
-if (GIMO_CONFIG_CXX_STANDARD GREATER_EQUAL 23)
+include(Gimo-HasStdExpected)
+
+if (GIMO_CONFIG_CXX_STANDARD GREATER_EQUAL 23
+    AND GIMO_HAS_STD_EXPECTED)
     target_sources(${TARGET_NAME} PRIVATE
         "StdExpected.cpp"
     )
