@@ -24,10 +24,14 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        return detail::rebind_value<Nullable>(
+        using Result = rebind_value_t<
+            Nullable,
+            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
+
+        return Result{
             std::invoke(
                 std::forward<Action>(action),
-                value(std::forward<Nullable>(opt))));
+                value(std::forward<Nullable>(opt)))};
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -78,7 +82,7 @@ namespace gimo::detail::transform
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires rebindable_to<
+            requires adaptable_value_by<
                 std::invoke_result_t<Action, reference_type_t<Nullable>>,
                 std::remove_cvref_t<Nullable>>;
         };

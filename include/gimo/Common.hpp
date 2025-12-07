@@ -122,13 +122,9 @@ namespace gimo
     };
 
     template <typename T, typename Nullable>
-    concept rebindable_to = nullable<Nullable>
-                         && requires(T&& obj) {
-                                {
-                                    typename traits<std::remove_cvref_t<Nullable>>::template rebind_value<std::remove_cvref_t<T>>{
-                                        std::forward<T>(obj)}
-                                } -> nullable;
-                            };
+    concept adaptable_value_by = nullable<Nullable>
+                              && unqualified<Nullable>
+                              && std::constructible_from<Nullable, T&&>;
 
     template <nullable Nullable>
     using reference_type_t = decltype(value(std::declval<Nullable&&>()));
@@ -153,13 +149,6 @@ namespace gimo
         constexpr bool has_value(Nullable const& target)
         {
             return target != null_v<Nullable>;
-        }
-
-        template <typename Nullable, typename Value>
-        [[nodiscard]]
-        constexpr auto rebind_value(Value&& value)
-        {
-            return rebind_value_t<Nullable, Value>{std::forward<Value>(value)};
         }
     }
 
