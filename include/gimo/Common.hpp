@@ -101,20 +101,24 @@ namespace gimo
     concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
 
     template <typename T>
-    concept dereferencable = requires(T closure) {
+    concept referencable_value = requires(T&& closure) {
         { *std::forward<T>(closure) } -> detail::referencable;
     };
 
-    template <dereferencable T>
-    constexpr decltype(auto) value(T&& nullable)
+    template <referencable_value T>
+    constexpr auto&& value(T&& nullable)
     {
         return *std::forward<T>(nullable);
     }
 
     template <typename T>
-    concept nullable = requires(T&& obj) {
+    concept nullable = requires(T&& closure) {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
-        { value(std::forward<T>(obj)) } -> detail::referencable;
+        typename std::common_type_t<
+            decltype(value(closure)),
+            decltype(value(std::as_const(closure))),
+            decltype(value(std::move(closure))),
+            decltype(value(std::move(std::as_const(closure))))>;
     };
 
     template <typename T, typename Nullable>
