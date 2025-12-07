@@ -157,7 +157,7 @@ namespace gimo
         { std::forward<T>(closure).error() } -> detail::transferable;
     };
 
-    template <referencable_error T>
+    template <readable_error T>
     constexpr auto&& error(T&& nullable)
     {
         return std::forward<T>(nullable).error();
