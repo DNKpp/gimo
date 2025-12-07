@@ -47,9 +47,23 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
+        using Result = rebind_value_t<
+            Nullable,
+            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
 
-        return detail::construct_empty<rebind_value_t<Nullable, Result>>();
+        return detail::construct_empty<Result>();
+    }
+
+    template <typename Action, expected_like Expected>
+    [[nodiscard]]
+    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Expected&& expected)
+    {
+        using Result = rebind_value_t<
+            Expected,
+            std::invoke_result_t<Action, reference_type_t<Expected>>>;
+
+        return detail::rebind_error<Result>(
+            error(std::forward<Expected>(expected)));
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
