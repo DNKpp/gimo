@@ -4,18 +4,10 @@
 #          https://www.boost.org/LICENSE_1_0.txt)
 
 include(CheckCXXSourceCompiles)
-include(CheckCXXCompilerFlag)
+include(Gimo-HasC++23)
 
 function(gimo_check_std_optional_monadic)
-
-    if (MSVC)
-        set(CXX23_FLAG "/std:c++latest")
-    else ()
-        set(CXX23_FLAG "-std=c++23")
-    endif ()
-
-    check_cxx_compiler_flag(${CXX23_FLAG} COMPILER_SUPPORTS_CXX23)
-    if (NOT COMPILER_SUPPORTS_CXX23)
+    if (NOT GIMO_HAS_CXX_23)
         return()
     endif ()
 
