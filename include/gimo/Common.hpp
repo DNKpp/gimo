@@ -43,7 +43,7 @@ namespace gimo::detail
     }
 
     template <typename T>
-    concept referencable = std::is_reference_v<T&>;
+    concept reference = std::is_reference_v<T&>;
 
     template <typename B>
     concept boolean_testable =
@@ -102,7 +102,7 @@ namespace gimo
 
     template <typename T>
     concept referencable_value = requires(T&& closure) {
-        { *std::forward<T>(closure) } -> detail::referencable;
+        { *std::forward<T>(closure) } -> detail::reference;
     };
 
     template <referencable_value T>
@@ -154,7 +154,7 @@ namespace gimo
 
     template <typename T>
     concept referencable_error = requires(T&& closure) {
-        { std::forward<T>(closure).error() } -> detail::referencable;
+        { std::forward<T>(closure).error() } -> detail::reference;
     };
 
     template <referencable_error T>
