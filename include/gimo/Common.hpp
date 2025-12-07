@@ -168,7 +168,10 @@ namespace gimo
     };
 
     template <readable_error Expected>
-    constexpr decltype(auto) error(Expected&& expected)
+    constexpr void forward_error(std::remove_reference_t<Expected>&&) = delete;
+
+    template <readable_error Expected>
+    constexpr auto&& forward_error(std::remove_reference_t<Expected>& expected) noexcept
     {
         return std::forward<Expected>(expected).error();
     }
@@ -176,11 +179,11 @@ namespace gimo
     template <typename T>
     concept expected_like = nullable<T>
                          && requires(T&& obj) {
-                                { error(std::forward<T>(obj)) } -> detail::referencable;
+                                { forward_error<T&>(obj) } -> detail::referencable;
                             };
 
     template <expected_like Expected>
-    using error_reference_type_t = decltype(error(std::declval<Expected&&>()));
+    using error_reference_type_t = decltype(forward_error<Expected>(std::declval<Expected&>()));
 
     namespace detail
     {

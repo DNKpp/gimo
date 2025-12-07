@@ -101,7 +101,6 @@ TEMPLATE_TEST_CASE_SIG(
     (false, std::optional<int>),
     (true, std::expected<int, std::string>))
 {
-    static_assert(gimo::expected_like<std::expected<int, std::string>>);
     STATIC_CHECK(expected == gimo::expected_like<T>);
     STATIC_CHECK(expected == gimo::expected_like<T const>);
     STATIC_CHECK(expected == gimo::expected_like<T&>);
