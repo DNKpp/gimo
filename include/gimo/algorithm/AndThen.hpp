@@ -54,7 +54,7 @@ namespace gimo::detail::and_then
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Expected&& expected)
+    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
         using Result = std::invoke_result_t<Action, reference_type_t<Expected>>;
 

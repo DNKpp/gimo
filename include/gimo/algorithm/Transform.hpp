@@ -56,7 +56,7 @@ namespace gimo::detail::transform
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Expected&& expected)
+    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
         using Result = rebind_value_t<
             Expected,
