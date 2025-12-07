@@ -4,7 +4,6 @@
 //           https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo/Common.hpp"
-#include "gimo_ext/std_expected.hpp"
 #include "gimo_ext/std_optional.hpp"
 
 #include "TestCommons.hpp"
@@ -84,7 +83,7 @@ TEMPLATE_TEST_CASE_SIG(
     (false, int),
     (false, std::nullopt_t),
     (true, std::optional<int>),
-    (true, std::expected<int, std::string>))
+    (true, gimo::testing::ExpectedFake<int>))
 {
     STATIC_CHECK(expected == gimo::nullable<T>);
     STATIC_CHECK(expected == gimo::nullable<T const>);
@@ -101,8 +100,7 @@ TEMPLATE_TEST_CASE_SIG(
     (false, int),
     (false, std::nullopt_t),
     (false, std::optional<int>),
-    (true, gimo::testing::ExpectedFake<int>),
-    (true, std::expected<int, std::string>))
+    (true, gimo::testing::ExpectedFake<int>))
 {
     STATIC_CHECK(expected == gimo::expected_like<T>);
     STATIC_CHECK(expected == gimo::expected_like<T const>);

@@ -11,6 +11,7 @@ add_executable(${TARGET_NAME}
 )
 add_subdirectory(algorithm)
 add_subdirectory(config)
+add_subdirectory(ext)
 
 target_include_directories(${TARGET_NAME} PRIVATE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
