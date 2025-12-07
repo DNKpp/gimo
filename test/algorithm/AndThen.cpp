@@ -4,6 +4,7 @@
 //           https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo/algorithm/AndThen.hpp"
+#include "gimo_ext/std_expected.hpp"
 #include "gimo_ext/std_optional.hpp"
 
 #include "TestCommons.hpp"
@@ -159,6 +160,50 @@ TEMPLATE_LIST_TEST_CASE(
             with_qualification::cast(step2));
         STATIC_REQUIRE(std::same_as<std::optional<int>, decltype(result)>);
         CHECK(1337 == result);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+    "and_then algorithm supports expected_like types.",
+    "[algorithm]",
+    testing::with_qualification_list)
+{
+    using with_qualification = TestType;
+
+    mimicpp::Mock<
+        std::expected<int, std::string>(float)&,
+        std::expected<int, std::string>(float) const&,
+        std::expected<int, std::string>(float)&&,
+        std::expected<int, std::string>(float) const&&>
+        action{};
+
+    using Algorithm = detail::and_then_t<decltype(action)>;
+    STATIC_REQUIRE(gimo::applicable_on<std::expected<float, int>, typename with_qualification::template type<Algorithm>>);
+
+    SECTION("When input has a value, the action is invoked.")
+    {
+        constexpr std::expected<float, std::string> expected{1337.f};
+
+        SCOPED_EXP with_qualification::cast(action).expect_call(1337.f)
+            and finally::returns(42);
+
+        Algorithm andThen{std::move(action)};
+        decltype(auto) result = std::invoke(with_qualification::cast(andThen), expected);
+        STATIC_REQUIRE(std::same_as<std::expected<int, std::string>, decltype(result)>);
+        CHECK(42 == result);
+    }
+
+    SECTION("When input holds an error, the error is forwarded.")
+    {
+        std::expected<float, std::string> const expected{std::unexpected{"An error."}};
+        Algorithm andThen{std::move(action)};
+
+        decltype(auto) result = std::invoke(with_qualification::cast(andThen), expected);
+        STATIC_REQUIRE(std::same_as<std::expected<int, std::string>, decltype(result)>);
+        CHECK(!result);
+        CHECK_THAT(
+            result.error(),
+            Catch::Matchers::Equals("An error."));
     }
 }
 
