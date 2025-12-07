@@ -47,7 +47,7 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
+        using Result = std::invoke_result_t<Action, value_result_t<Nullable>>;
 
         return detail::construct_empty<Result>();
     }
@@ -56,7 +56,7 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Expected>>;
+        using Result = std::invoke_result_t<Action, value_result_t<Expected>>;
 
         return detail::rebind_error<Result, Expected>(expected);
     }
@@ -77,7 +77,7 @@ namespace gimo::detail::and_then
             requires nullable<
                 std::invoke_result_t<
                     Action,
-                    reference_type_t<Nullable>>>;
+                    value_result_t<Nullable>>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>

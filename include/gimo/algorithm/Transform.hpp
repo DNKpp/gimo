@@ -26,7 +26,7 @@ namespace gimo::detail::transform
     {
         using Result = rebind_value_t<
             Nullable,
-            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
+            std::invoke_result_t<Action, value_result_t<Nullable>>>;
 
         return Result{
             std::invoke(
@@ -53,7 +53,7 @@ namespace gimo::detail::transform
     {
         using Result = rebind_value_t<
             Nullable,
-            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
+            std::invoke_result_t<Action, value_result_t<Nullable>>>;
 
         return detail::construct_empty<Result>();
     }
@@ -64,7 +64,7 @@ namespace gimo::detail::transform
     {
         using Result = rebind_value_t<
             Expected,
-            std::invoke_result_t<Action, reference_type_t<Expected>>>;
+            std::invoke_result_t<Action, value_result_t<Expected>>>;
 
         return detail::rebind_error<Result, Expected>(expected);
     }
@@ -83,7 +83,7 @@ namespace gimo::detail::transform
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
             requires adaptable_value_by<
-                std::invoke_result_t<Action, reference_type_t<Nullable>>,
+                std::invoke_result_t<Action, value_result_t<Nullable>>,
                 std::remove_cvref_t<Nullable>>;
         };
 
