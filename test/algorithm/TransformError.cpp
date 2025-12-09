@@ -79,6 +79,13 @@ TEMPLATE_LIST_TEST_CASE(
     CHECK(42 == result.error());
 }
 
+namespace
+{
+    // This is required to please clang with a version <= 18
+    template <typename Value>
+    using ExpectedFakeStr = testing::ExpectedFake<Value, std::string>;
+}
+
 TEMPLATE_LIST_TEST_CASE(
     "transform_error algorithm forwards additional steps as-is.",
     "[algorith]",
@@ -87,7 +94,7 @@ TEMPLATE_LIST_TEST_CASE(
     using matches::_;
     using with_qualification = TestType;
     using testing::ExpectedFake;
-    using AlgorithmTraits = testing::BasicAlgorithmMockTraits<ExpectedFake>;
+    using AlgorithmTraits = testing::BasicAlgorithmMockTraits<ExpectedFakeStr>;
 
     auto const step0 = detail::transform_error_t<decltype([](std::string const& e) { return e + " error"; })>{};
     using StepMock = BasicAlgorithm<AlgorithmTraits, std::identity>;
