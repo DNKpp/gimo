@@ -116,12 +116,12 @@ namespace gimo::testing
     template <typename Action>
     using AlgorithmMock = BasicAlgorithm<AlgorithmMockTraits, Action>;
 
-    template <typename T>
+    template <typename Value, typename Error = std::string>
     class ExpectedFake
     {
     public:
-        using value_type = T;
-        using error_type = std::string;
+        using value_type = Value;
+        using error_type = Error;
 
         struct null_t
         {
@@ -139,7 +139,7 @@ namespace gimo::testing
         };
 
         [[nodiscard]]
-        explicit ExpectedFake(T value) noexcept
+        explicit ExpectedFake(Value value) noexcept
             : m_Value{std::move(value)}
         {
         }
@@ -183,6 +183,9 @@ namespace gimo::testing
             return m_Value.has_value();
         }
 
+        [[nodiscard]]
+        friend bool operator==(ExpectedFake const&, ExpectedFake const&) = default;
+
     private:
         std::optional<value_type> m_Value{};
         std::optional<error_type> m_Error{};
@@ -192,18 +195,19 @@ namespace gimo::testing
     };
 }
 
-template <typename Value>
-struct gimo::traits<gimo::testing::ExpectedFake<Value>>
+template <typename Value, typename Error>
+struct gimo::traits<gimo::testing::ExpectedFake<Value, Error>>
 {
-    using expected = testing::ExpectedFake<Value>;
+    using expected = testing::ExpectedFake<Value, Error>;
 
     static constexpr expected::null_t null{};
 
     template <typename V>
-    using rebind_value = testing::ExpectedFake<V>;
+    using rebind_value = testing::ExpectedFake<V, Error>;
 
     static constexpr testing::ExpectedFake<Value> bind_error(expected::error_type error)
+    static constexpr testing::ExpectedFake<Value, Error> bind_error(Error error)
     {
-        return testing::ExpectedFake<Value>::from_error(std::move(error));
+        return testing::ExpectedFake<Value, Error>::from_error(std::move(error));
     }
 };
