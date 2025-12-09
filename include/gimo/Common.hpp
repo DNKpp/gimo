@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_COMMON_HPP
 #define GIMO_COMMON_HPP
@@ -173,8 +173,29 @@ namespace gimo
                                     decltype(error(std::move(std::as_const(closure))))>;
                             };
 
+    template <typename T, typename Error>
+    concept constructible_from_error =
+        expected_like<T>
+        && detail::unqualified<T>
+        && requires(Error&& e) {
+               { traits<T>::bind_error(std::forward<Error>(e)) } -> std::same_as<T>;
+           };
+
+    template <expected_like Expected, typename Error>
+    using rebind_error_t = typename traits<std::remove_cvref_t<Expected>>::template rebind_error<std::remove_cvref_t<Error>>;
+
+    template <typename Expected, typename Error>
+    concept rebindable_error_to =
+        expected_like<Expected>
+        && requires {
+               requires constructible_from_error<rebind_error_t<Expected, Error>, Error>;
+           };
+
     namespace detail
     {
+        template <expected_like Expected>
+        using error_result_t = decltype(error(std::declval<Expected&&>()));
+
         template <expected_like Expected, expected_like Source>
         [[nodiscard]]
         constexpr expected_like auto rebind_error(Source&& source)
