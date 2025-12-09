@@ -204,6 +204,14 @@ namespace gimo
         template <expected_like Expected>
         using error_result_t = decltype(error(std::declval<Expected&&>()));
 
+        template <expected_like T>
+        constexpr decltype(auto) forward_error(std::remove_reference_t<T>& expected)
+        {
+            GIMO_ASSERT(!detail::has_value(expected), "Expected must hold an error.", expected);
+
+            return error(std::forward<T>(expected));
+        }
+
         template <expected_like Expected, expected_like Source>
         [[nodiscard]]
         constexpr expected_like auto rebind_error(Source&& source)
@@ -211,8 +219,7 @@ namespace gimo
             GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
             using traits = gimo::traits<std::remove_cvref_t<Expected>>;
 
-            return traits::bind_error(
-                error(std::forward<Source>(source)));
+            return traits::bind_error(forward_error<Source>(source));
         }
     }
 }

@@ -51,7 +51,7 @@ namespace gimo::detail::transform_error
         return traits<result_t<Expected, Action>>::bind_error(
             std::invoke(
                 std::forward<Action>(action),
-                error(std::forward<Expected>(closure))));
+                detail::forward_error<Expected>(closure)));
     }
 
     template <typename Action, expected_like Expected, typename Next, typename... Steps>
