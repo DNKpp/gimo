@@ -31,10 +31,22 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     mimicpp::mimicpp
 )
 
+# @formatter:off
+string(CONCAT DISABLED_WARNINGS
+    "$<"
+        "$<AND:"
+            "$<CXX_COMPILER_ID:GNU>,"
+            "$<VERSION_GREATER_EQUAL:$<CXX_COMPILER_VERSION>,10>,"
+            "$<NOT:$<CONFIG:Debug>>>:"
+        "-Wno-maybe-uninitialized>"
+)
+#  @formatter:on
+
 target_compile_options(${TARGET_NAME} PRIVATE
     # some test files exceed some limits
     # see: https://learn.microsoft.com/en-us/cpp/error-messages/compiler-errors-1/fatal-error-c1128?view=msvc-170
     "$<$<CXX_COMPILER_ID:MSVC>:/bigobj>"
+    ${DISABLED_WARNINGS}
 )
 
 target_compile_definitions(${TARGET_NAME} PRIVATE
