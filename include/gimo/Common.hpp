@@ -214,12 +214,11 @@ namespace gimo
 
         template <expected_like Expected, expected_like Source>
         [[nodiscard]]
-        constexpr expected_like auto rebind_error(Source&& source)
+        constexpr expected_like auto rebind_error(std::remove_reference_t<Source>& source)
         {
             GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
-            using traits = gimo::traits<std::remove_cvref_t<Expected>>;
 
-            return traits::bind_error(forward_error<Source>(source));
+            return traits<Expected>::bind_error(forward_error<Source>(source));
         }
     }
 }
