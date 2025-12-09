@@ -137,6 +137,14 @@ namespace gimo
         template <nullable Nullable>
         using value_result_t = decltype(value(std::declval<Nullable&&>()));
 
+        template <nullable T>
+        constexpr decltype(auto) forward_value(std::remove_reference_t<T>& nullable)
+        {
+            GIMO_ASSERT(detail::has_value(nullable), "Nullable must contain a value.", nullable);
+
+            return value(std::forward<T>(nullable));
+        }
+
         template <nullable Nullable>
         [[nodiscard]]
         constexpr auto construct_empty()

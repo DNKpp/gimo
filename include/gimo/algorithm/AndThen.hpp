@@ -26,7 +26,7 @@ namespace gimo::detail::and_then
     {
         return std::invoke(
             std::forward<Action>(action),
-            gimo::value(std::forward<Nullable>(opt)));
+            detail::forward_value<Nullable>(opt));
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>

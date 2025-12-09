@@ -31,7 +31,7 @@ namespace gimo::detail::transform
         return Result{
             std::invoke(
                 std::forward<Action>(action),
-                value(std::forward<Nullable>(opt)))};
+                detail::forward_value<Nullable>(opt))};
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
