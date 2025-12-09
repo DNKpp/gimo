@@ -212,13 +212,17 @@ namespace gimo
             return error(std::forward<T>(expected));
         }
 
+        template <expected_like Expected, typename Error>
+        constexpr Expected construct_from_error(Error&& error)
+        {
+            return traits<Expected>::bind_error(std::forward<Error>(error));
+        }
+
         template <expected_like Expected, expected_like Source>
         [[nodiscard]]
-        constexpr expected_like auto rebind_error(std::remove_reference_t<Source>& source)
+        constexpr Expected rebind_error(std::remove_reference_t<Source>& source)
         {
-            GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
-
-            return traits<Expected>::bind_error(forward_error<Source>(source));
+            return detail::construct_from_error<Expected>(forward_error<Source>(source));
         }
     }
 }

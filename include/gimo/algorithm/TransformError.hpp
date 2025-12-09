@@ -48,7 +48,7 @@ namespace gimo::detail::transform_error
     [[nodiscard]]
     constexpr auto on_null(Action&& action, Expected&& closure)
     {
-        return traits<result_t<Expected, Action>>::bind_error(
+        return detail::construct_from_error<result_t<Expected, Action>>(
             std::invoke(
                 std::forward<Action>(action),
                 detail::forward_error<Expected>(closure)));
