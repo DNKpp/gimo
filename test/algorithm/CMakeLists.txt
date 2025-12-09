@@ -8,4 +8,5 @@ target_sources(${TARGET_NAME} PRIVATE
     "AndThen.cpp"
     "OrElse.cpp"
     "Transform.cpp"
+    "TransformError.cpp"
 )
