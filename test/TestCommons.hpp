@@ -71,10 +71,11 @@ namespace gimo::testing
         as_rvalue_ref,
         as_const_rvalue_ref>;
 
-    struct AlgorithmMockTraits
+    template <template <typename> typename ResultTemplate>
+    struct BasicAlgorithmMockTraits
     {
         template <nullable Nullable>
-        using output = std::optional<std::remove_cvref_t<detail::value_result_t<Nullable>>>;
+        using output = ResultTemplate<std::remove_cvref_t<detail::value_result_t<Nullable>>>;
 
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = true;
@@ -109,6 +110,8 @@ namespace gimo::testing
                 std::forward<Steps>(steps)...);
         }
     };
+
+    using AlgorithmMockTraits = BasicAlgorithmMockTraits<std::optional>;
 
     template <typename Action>
     using AlgorithmMock = BasicAlgorithm<AlgorithmMockTraits, Action>;
