@@ -74,7 +74,7 @@ namespace gimo::testing
     struct AlgorithmMockTraits
     {
         template <nullable Nullable>
-        using output = std::optional<std::remove_cvref_t<value_result_t<Nullable>>>;
+        using output = std::optional<std::remove_cvref_t<detail::value_result_t<Nullable>>>;
 
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = true;

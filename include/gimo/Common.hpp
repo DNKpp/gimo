@@ -127,9 +127,6 @@ namespace gimo
                               && std::constructible_from<Nullable, T&&>;
 
     template <nullable Nullable>
-    using value_result_t = decltype(value(std::declval<Nullable&&>()));
-
-    template <nullable Nullable>
     inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
 
     template <nullable Nullable, typename Value>
@@ -137,6 +134,9 @@ namespace gimo
 
     namespace detail
     {
+        template <nullable Nullable>
+        using value_result_t = decltype(value(std::declval<Nullable&&>()));
+
         template <nullable Nullable>
         [[nodiscard]]
         constexpr auto construct_empty()
