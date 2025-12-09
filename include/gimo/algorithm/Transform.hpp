@@ -12,7 +12,6 @@
 #include "gimo/Pipeline.hpp"
 #include "gimo/algorithm/BasicAlgorithm.hpp"
 
-#include <concepts>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -20,15 +19,16 @@
 
 namespace gimo::detail::transform
 {
+    template <typename Nullable, typename Action>
+    using result_t = rebind_value_t<
+        Nullable,
+        std::invoke_result_t<Action, value_result_t<Nullable>>>;
+
     template <typename Action, nullable Nullable>
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        using Result = rebind_value_t<
-            Nullable,
-            std::invoke_result_t<Action, value_result_t<Nullable>>>;
-
-        return Result{
+        return result_t<Nullable, Action>{
             std::invoke(
                 std::forward<Action>(action),
                 detail::forward_value<Nullable>(opt))};
@@ -51,22 +51,14 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = rebind_value_t<
-            Nullable,
-            std::invoke_result_t<Action, value_result_t<Nullable>>>;
-
-        return detail::construct_empty<Result>();
+        return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = rebind_value_t<
-            Expected,
-            std::invoke_result_t<Action, value_result_t<Expected>>>;
-
-        return detail::rebind_error<Result, Expected>(expected);
+        return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>

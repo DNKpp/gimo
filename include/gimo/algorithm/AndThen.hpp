@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_ALGORITHM_AND_THEN_HPP
 #define GIMO_ALGORITHM_AND_THEN_HPP
@@ -12,7 +12,6 @@
 #include "gimo/Pipeline.hpp"
 #include "gimo/algorithm/BasicAlgorithm.hpp"
 
-#include <concepts>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -20,6 +19,11 @@
 
 namespace gimo::detail::and_then
 {
+    template <typename Nullable, typename Action>
+    using result_t = std::invoke_result_t<
+        Action,
+        value_result_t<Nullable>>;
+
     template <typename Action, nullable Nullable>
     [[nodiscard]]
     constexpr auto on_value(Action&& action, Nullable&& opt)
@@ -47,18 +51,14 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, value_result_t<Nullable>>;
-
-        return detail::construct_empty<Result>();
+        return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = std::invoke_result_t<Action, value_result_t<Expected>>;
-
-        return detail::rebind_error<Result, Expected>(expected);
+        return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -74,10 +74,7 @@ namespace gimo::detail::and_then
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires nullable<
-                std::invoke_result_t<
-                    Action,
-                    value_result_t<Nullable>>>;
+            requires nullable<result_t<Nullable, Action>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
