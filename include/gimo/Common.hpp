@@ -137,6 +137,13 @@ namespace gimo
         template <nullable Nullable>
         using value_result_t = decltype(value(std::declval<Nullable&&>()));
 
+        template <typename Nullable>
+        [[nodiscard]]
+        constexpr bool has_value(Nullable const& target)
+        {
+            return target != null_v<Nullable>;
+        }
+
         template <nullable T>
         constexpr decltype(auto) forward_value(std::remove_reference_t<T>& nullable)
         {
@@ -163,13 +170,6 @@ namespace gimo
         constexpr Nullable rebind_value(std::remove_reference_t<Source>& source)
         {
             return detail::construct_from_value<Nullable>(forward_value<Source>(source));
-        }
-
-        template <typename Nullable>
-        [[nodiscard]]
-        constexpr bool has_value(Nullable const& target)
-        {
-            return target != null_v<Nullable>;
         }
     }
 
