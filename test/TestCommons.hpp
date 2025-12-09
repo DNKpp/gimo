@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #pragma once
 
@@ -166,6 +166,12 @@ namespace gimo::testing
         }
 
         [[nodiscard]]
+        constexpr error_type& error() &
+        {
+            return m_Error.value();
+        }
+
+        [[nodiscard]]
         constexpr error_type const& error() const&
         {
             return m_Error.value();
@@ -173,6 +179,12 @@ namespace gimo::testing
 
         [[nodiscard]]
         constexpr error_type&& error() &&
+        {
+            return std::move(m_Error).value();
+        }
+
+        [[nodiscard]]
+        constexpr error_type const&& error() const&&
         {
             return std::move(m_Error).value();
         }
