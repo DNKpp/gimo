@@ -112,7 +112,7 @@ namespace gimo
     }
 
     template <typename T>
-    concept nullable = requires(T&& closure) {
+    concept nullable = requires(std::remove_cvref_t<T> closure) {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
         typename std::common_type_t<
             decltype(value(closure)),
