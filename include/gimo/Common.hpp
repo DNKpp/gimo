@@ -152,6 +152,19 @@ namespace gimo
             return Nullable{null_v<Nullable>};
         }
 
+        template <nullable Nullable, typename Value>
+        constexpr Nullable construct_from_value(Value&& value)
+        {
+            return Nullable{std::forward<Value>(value)};
+        }
+
+        template <nullable Nullable, nullable Source>
+        [[nodiscard]]
+        constexpr Nullable rebind_value(std::remove_reference_t<Source>& source)
+        {
+            return detail::construct_from_value<Nullable>(forward_value<Source>(source));
+        }
+
         template <typename Nullable>
         [[nodiscard]]
         constexpr bool has_value(Nullable const& target)

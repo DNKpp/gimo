@@ -28,7 +28,7 @@ namespace gimo::detail::transform_error
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Expected&& closure)
     {
-        return result_t<Expected, Action>{detail::forward_value<Expected>(closure)};
+        return detail::rebind_value<result_t<Expected, Action>, Expected>(closure);
     }
 
     template <typename Action, expected_like Expected, typename Next, typename... Steps>

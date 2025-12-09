@@ -28,10 +28,10 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        return result_t<Nullable, Action>{
+        return detail::construct_from_value<result_t<Nullable, Action>>(
             std::invoke(
                 std::forward<Action>(action),
-                detail::forward_value<Nullable>(opt))};
+                detail::forward_value<Nullable>(opt)));
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
