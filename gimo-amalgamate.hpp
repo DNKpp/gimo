@@ -92,7 +92,10 @@ namespace gimo::detail
     }
 
     template <typename T>
-    concept referencable = std::is_reference_v<T&>;
+    concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
+
+    template <typename T>
+    concept transferable = std::constructible_from<std::remove_cvref_t<T>, T&&>;
 
     template <typename B>
     concept boolean_testable =
@@ -147,36 +150,30 @@ namespace gimo
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
 
     template <typename T>
-    concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
-
-    template <typename T>
-    concept dereferencable = requires(T closure) {
-        { *std::forward<T>(closure) } -> detail::referencable;
+    concept readable_value = requires(T&& closure) {
+        { *std::forward<T>(closure) } -> detail::transferable;
     };
 
-    template <dereferencable T>
+    template <readable_value T>
     constexpr decltype(auto) value(T&& nullable)
     {
         return *std::forward<T>(nullable);
     }
 
     template <typename T>
-    concept nullable = requires(T&& obj) {
+    concept nullable = requires(std::remove_cvref_t<T> closure) {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
-        { value(std::forward<T>(obj)) } -> detail::referencable;
+        typename std::common_type_t<
+            decltype(value(closure)),
+            decltype(value(std::as_const(closure))),
+            decltype(value(std::move(closure))),
+            decltype(value(std::move(std::as_const(closure))))>;
     };
 
     template <typename T, typename Nullable>
-    concept rebindable_to = nullable<Nullable>
-                         && requires(T&& obj) {
-                                {
-                                    typename traits<std::remove_cvref_t<Nullable>>::template rebind_value<std::remove_cvref_t<T>>{
-                                        std::forward<T>(obj)}
-                                } -> nullable;
-                            };
-
-    template <nullable Nullable>
-    using reference_type_t = decltype(value(std::declval<Nullable&&>()));
+    concept adaptable_value_by = nullable<Nullable>
+                              && detail::unqualified<Nullable>
+                              && std::constructible_from<Nullable, T&&>;
 
     template <nullable Nullable>
     inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
@@ -186,6 +183,9 @@ namespace gimo
 
     namespace detail
     {
+        template <nullable Nullable>
+        using value_result_t = decltype(value(std::declval<Nullable&&>()));
+
         template <nullable Nullable>
         [[nodiscard]]
         constexpr auto construct_empty()
@@ -199,22 +199,15 @@ namespace gimo
         {
             return target != null_v<Nullable>;
         }
-
-        template <typename Nullable, typename Value>
-        [[nodiscard]]
-        constexpr auto rebind_value(Value&& value)
-        {
-            return rebind_value_t<Nullable, Value>{std::forward<Value>(value)};
-        }
     }
 
     template <typename T>
-    concept referencable_error = requires(T&& closure) {
-        { std::forward<T>(closure).error() } -> detail::referencable;
+    concept readable_error = requires(T&& closure) {
+        { std::forward<T>(closure).error() } -> detail::transferable;
     };
 
-    template <referencable_error T>
-    constexpr auto&& error(T&& nullable)
+    template <readable_error T>
+    constexpr decltype(auto) error(T&& nullable)
     {
         return std::forward<T>(nullable).error();
     }
@@ -437,7 +430,7 @@ namespace gimo
             detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
     };
 
-    template <unqualified Traits, unqualified Action>
+    template <detail::unqualified Traits, detail::unqualified Action>
     class BasicAlgorithm
     {
     public:
@@ -446,7 +439,8 @@ namespace gimo
 
         template <typename... Args>
             requires std::constructible_from<Action, Args&&...>
-        [[nodiscard]] explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
+        [[nodiscard]] //
+        explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
             : m_Action{std::forward<Args>(args)...}
         {
         }
@@ -643,7 +637,7 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Nullable>>;
+        using Result = std::invoke_result_t<Action, value_result_t<Nullable>>;
 
         return detail::construct_empty<Result>();
     }
@@ -652,7 +646,7 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = std::invoke_result_t<Action, reference_type_t<Expected>>;
+        using Result = std::invoke_result_t<Action, value_result_t<Expected>>;
 
         return detail::rebind_error<Result, Expected>(expected);
     }
@@ -673,7 +667,7 @@ namespace gimo::detail::and_then
             requires nullable<
                 std::invoke_result_t<
                     Action,
-                    reference_type_t<Nullable>>>;
+                    value_result_t<Nullable>>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
@@ -854,10 +848,14 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        return detail::rebind_value<Nullable>(
+        using Result = rebind_value_t<
+            Nullable,
+            std::invoke_result_t<Action, value_result_t<Nullable>>>;
+
+        return Result{
             std::invoke(
                 std::forward<Action>(action),
-                value(std::forward<Nullable>(opt))));
+                value(std::forward<Nullable>(opt)))};
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -879,7 +877,7 @@ namespace gimo::detail::transform
     {
         using Result = rebind_value_t<
             Nullable,
-            std::invoke_result_t<Action, reference_type_t<Nullable>>>;
+            std::invoke_result_t<Action, value_result_t<Nullable>>>;
 
         return detail::construct_empty<Result>();
     }
@@ -890,7 +888,7 @@ namespace gimo::detail::transform
     {
         using Result = rebind_value_t<
             Expected,
-            std::invoke_result_t<Action, reference_type_t<Expected>>>;
+            std::invoke_result_t<Action, value_result_t<Expected>>>;
 
         return detail::rebind_error<Result, Expected>(expected);
     }
@@ -908,8 +906,8 @@ namespace gimo::detail::transform
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires rebindable_to<
-                std::invoke_result_t<Action, reference_type_t<Nullable>>,
+            requires adaptable_value_by<
+                std::invoke_result_t<Action, value_result_t<Nullable>>,
                 std::remove_cvref_t<Nullable>>;
         };
 
