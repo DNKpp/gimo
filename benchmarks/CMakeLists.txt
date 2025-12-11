@@ -19,6 +19,7 @@ include(EnableSanitizers)
 enable_sanitizers(${TARGET_NAME})
 
 include(EnableWarnings)
+include(Gimo-get_cpm)
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
 CPMAddPackage("gh:google/benchmark@1.9.4")
 CPMAddPackage("gh:martinus/nanobench@4.3.11")
