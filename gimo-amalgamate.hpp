@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_HPP
 #define GIMO_HPP
@@ -47,10 +47,10 @@
 
 
 /*** Start of inlined file: Common.hpp ***/
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_COMMON_HPP
 #define GIMO_COMMON_HPP
@@ -186,6 +186,21 @@ namespace gimo
         template <nullable Nullable>
         using value_result_t = decltype(value(std::declval<Nullable&&>()));
 
+        template <typename Nullable>
+        [[nodiscard]]
+        constexpr bool has_value(Nullable const& target)
+        {
+            return target != null_v<Nullable>;
+        }
+
+        template <nullable T>
+        constexpr decltype(auto) forward_value(std::remove_reference_t<T>& nullable)
+        {
+            GIMO_ASSERT(detail::has_value(nullable), "Nullable must contain a value.", nullable);
+
+            return value(std::forward<T>(nullable));
+        }
+
         template <nullable Nullable>
         [[nodiscard]]
         constexpr auto construct_empty()
@@ -193,11 +208,17 @@ namespace gimo
             return Nullable{null_v<Nullable>};
         }
 
-        template <typename Nullable>
-        [[nodiscard]]
-        constexpr bool has_value(Nullable const& target)
+        template <nullable Nullable, typename Value>
+        constexpr Nullable construct_from_value(Value&& value)
         {
-            return target != null_v<Nullable>;
+            return Nullable{std::forward<Value>(value)};
+        }
+
+        template <nullable Nullable, nullable Source>
+        [[nodiscard]]
+        constexpr Nullable rebind_value(std::remove_reference_t<Source>& source)
+        {
+            return detail::construct_from_value<Nullable>(forward_value<Source>(source));
         }
     }
 
@@ -222,17 +243,48 @@ namespace gimo
                                     decltype(error(std::move(std::as_const(closure))))>;
                             };
 
+    template <typename T, typename Error>
+    concept constructible_from_error =
+        expected_like<T>
+        && detail::unqualified<T>
+        && requires(Error&& e) {
+               { traits<T>::bind_error(std::forward<Error>(e)) } -> std::same_as<T>;
+           };
+
+    template <expected_like Expected, typename Error>
+    using rebind_error_t = typename traits<std::remove_cvref_t<Expected>>::template rebind_error<std::remove_cvref_t<Error>>;
+
+    template <typename Expected, typename Error>
+    concept rebindable_error_to =
+        expected_like<Expected>
+        && requires {
+               requires constructible_from_error<rebind_error_t<Expected, Error>, Error>;
+           };
+
     namespace detail
     {
+        template <expected_like Expected>
+        using error_result_t = decltype(error(std::declval<Expected&&>()));
+
+        template <expected_like T>
+        constexpr decltype(auto) forward_error(std::remove_reference_t<T>& expected)
+        {
+            GIMO_ASSERT(!detail::has_value(expected), "Expected must hold an error.", expected);
+
+            return error(std::forward<T>(expected));
+        }
+
+        template <expected_like Expected, typename Error>
+        constexpr Expected construct_from_error(Error&& error)
+        {
+            return traits<Expected>::bind_error(std::forward<Error>(error));
+        }
+
         template <expected_like Expected, expected_like Source>
         [[nodiscard]]
-        constexpr expected_like auto rebind_error(Source&& source)
+        constexpr Expected rebind_error(std::remove_reference_t<Source>& source)
         {
-            GIMO_ASSERT(!detail::has_value(source), "Expected must not contain a value.", source);
-            using traits = gimo::traits<std::remove_cvref_t<Expected>>;
-
-            return traits::bind_error(
-                error(std::forward<Source>(source)));
+            return detail::construct_from_error<Expected>(forward_error<Source>(source));
         }
     }
 }
@@ -592,17 +644,16 @@ namespace gimo
 
 
 /*** Start of inlined file: AndThen.hpp ***/
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_ALGORITHM_AND_THEN_HPP
 #define GIMO_ALGORITHM_AND_THEN_HPP
 
 #pragma once
 
-#include <concepts>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -610,13 +661,18 @@ namespace gimo
 
 namespace gimo::detail::and_then
 {
+    template <typename Nullable, typename Action>
+    using result_t = std::invoke_result_t<
+        Action,
+        value_result_t<Nullable>>;
+
     template <typename Action, nullable Nullable>
     [[nodiscard]]
     constexpr auto on_value(Action&& action, Nullable&& opt)
     {
         return std::invoke(
             std::forward<Action>(action),
-            gimo::value(std::forward<Nullable>(opt)));
+            detail::forward_value<Nullable>(opt));
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -637,18 +693,14 @@ namespace gimo::detail::and_then
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = std::invoke_result_t<Action, value_result_t<Nullable>>;
-
-        return detail::construct_empty<Result>();
+        return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = std::invoke_result_t<Action, value_result_t<Expected>>;
-
-        return detail::rebind_error<Result, Expected>(expected);
+        return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -664,10 +716,7 @@ namespace gimo::detail::and_then
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires nullable<
-                std::invoke_result_t<
-                    Action,
-                    value_result_t<Nullable>>>;
+            requires nullable<result_t<Nullable, Action>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
@@ -836,7 +885,6 @@ namespace gimo
 
 #pragma once
 
-#include <concepts>
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -844,18 +892,19 @@ namespace gimo
 
 namespace gimo::detail::transform
 {
+    template <typename Nullable, typename Action>
+    using result_t = rebind_value_t<
+        Nullable,
+        std::invoke_result_t<Action, value_result_t<Nullable>>>;
+
     template <typename Action, nullable Nullable>
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        using Result = rebind_value_t<
-            Nullable,
-            std::invoke_result_t<Action, value_result_t<Nullable>>>;
-
-        return Result{
+        return detail::construct_from_value<result_t<Nullable, Action>>(
             std::invoke(
                 std::forward<Action>(action),
-                value(std::forward<Nullable>(opt)))};
+                detail::forward_value<Nullable>(opt)));
     }
 
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
@@ -875,22 +924,14 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
-        using Result = rebind_value_t<
-            Nullable,
-            std::invoke_result_t<Action, value_result_t<Nullable>>>;
-
-        return detail::construct_empty<Result>();
+        return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
     constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
-        using Result = rebind_value_t<
-            Expected,
-            std::invoke_result_t<Action, value_result_t<Expected>>>;
-
-        return detail::rebind_error<Result, Expected>(expected);
+        return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
@@ -954,6 +995,122 @@ namespace gimo
 #endif
 
 /*** End of inlined file: Transform.hpp ***/
+
+
+/*** Start of inlined file: TransformError.hpp ***/
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef GIMO_ALGORITHM_TRANSFORM_ERROR_HPP
+#define GIMO_ALGORITHM_TRANSFORM_ERROR_HPP
+
+#pragma once
+
+#include <functional>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+namespace gimo::detail::transform_error
+{
+    template <typename Expected, typename Action>
+    using result_t = rebind_error_t<
+        Expected,
+        std::invoke_result_t<Action, error_result_t<Expected>>>;
+
+    template <typename Action, expected_like Expected>
+    [[nodiscard]]
+    constexpr auto on_value([[maybe_unused]] Action&& action, Expected&& closure)
+    {
+        return detail::rebind_value<result_t<Expected, Action>, Expected>(closure);
+    }
+
+    template <typename Action, expected_like Expected, typename Next, typename... Steps>
+    [[nodiscard]]
+    constexpr auto on_value(
+        Action&& action,
+        Expected&& closure,
+        Next&& next,
+        Steps&&... steps)
+    {
+        return std::forward<Next>(next).on_value(
+            transform_error::on_value(std::forward<Action>(action), std::forward<Expected>(closure)),
+            std::forward<Steps>(steps)...);
+    }
+
+    template <typename Action, expected_like Expected>
+    [[nodiscard]]
+    constexpr auto on_null(Action&& action, Expected&& closure)
+    {
+        return detail::construct_from_error<result_t<Expected, Action>>(
+            std::invoke(
+                std::forward<Action>(action),
+                detail::forward_error<Expected>(closure)));
+    }
+
+    template <typename Action, expected_like Expected, typename Next, typename... Steps>
+    [[nodiscard]]
+    constexpr auto on_null(Action&& action, Expected&& closure, Next&& next, Steps&&... steps)
+    {
+        return std::forward<Next>(next).on_null(
+            transform_error::on_null(std::forward<Action>(action), std::forward<Expected>(closure)),
+            std::forward<Steps>(steps)...);
+    }
+
+    struct traits
+    {
+        template <expected_like Expected, typename Action>
+        static constexpr bool is_applicable_on = requires {
+            requires rebindable_error_to<
+                Expected,
+                std::invoke_result_t<Action, error_result_t<Expected>>>;
+        };
+
+        template <typename Action, expected_like Expected, typename... Steps>
+        [[nodiscard]]
+        static constexpr expected_like auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
+        {
+            return transform_error::on_value(
+                std::forward<Action>(action),
+                std::forward<Expected>(closure),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Action, expected_like Expected, typename... Steps>
+        [[nodiscard]]
+        static constexpr expected_like auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
+        {
+            return transform_error::on_null(
+                std::forward<Action>(action),
+                std::forward<Expected>(closure),
+                std::forward<Steps>(steps)...);
+        }
+    };
+}
+
+namespace gimo
+{
+    namespace detail
+    {
+        template <typename Action>
+        using transform_error_t = BasicAlgorithm<transform_error::traits, std::remove_cvref_t<Action>>;
+    }
+
+    template <typename Action>
+    [[nodiscard]]
+    constexpr auto transform_error(Action&& action)
+    {
+        using Algorithm = detail::transform_error_t<Action>;
+
+        return Pipeline{std::tuple<Algorithm>{std::forward<Action>(action)}};
+    }
+}
+
+#endif
+
+/*** End of inlined file: TransformError.hpp ***/
 
 #endif
 
