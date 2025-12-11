@@ -5,6 +5,10 @@
 
 include(Gimo-HasStdExpected)
 
+target_sources(${TARGET_NAME} PRIVATE
+    "RawPointer.cpp"
+)
+
 if (GIMO_CONFIG_CXX_STANDARD GREATER_EQUAL 23
     AND GIMO_HAS_STD_EXPECTED)
     target_sources(${TARGET_NAME} PRIVATE
