@@ -52,6 +52,5 @@ TEST_CASE(
     constexpr int const* result = gimo::apply(
         x,
         gimo::or_else([] { return &y; }));
-    STATIC_REQUIRE(result);
     STATIC_CHECK(1337 == *result);
 }
