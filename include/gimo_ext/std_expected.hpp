@@ -39,7 +39,7 @@ struct gimo::traits<std::expected<Value, Error>>
     using rebind_value =  std::expected<V, Error>;
 
     template <typename E>
-    static constexpr std::expected<Value, std::remove_cvref_t<E>> bind_error(E&& error)
+    static constexpr std::expected<Value, std::remove_cvref_t<E>> from_error(E&& error)
     {
         return std::unexpected{std::forward<E>(error)};
     }

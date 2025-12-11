@@ -208,7 +208,7 @@ namespace gimo
         expected_like<T>
         && detail::unqualified<T>
         && requires(Error&& e) {
-               { traits<T>::bind_error(std::forward<Error>(e)) } -> std::same_as<T>;
+               { traits<T>::from_error(std::forward<Error>(e)) } -> std::same_as<T>;
            };
 
     template <expected_like Expected, typename Error>
@@ -237,7 +237,7 @@ namespace gimo
         template <expected_like Expected, typename Error>
         constexpr Expected construct_from_error(Error&& error)
         {
-            return traits<Expected>::bind_error(std::forward<Error>(error));
+            return traits<Expected>::from_error(std::forward<Error>(error));
         }
 
         template <expected_like Expected, expected_like Source>

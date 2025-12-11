@@ -220,7 +220,7 @@ struct gimo::traits<gimo::testing::ExpectedFake<Value, Error>>
     template <typename E>
     using rebind_error = testing::ExpectedFake<Value, E>;
 
-    static constexpr testing::ExpectedFake<Value, Error> bind_error(Error error)
+    static constexpr testing::ExpectedFake<Value, Error> from_error(Error error)
     {
         return testing::ExpectedFake<Value, Error>::from_error(std::move(error));
     }
