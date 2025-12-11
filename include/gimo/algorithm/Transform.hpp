@@ -74,9 +74,9 @@ namespace gimo::detail::transform
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires adaptable_value_by<
-                std::invoke_result_t<Action, value_result_t<Nullable>>,
-                std::remove_cvref_t<Nullable>>;
+            requires rebindable_value_to<
+                Nullable,
+                std::invoke_result_t<Action, value_result_t<Nullable>>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
