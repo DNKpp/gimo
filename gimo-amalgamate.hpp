@@ -170,16 +170,23 @@ namespace gimo
             decltype(value(std::move(std::as_const(closure))))>;
     };
 
-    template <typename T, typename Nullable>
-    concept adaptable_value_by = nullable<Nullable>
-                              && detail::unqualified<Nullable>
-                              && std::constructible_from<Nullable, T&&>;
-
-    template <nullable Nullable>
-    inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
+    template <typename T, typename Value>
+    concept constructible_from_value = nullable<T>
+                                    && detail::unqualified<T>
+                                    && std::constructible_from<T, Value&&>;
 
     template <nullable Nullable, typename Value>
     using rebind_value_t = typename traits<std::remove_cvref_t<Nullable>>::template rebind_value<Value>;
+
+    template <typename Nullable, typename Value>
+    concept rebindable_value_to =
+        nullable<Nullable>
+        && requires {
+               requires constructible_from_value<rebind_value_t<Nullable, Value>, Value>;
+           };
+
+    template <nullable Nullable>
+    inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
 
     namespace detail
     {
@@ -248,7 +255,7 @@ namespace gimo
         expected_like<T>
         && detail::unqualified<T>
         && requires(Error&& e) {
-               { traits<T>::bind_error(std::forward<Error>(e)) } -> std::same_as<T>;
+               { traits<T>::from_error(std::forward<Error>(e)) } -> std::same_as<T>;
            };
 
     template <expected_like Expected, typename Error>
@@ -277,7 +284,7 @@ namespace gimo
         template <expected_like Expected, typename Error>
         constexpr Expected construct_from_error(Error&& error)
         {
-            return traits<Expected>::bind_error(std::forward<Error>(error));
+            return traits<Expected>::from_error(std::forward<Error>(error));
         }
 
         template <expected_like Expected, expected_like Source>
@@ -947,9 +954,9 @@ namespace gimo::detail::transform
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
-            requires adaptable_value_by<
-                std::invoke_result_t<Action, value_result_t<Nullable>>,
-                std::remove_cvref_t<Nullable>>;
+            requires rebindable_value_to<
+                Nullable,
+                std::invoke_result_t<Action, value_result_t<Nullable>>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
