@@ -218,8 +218,9 @@ namespace gimo
     template <typename Expected, typename Error>
     concept rebindable_error_to =
         expected_like<Expected>
-        && requires {
-               requires constructible_from_error<rebind_error_t<Expected, Error>, Error>;
+        && requires(rebind_error_t<Expected, Error> result) {
+               requires constructible_from_error<decltype(result), Error>;
+               { error(result) } -> std::convertible_to<Error const&>;
            };
 
     namespace detail
