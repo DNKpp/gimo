@@ -181,8 +181,9 @@ namespace gimo
     template <typename Nullable, typename Value>
     concept rebindable_value_to =
         nullable<Nullable>
-        && requires {
-               requires constructible_from_value<rebind_value_t<Nullable, Value>, Value>;
+        && requires(rebind_value_t<Nullable, Value> result) {
+               requires constructible_from_value<decltype(result), Value>;
+               { value(result) } -> std::convertible_to<Value const&>;
            };
 
     template <nullable Nullable>
@@ -264,8 +265,9 @@ namespace gimo
     template <typename Expected, typename Error>
     concept rebindable_error_to =
         expected_like<Expected>
-        && requires {
-               requires constructible_from_error<rebind_error_t<Expected, Error>, Error>;
+        && requires(rebind_error_t<Expected, Error> result) {
+               requires constructible_from_error<decltype(result), Error>;
+               { error(result) } -> std::convertible_to<Error const&>;
            };
 
     namespace detail
