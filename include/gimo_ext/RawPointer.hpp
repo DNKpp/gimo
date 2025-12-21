@@ -1,4 +1,3 @@
-
 //          Copyright Dominic (DNKpp) Koepke 2025.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -10,7 +9,6 @@
 #pragma once
 
 #include <cstddef>
-#include <type_traits>
 
 namespace gimo
 {
@@ -19,8 +17,7 @@ namespace gimo
 }
 
 template <typename T>
-    requires std::is_pointer_v<T>
-struct gimo::traits<T>
+struct gimo::traits<T*>
 {
     static constexpr std::nullptr_t null{};
 };
