@@ -207,7 +207,7 @@ namespace gimo
         {
             GIMO_ASSERT(detail::has_value(nullable), "Nullable must contain a value.", nullable);
 
-            return value(std::forward<T>(nullable));
+            return detail::value(std::forward<T>(nullable));
         }
 
         template <nullable Nullable>
