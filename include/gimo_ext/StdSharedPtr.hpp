@@ -19,8 +19,6 @@ template <typename T>
 struct gimo::traits<std::shared_ptr<T>>
 {
     static constexpr std::nullptr_t null{};
-
-    using Pointer = std::shared_ptr<T>;
 };
 
 #endif
