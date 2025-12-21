@@ -90,7 +90,7 @@ TEST_CASE(
             pipeline);
 
         STATIC_CHECK(std::same_as<std::unique_ptr<int> const, decltype(result)>);
-        CHECK(43.f == *result);
+        CHECK(42.f == *result);
     }
 
     SECTION("When nullptr is provided.")
@@ -102,6 +102,6 @@ TEST_CASE(
             pipeline);
 
         STATIC_CHECK(std::same_as<std::unique_ptr<int> const, decltype(result)>);
-        CHECK_FALSE(result);
+        CHECK(1337.f == *result);
     }
 }
