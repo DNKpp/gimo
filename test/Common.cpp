@@ -114,51 +114,67 @@ namespace dummy
 {
     namespace
     {
-        struct ADLValue
+        struct ADLTester
         {
             struct Null
             {
                 [[nodiscard]]
-                constexpr bool operator==([[maybe_unused]] ADLValue const& opt) const
+                constexpr bool operator==([[maybe_unused]] ADLTester const& opt) const
                 {
                     return true;
                 }
             };
 
-            ADLValue() = default;
-            ADLValue(ADLValue const&) = default;
-            ADLValue& operator=(ADLValue const&) = default;
+            ADLTester() = default;
+            ADLTester(ADLTester const&) = default;
+            ADLTester& operator=(ADLTester const&) = default;
 
-            explicit(false) constexpr ADLValue([[maybe_unused]] Null const null)
+            explicit(false) constexpr ADLTester([[maybe_unused]] Null const null)
             {
             }
 
-            ADLValue& operator=([[maybe_unused]] Null const null)
+            ADLTester& operator=([[maybe_unused]] Null const null)
             {
                 return *this;
             }
         };
 
         [[nodiscard]]
-        constexpr int value([[maybe_unused]] ADLValue const& opt)
+        constexpr int value([[maybe_unused]] ADLTester const& opt)
         {
             return 1337;
+        }
+
+        [[nodiscard]]
+        constexpr std::string error([[maybe_unused]] ADLTester const& opt)
+        {
+            return "Error";
         }
     }
 }
 
 template <>
-struct gimo::traits<dummy::ADLValue>
+struct gimo::traits<dummy::ADLTester>
 {
-    static constexpr dummy::ADLValue::Null null{};
+    static constexpr dummy::ADLTester::Null null{};
 };
 
 TEST_CASE(
     "forward_value customization point supports ADL.",
     "[customization-point]")
 {
-    constexpr dummy::ADLValue test{};
+    constexpr dummy::ADLTester test{};
     STATIC_CHECK(gimo::nullable<decltype(test)>);
 
-    STATIC_CHECK(1337 == gimo::detail::forward_value<dummy::ADLValue const&>(test));
+    STATIC_CHECK(1337 == gimo::detail::forward_value<dummy::ADLTester const&>(test));
+}
+
+TEST_CASE(
+    "forward_error customization point supports ADL.",
+    "[customization-point]")
+{
+    constexpr dummy::ADLTester test{};
+    STATIC_CHECK(gimo::expected_like<decltype(test)>);
+
+    STATIC_CHECK("Error" == gimo::detail::forward_error<dummy::ADLTester const&>(test));
 }
