@@ -11,11 +11,25 @@
 #include "gimo/Config.hpp"
 
 #include <concepts>
+#include <cstddef>
 #include <type_traits>
 #include <utility>
 
 namespace gimo::detail
 {
+    template <std::size_t priority>
+    struct priority_tag
+        /** \cond Help doxygen with recursion.*/
+        : public priority_tag<priority - 1>
+    /** \endcond */
+    {
+    };
+
+    template <>
+    struct priority_tag<0u>
+    {
+    };
+
     template <typename T, typename U>
     struct const_ref_like
     {
