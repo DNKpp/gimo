@@ -160,13 +160,12 @@ struct gimo::traits<dummy::ADLTester>
 };
 
 TEST_CASE(
-    "forward_value customization point supports ADL.",
+    "value customization point supports ADL.",
     "[customization-point]")
 {
     constexpr dummy::ADLTester test{};
-    STATIC_CHECK(gimo::nullable<decltype(test)>);
 
-    STATIC_CHECK(1337 == gimo::detail::forward_value<dummy::ADLTester const&>(test));
+    STATIC_CHECK(1337 == gimo::detail::value(test));
 }
 
 TEST_CASE(
@@ -177,4 +176,36 @@ TEST_CASE(
     STATIC_CHECK(gimo::expected_like<decltype(test)>);
 
     STATIC_CHECK("Error" == gimo::detail::forward_error<dummy::ADLTester const&>(test));
+}
+
+namespace dummy
+{
+    namespace
+    {
+        struct TraitCPTester
+        {
+            constexpr int operator*() const
+            {
+                return 42;
+            }
+        };
+    }
+}
+
+template <>
+struct gimo::traits<dummy::TraitCPTester>
+{
+    static constexpr int value([[maybe_unused]] dummy::TraitCPTester const& obj)
+    {
+        return 1337;
+    }
+};
+
+TEST_CASE(
+    "value customization point supports trait definition.",
+    "[customization-point]")
+{
+    constexpr dummy::TraitCPTester test{};
+
+    STATIC_CHECK(1337 == gimo::detail::value(test));
 }

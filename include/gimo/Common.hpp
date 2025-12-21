@@ -116,25 +116,66 @@ namespace gimo
                     && std::constructible_from<Nullable, Null const&>
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
 
-    template <typename T>
-    concept readable_value = requires(T&& closure) {
-        { *std::forward<T>(closure) } -> detail::transferable;
-    };
-
-    template <readable_value T>
-    constexpr decltype(auto) value(T&& nullable)
+    namespace detail
     {
-        return *std::forward<T>(nullable);
+        template <typename T>
+        concept trait_readable_value = requires(T&& closure) {
+            { traits<std::remove_cvref_t<T>>::value(std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <trait_readable_value T>
+        constexpr decltype(auto) value_impl([[maybe_unused]] priority_tag<2u> const tag, T&& closure)
+        {
+            return traits<std::remove_cvref_t<T>>::value(std::forward<T>(closure));
+        }
+
+        template <typename T>
+        concept indirectly_readable_value = requires(T&& closure) {
+            { *std::forward<T>(closure) } -> transferable;
+        };
+
+        template <indirectly_readable_value T>
+        constexpr decltype(auto) value_impl([[maybe_unused]] priority_tag<1u> const tag, T&& closure)
+        {
+            return *std::forward<T>(closure);
+        }
+
+        template <typename T>
+        concept adl_readable_value = requires(T&& closure) {
+            { value(std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <adl_readable_value T>
+        constexpr decltype(auto) value_impl([[maybe_unused]] priority_tag<0u> const tag, T&& closure)
+        {
+            return value(std::forward<T>(closure));
+        }
+
+        inline constexpr priority_tag<2u> max_value_tag{};
+
+        template <typename T>
+        concept readable_value = requires(T&& closure) {
+            { detail::value_impl(max_value_tag, std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <readable_value T>
+        constexpr decltype(auto) value(T&& closure)
+        {
+            return detail::value_impl(max_value_tag, std::forward<T>(closure));
+        }
+
+        template <unqualified T>
+        using common_value_t = std::common_type_t<
+            decltype(detail::value(std::declval<T&>())),
+            decltype(detail::value(std::declval<T const&>())),
+            decltype(detail::value(std::declval<T&&>())),
+            decltype(detail::value(std::declval<T const&&>()))>;
     }
 
     template <typename T>
-    concept nullable = requires(std::remove_cvref_t<T> closure) {
+    concept nullable = requires {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
-        typename std::common_type_t<
-            decltype(value(closure)),
-            decltype(value(std::as_const(closure))),
-            decltype(value(std::move(closure))),
-            decltype(value(std::move(std::as_const(closure))))>;
+        typename detail::common_value_t<std::remove_cvref_t<T>>;
     };
 
     template <typename T, typename Value>
@@ -150,7 +191,7 @@ namespace gimo
         nullable<Nullable>
         && requires(rebind_value_t<Nullable, Value> result) {
                requires constructible_from_value<decltype(result), Value>;
-               { value(result) } -> std::convertible_to<Value const&>;
+               { detail::value(result) } -> std::convertible_to<Value const&>;
            };
 
     template <nullable Nullable>
