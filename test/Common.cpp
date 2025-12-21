@@ -109,3 +109,56 @@ TEMPLATE_TEST_CASE_SIG(
     STATIC_CHECK(expected == gimo::expected_like<T&&>);
     STATIC_CHECK(expected == gimo::expected_like<T const&&>);
 }
+
+namespace dummy
+{
+    namespace
+    {
+        struct ADLValue
+        {
+            struct Null
+            {
+                [[nodiscard]]
+                constexpr bool operator==([[maybe_unused]] ADLValue const& opt) const
+                {
+                    return true;
+                }
+            };
+
+            ADLValue() = default;
+            ADLValue(ADLValue const&) = default;
+            ADLValue& operator=(ADLValue const&) = default;
+
+            explicit(false) constexpr ADLValue([[maybe_unused]] Null const null)
+            {
+            }
+
+            ADLValue& operator=([[maybe_unused]] Null const null)
+            {
+                return *this;
+            }
+        };
+
+        [[nodiscard]]
+        constexpr int value([[maybe_unused]] ADLValue const& opt)
+        {
+            return 1337;
+        }
+    }
+}
+
+template <>
+struct gimo::traits<dummy::ADLValue>
+{
+    static constexpr dummy::ADLValue::Null null{};
+};
+
+TEST_CASE(
+    "forward_value customization point supports ADL.",
+    "[customization-point]")
+{
+    constexpr dummy::ADLValue test{};
+    STATIC_CHECK(gimo::nullable<decltype(test)>);
+
+    STATIC_CHECK(1337 == gimo::detail::forward_value<dummy::ADLValue const&>(test));
+}
