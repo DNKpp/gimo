@@ -3,9 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
+#include "gimo_ext/RawPointer.hpp"
 #include "gimo.hpp"
-#include "gimo_ext/raw_pointer.hpp"
-#include "gimo_ext/std_optional.hpp"
+#include "gimo_ext/StdOptional.hpp"
 
 TEMPLATE_TEST_CASE(
     "raw-pointers satisfies the gimo::nullable requirements.",
