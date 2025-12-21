@@ -146,7 +146,7 @@ namespace dummy
         }
 
         [[nodiscard]]
-        constexpr std::string error([[maybe_unused]] ADLTester const& opt)
+        constexpr std::string_view error([[maybe_unused]] ADLTester const& opt)
         {
             return "Error";
         }
