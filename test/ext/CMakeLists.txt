@@ -9,6 +9,7 @@ target_sources(${TARGET_NAME} PRIVATE
     "RawPointer.cpp"
     "StdOptional.cpp"
     "StdUniquePtr.cpp"
+    "StdSharedPtr.cpp"
 )
 
 if (GIMO_CONFIG_CXX_STANDARD GREATER_EQUAL 23
