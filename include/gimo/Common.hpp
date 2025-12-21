@@ -231,26 +231,58 @@ namespace gimo
         }
     }
 
-    template <typename T>
-    concept readable_error = requires(T&& closure) {
-        { std::forward<T>(closure).error() } -> detail::transferable;
-    };
-
-    template <readable_error T>
-    constexpr decltype(auto) error(T&& nullable)
+    namespace detail
     {
-        return std::forward<T>(nullable).error();
+        template <typename T>
+        concept trait_readable_error = requires(T&& closure) {
+            { traits<std::remove_cvref_t<T>>::error(std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <trait_readable_error T>
+        constexpr decltype(auto) error_impl([[maybe_unused]] priority_tag<2u> const tag, T&& closure)
+        {
+            return traits<std::remove_cvref_t<T>>::error(std::forward<T>(closure));
+        }
+
+        template <typename T>
+        concept member_readable_error = requires(T&& closure) {
+            { std::forward<T>(closure).error() } -> transferable;
+        };
+
+        template <member_readable_error T>
+        constexpr decltype(auto) error_impl([[maybe_unused]] priority_tag<1u> const tag, T&& closure)
+        {
+            return std::forward<T>(closure).error();
+        }
+
+        template <typename T>
+        concept adl_readable_error = requires(T&& closure) {
+            { error(std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <adl_readable_error T>
+        constexpr decltype(auto) error_impl([[maybe_unused]] priority_tag<0u> const tag, T&& closure)
+        {
+            return error(std::forward<T>(closure));
+        }
+
+        inline constexpr priority_tag<2u> max_error_tag{};
+
+        template <typename T>
+        concept readable_error = requires(T&& closure) {
+            { detail::error_impl(max_error_tag, std::forward<T>(closure)) } -> transferable;
+        };
+
+        template <readable_error T>
+        constexpr decltype(auto) error(T&& closure)
+        {
+            return detail::error_impl(max_error_tag, std::forward<T>(closure));
+        }
     }
 
     template <typename T>
     concept expected_like = nullable<T>
-                         && requires(std::remove_cvref_t<T> closure) {
-                                typename std::common_type_t<
-                                    decltype(error(closure)),
-                                    decltype(error(std::as_const(closure))),
-                                    decltype(error(std::move(closure))),
-                                    decltype(error(std::move(std::as_const(closure))))>;
-                            };
+                         && detail::readable_error<T>;
 
     template <typename T, typename Error>
     concept constructible_from_error =
@@ -268,7 +300,7 @@ namespace gimo
         expected_like<Expected>
         && requires(rebind_error_t<Expected, Error> result) {
                requires constructible_from_error<decltype(result), Error>;
-               { error(result) } -> std::convertible_to<Error const&>;
+               { detail::error(result) } -> std::convertible_to<Error const&>;
            };
 
     namespace detail
@@ -281,7 +313,7 @@ namespace gimo
         {
             GIMO_ASSERT(!detail::has_value(expected), "Expected must hold an error.", expected);
 
-            return error(std::forward<T>(expected));
+            return detail::error(std::forward<T>(expected));
         }
 
         template <expected_like Expected, typename Error>

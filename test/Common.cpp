@@ -116,27 +116,6 @@ namespace dummy
     {
         struct ADLTester
         {
-            struct Null
-            {
-                [[nodiscard]]
-                constexpr bool operator==([[maybe_unused]] ADLTester const& opt) const
-                {
-                    return true;
-                }
-            };
-
-            ADLTester() = default;
-            ADLTester(ADLTester const&) = default;
-            ADLTester& operator=(ADLTester const&) = default;
-
-            explicit(false) constexpr ADLTester([[maybe_unused]] Null const null)
-            {
-            }
-
-            ADLTester& operator=([[maybe_unused]] Null const null)
-            {
-                return *this;
-            }
         };
 
         [[nodiscard]]
@@ -153,12 +132,6 @@ namespace dummy
     }
 }
 
-template <>
-struct gimo::traits<dummy::ADLTester>
-{
-    static constexpr dummy::ADLTester::Null null{};
-};
-
 TEST_CASE(
     "value customization point supports ADL.",
     "[customization-point]")
@@ -173,9 +146,8 @@ TEST_CASE(
     "[customization-point]")
 {
     constexpr dummy::ADLTester test{};
-    STATIC_CHECK(gimo::expected_like<decltype(test)>);
 
-    STATIC_CHECK("Error" == gimo::detail::forward_error<dummy::ADLTester const&>(test));
+    STATIC_CHECK("Error" == gimo::detail::error(test));
 }
 
 namespace dummy
@@ -184,9 +156,16 @@ namespace dummy
     {
         struct TraitCPTester
         {
+            [[nodiscard]]
             constexpr int operator*() const
             {
                 return 42;
+            }
+
+            [[nodiscard]]
+            constexpr std::string_view error() const
+            {
+                return "Member error.";
             }
         };
     }
@@ -199,6 +178,11 @@ struct gimo::traits<dummy::TraitCPTester>
     {
         return 1337;
     }
+
+    static constexpr std::string_view error([[maybe_unused]] dummy::TraitCPTester const& obj)
+    {
+        return "Error";
+    }
 };
 
 TEST_CASE(
@@ -208,4 +192,13 @@ TEST_CASE(
     constexpr dummy::TraitCPTester test{};
 
     STATIC_CHECK(1337 == gimo::detail::value(test));
+}
+
+TEST_CASE(
+    "error customization point supports trait definition.",
+    "[customization-point]")
+{
+    constexpr dummy::TraitCPTester test{};
+
+    STATIC_CHECK("Error" == gimo::detail::error(test));
 }
