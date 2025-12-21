@@ -1,11 +1,11 @@
-//          Copyright Dominic (DNKpp) Koepke 2025 - 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo/Pipeline.hpp"
 #include "gimo/algorithm/AndThen.hpp"
-#include "gimo_ext/std_optional.hpp"
+#include "gimo_ext/StdOptional.hpp"
 
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include <nanobench.h>
