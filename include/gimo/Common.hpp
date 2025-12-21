@@ -62,7 +62,7 @@ namespace gimo::detail
     concept unqualified = std::same_as<T, std::remove_cvref_t<T>>;
 
     template <typename T>
-    concept transferable = std::constructible_from<std::remove_cvref_t<T>, T&&>;
+    concept transferable = !std::is_void_v<std::remove_cvref_t<T>>;
 
     template <typename B>
     concept boolean_testable =
