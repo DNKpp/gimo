@@ -12,23 +12,15 @@ TEMPLATE_TEST_CASE(
     "std::unique_ptr satisfies the gimo::nullable requirements.",
     "[ext][std::unique_ptr]",
     std::unique_ptr<int>,
-    std::unique_ptr<int> const,
-    std::unique_ptr<int>&,
-    std::unique_ptr<int> const&,
-    std::unique_ptr<int>&&,
-    std::unique_ptr<int> const&&,
-
     std::unique_ptr<int const>,
-    std::unique_ptr<int const> const,
-    std::unique_ptr<int const>&,
-    std::unique_ptr<int const> const&,
-    std::unique_ptr<int const>&&,
-    std::unique_ptr<int const> const&&,
-
-    std::unique_ptr<std::unique_ptr<int>>,
-    std::unique_ptr<std::unique_ptr<int>>&&)
+    std::unique_ptr<std::unique_ptr<int>>)
 {
     STATIC_CHECK(gimo::nullable<TestType>);
+    STATIC_CHECK(gimo::nullable<TestType const>);
+    STATIC_CHECK(gimo::nullable<TestType&>);
+    STATIC_CHECK(gimo::nullable<TestType const&>);
+    STATIC_CHECK(gimo::nullable<TestType&&>);
+    STATIC_CHECK(gimo::nullable<TestType const&&>);
     STATIC_CHECK_FALSE(gimo::constructible_from_value<TestType, int>);
     STATIC_CHECK_FALSE(gimo::rebindable_value_to<TestType, int>);
     STATIC_CHECK_FALSE(gimo::expected_like<TestType>);
