@@ -163,19 +163,12 @@ namespace gimo
         {
             return detail::value_impl(max_value_tag, std::forward<T>(closure));
         }
-
-        template <unqualified T>
-        using common_value_t = std::common_type_t<
-            decltype(detail::value(std::declval<T&>())),
-            decltype(detail::value(std::declval<T const&>())),
-            decltype(detail::value(std::declval<T&&>())),
-            decltype(detail::value(std::declval<T const&&>()))>;
     }
 
     template <typename T>
     concept nullable = requires {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
-        typename detail::common_value_t<std::remove_cvref_t<T>>;
+        requires detail::readable_value<T>;
     };
 
     template <typename T, typename Value>
