@@ -29,10 +29,10 @@ function(read_compile_error_definitions SOURCE_FILE OUT_ERROR_DEFINITIONS)
     set(${OUT_ERROR_DEFINITIONS} ${ERROR_DEFINITIONS} PARENT_SCOPE)
 endfunction()
 
-function(check_compile_error SOURCE_FILE)
+function(check_compile_error TEST_PREFIX SOURCE_FILE)
     cmake_path(GET SOURCE_FILE STEM NAME)
-    set(TARGET_NAME mimicpp-compile-error-${NAME})
-    set(TEST_NAME compile-error-${NAME})
+    set(TARGET_NAME gimo-compile-error-${TEST_PREFIX}${NAME})
+    set(TEST_NAME compile-error-${TEST_PREFIX}${NAME})
     read_compile_error_definitions(${SOURCE_FILE} EXPECTED_COMPILE_ERRORS)
 
     add_library(${TARGET_NAME} EXCLUDE_FROM_ALL
@@ -61,3 +61,5 @@ function(check_compile_error SOURCE_FILE)
         )
     endif ()
 endfunction()
+
+check_compile_error("transform-" "transform/inapplicable-action.cpp")

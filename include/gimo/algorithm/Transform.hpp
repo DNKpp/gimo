@@ -20,13 +20,21 @@
 namespace gimo::detail::transform
 {
     template <typename Nullable, typename Action>
+    consteval void print_diagnostics()
+    {
+        static_assert(
+            std::is_invocable_v<Action, value_result_t<Nullable>>,
+            "The transform action must be invocable with the value of the nullable.");
+    }
+
+    template <typename Nullable, typename Action>
     using result_t = rebind_value_t<
         Nullable,
         std::invoke_result_t<Action, value_result_t<Nullable>>>;
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
+    constexpr result_t<Nullable, Action> on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
         return detail::construct_from_value<result_t<Nullable, Action>>(
             std::invoke(
@@ -49,14 +57,14 @@ namespace gimo::detail::transform
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
+    constexpr result_t<Nullable, Action> on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
+    constexpr result_t<Expected, Action> on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
         return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
@@ -83,20 +91,36 @@ namespace gimo::detail::transform
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return transform::on_value(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return transform::on_value(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                transform::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
 
         template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return transform::on_null(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return transform::on_null(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                transform::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
     };
 }
