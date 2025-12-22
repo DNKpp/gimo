@@ -145,6 +145,10 @@ namespace gimo
      * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
      * - **On Null**: Invokes the `action` with the underlying error of the input.
      * The result of this invocation is wrapped as an error into a new instance of the `expected_like` container.
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the error extracted from the input `expected_like`.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the error-type of the resulting nullable.
      * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
      *
      * \note The `expected_like` type must support error-type rebinding.
