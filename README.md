@@ -11,8 +11,23 @@
 
 <b>G</b>eneric <b>I</b>nterchangeable <b>M</b>onadic <b>O</b>perations
 
-<a name="introduction"></a>
+---
 
+## Table of Contents
+
+* [Introduction](#introduction)
+    * [Genericity](#genericity)
+    * [Interchangeability](#interchangeability)
+    * [Zero Cost Abstraction](#zero-cost-abstraction)
+* [Integration](#integration)
+    * [Optional Extensions](#optional-extensions)
+    * [Portability](#portability)
+    * [CMake](#cmake)
+    * [Single-Header](#single-header)
+
+---
+
+<a name="introduction"></a>
 ## Introduction
 
 *gimo* is a small C++20 library that provides reusable monadic operations as free functions.
@@ -21,6 +36,7 @@ their real-world usability is still quite limited.
 
 In the following sections, I’ll explain the general idea behind *gimo*.
 
+<a name="genericity"></a>
 ### Genericity
 
 The C++ standard library is well known for its generic algorithms,
@@ -44,6 +60,7 @@ Additionally, for *expected-like* types, *gimo* offers `gimo::transform_error`.
 Providing these operations as free functions also enables customization.
 Users can add their own algorithms where needed, without being constrained by member functions.
 
+<a name="interchangeability"></a>
 ### Interchangeability
 
 C++ has a long history, and many codebases already use their own optional- or expected-like types.
@@ -65,6 +82,7 @@ auto const result = gimo::apply(
 
 See the full example on [godbolt.org](https://godbolt.org/z/ETWxbnhce).
 
+<a name="zero-cost-abstraction"></a>
 ### Zero Cost Abstraction
 
 This section describes more of a nice side effect,
@@ -98,8 +116,112 @@ int const result = gimo::apply(
 Here, the first `transform` still needs to evaluate emptiness.
 However, once that information is known, it can be forwarded to the next operation.
 
+In fact, this closely resembles the following rewritten code,
+which users may have in mind when constructing the pipeline.
+
+```cpp
+std::optional opt{1337};
+if (opt)
+{
+    auto const f = static_cast<float>(*opt);
+    return std::to_string(f);
+}
+
+return std::nullopt;
+```
+
 Note that these optimizations depend on the specific algorithm, as each has different semantic properties.
 For instance, `or_else` preserves the emptiness state when the nullable holds a value,
 allowing this information to be propagated.
 Since the fallback action is not guaranteed to produce a non-empty nullable,
 the next operation must still perform its own check.
+
+<a name="integration"></a>
+
+## Integration
+
+*gimo* is a header-only library, allowing users to easily access all features by simply including the `gimo.hpp` header.
+
+<a name="optional_extensions"></a>
+
+### Optional Extensions
+
+The *gimo* core is a type-agnostic framework for free-standing monadic operations.
+Support for specific types is available via an opt-in model through the `gimo_ext` directory.
+These headers provide the necessary trait specializations to adapt existing types to the gimo pipeline.
+For instance, to enable support for `std::optional`, simply include the corresponding adapter:
+
+```cpp
+#include <gimo_ext/StdOptional.hpp>
+```
+
+Currently, the following extensions are provided:
+
+- [std::optional](https://github.com/DNKpp/gimo/blob/main/include/gimo_ext/StdOptional.hpp)
+- [std::expected](https://github.com/DNKpp/gimo/blob/main/include/gimo_ext/StdExpected.hpp)
+- [raw-pointers](https://github.com/DNKpp/gimo/blob/main/include/gimo_ext/RawPointer.hpp)
+- [std::unique_ptr](https://github.com/DNKpp/gimo/blob/main/include/gimo_ext/StdUniquePtr.hpp)
+- [std::shared_ptr](https://github.com/DNKpp/gimo/blob/main/include/gimo_ext/StdSharedPtr.hpp)
+
+<a name="portability"></a>
+
+### Portability
+
+The *gimo* framework is architected for broad compatibility with any C++20-conforming compiler,
+maintaining strict independence from underlying hardware architectures or operating systems.
+The library has been verified across various environments, including Windows, macOS,
+and major Linux distributions (Ubuntu, Debian) on both `x86_64` and `x86_32` platforms.
+
+#### Minimum Toolchain Requirements
+
+The library is verified to work with the following compiler versions.
+While older versions supporting C++20 may work, these represent the minimums confirmed by the current test suite:
+
+- **GCC:** 10.2+
+- **Clang:** 16+
+- **MSVC:** v143+ (Visual Studio 2022)
+
+<a name="cmake"></a>
+
+### CMake
+
+The integration into a CMake project is straight-forward.
+
+```cmake
+target_link_libraries(<your_target_name> PUBLIC gimo::gimo)
+```
+
+Users can either select a commit in the **main** branch or a version tag and utilize the CMake ``FetchContent`` module:
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(gimo
+    VERSION 0.1.0 # or GIT_TAG <commit_hash> 
+    GIT_REPOSITORY https://github.com/DNKpp/gimo
+)
+
+FetchContent_MakeAvailable(gimo)
+# do not forget linking via target_link_libraries as shown above
+```
+
+As an alternative, I recommend using [CPM](https://github.com/cpm-cmake/CPM.cmake),
+which is a convenient wrapper based on the ``FetchContent`` feature:
+
+```cmake
+include(CPM.cmake) # or include(get_cpm.cmake)
+
+CPMAddPackage("gh:DNKpp/gimo@0.1.0") # or gh:DNKpp/gimo#<commit_hash>
+# do not forget linking via target_link_libraries as shown above
+```
+
+<a name="single-header"></a>
+
+### Single-Header
+
+For convenience, an amalgamated version is available
+via [gimo-amalgamate.hpp](https://github.com/DNKpp/gimo/blob/amalgamate/gimo-amalgamate.hpp).
+This file tracks the current state of the main branch as a single, self-contained header.
+Please note that extensions found in `gimo_ext` are excluded from this file and must be included separately.
+
+
