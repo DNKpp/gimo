@@ -1,0 +1,88 @@
+#          Copyright Dominic (DNKpp) Koepke 2025.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          https://www.boost.org/LICENSE_1_0.txt)
+
+name: generate docs
+
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+  release:
+    types: [ released ]
+
+jobs:
+  create-documentation:
+    runs-on: ubuntu-latest
+
+    # this is required for the gh-pages deployment
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      # we must configure, because the Doxyfile is generated via cmake
+      - name: Configure
+        run: |
+          cmake \
+              -S . \
+              -B build \
+              --log-level=VERBOSE \
+              -DGIMO_CONFIGURE_DOXYGEN=ON \
+              -DGIMO_BUILD_TESTS=OFF \
+              -DGIMO_BUILD_BENCHMARKS=OFF \
+              -DGIMO_BUILD_EXAMPLES=OFF
+
+      - name: Generate Doxygen Documentation
+        uses: mattnotmitt/doxygen-action@edge
+        with:
+          doxyfile-path: build/docs/Doxyfile
+
+      - name: Upload html documentation
+        uses: actions/upload-artifact@v6
+        with:
+          name: HTML-Documentation
+          path: build/docs/html
+
+      # publish to main gh-pages, when main branch is pushed
+      - name: Deploy to GitHub main Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/docs/html
+
+  release-documentation:
+    runs-on: ubuntu-latest
+    needs: create-documentation
+    if: ${{ github.event_name == 'release' }}
+
+    # this is required for the asset attachment
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: HTML-Documentation
+          path: ./documentation
+
+      - name: zip documentation
+        uses: thedoctor0/zip-release@0.7.6
+        with:
+          type: 'zip'
+          filename: "documentation.zip"
+          path: ./documentation
+
+      - name: attach release assets
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "documentation.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          omitBody: true
+          omitName: true
