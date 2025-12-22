@@ -6,7 +6,7 @@
 #include "gimo/algorithm/BasicAlgorithm.hpp"
 #include "gimo_ext/StdOptional.hpp"
 
-#include "TestCommons.hpp"
+#include "../unit-tests/TestCommons.hpp"
 
 using namespace gimo;
 

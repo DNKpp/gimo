@@ -6,7 +6,7 @@
 #include "gimo/Common.hpp"
 #include "gimo_ext/StdOptional.hpp"
 
-#include "TestCommons.hpp"
+#include "../TestCommons.hpp"
 
 // see: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2445r1.pdf
 TEMPLATE_TEST_CASE_SIG(

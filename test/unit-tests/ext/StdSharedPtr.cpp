@@ -6,7 +6,7 @@
 #include "gimo_ext/StdSharedPtr.hpp"
 #include "gimo.hpp"
 
-#include "TestCommons.hpp"
+#include "../unit-tests/TestCommons.hpp"
 
 TEMPLATE_TEST_CASE(
     "std::shared_ptr satisfies the gimo::nullable requirements.",
