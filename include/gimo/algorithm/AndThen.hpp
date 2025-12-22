@@ -41,7 +41,7 @@ namespace gimo::detail::and_then
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_value(Action&& action, Nullable&& opt)
+    constexpr result_t<Nullable, Action> on_value(Action&& action, Nullable&& opt)
     {
         return std::invoke(
             std::forward<Action>(action),
@@ -64,14 +64,14 @@ namespace gimo::detail::and_then
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
+    constexpr result_t<Nullable, Action> on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
     {
         return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null([[maybe_unused]] Action&& action, Expected&& expected)
+    constexpr result_t<Expected, Action> on_null([[maybe_unused]] Action&& action, Expected&& expected)
     {
         return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }

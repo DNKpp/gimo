@@ -45,7 +45,7 @@ namespace gimo::detail::transform_error
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_value([[maybe_unused]] Action&& action, Expected&& closure)
+    constexpr result_t<Expected, Action> on_value([[maybe_unused]] Action&& action, Expected&& closure)
     {
         return detail::rebind_value<result_t<Expected, Action>, Expected>(closure);
     }
@@ -65,7 +65,7 @@ namespace gimo::detail::transform_error
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr auto on_null(Action&& action, Expected&& closure)
+    constexpr result_t<Expected, Action> on_null(Action&& action, Expected&& closure)
     {
         return detail::construct_from_error<result_t<Expected, Action>>(
             std::invoke(
