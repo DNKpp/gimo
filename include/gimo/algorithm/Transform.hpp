@@ -24,7 +24,7 @@ namespace gimo::detail::transform
     {
         static_assert(
             std::is_invocable_v<Action, value_result_t<Nullable>>,
-            "The transform action must be invocable with the value of the nullable.");
+            "The transform algorithm requires an action invocable with the nullable’s value.");
         static_assert(
             rebindable_value_to<Nullable, std::invoke_result_t<Action, value_result_t<Nullable>>>,
             "The transform algorithm requires a nullable whose value-type can be rebound.");

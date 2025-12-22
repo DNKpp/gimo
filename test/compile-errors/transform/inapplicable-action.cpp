@@ -8,7 +8,7 @@
 
 /*
 <begin-expected-compile-error>
-The transform action must be invocable with the value of the nullable\.
+The transform algorithm requires an action invocable with the nullable’s value\.
 <end-expected-compile-error>
 */
 
