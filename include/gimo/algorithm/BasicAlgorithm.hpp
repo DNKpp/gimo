@@ -11,6 +11,7 @@
 #include "gimo/Common.hpp"
 #include "gimo/Config.hpp"
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -48,6 +49,14 @@ namespace gimo
             detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
     };
 
+    /**
+     * \brief The basic building block for every monadic operation.
+     * \tparam Traits The policy struct defining certain behavior.
+     * \tparam Action The user-provided callable (e.g., lambda, function pointer).
+     * \details
+     * This class wraps a user-provided callable (`Action`) and associates it with specific behavior traits
+     * that dictate how the action is applied to a Nullable input.
+     */
     template <detail::unqualified Traits, detail::unqualified Action>
     class BasicAlgorithm
     {
