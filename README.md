@@ -142,7 +142,7 @@ the next operation must still perform its own check.
 
 *gimo* is a header-only library, allowing users to easily access all features by simply including the `gimo.hpp` header.
 
-<a name="optional_extensions"></a>
+<a name="optional-extensions"></a>
 
 ### Optional Extensions
 
