@@ -21,14 +21,18 @@
 namespace gimo::detail::or_else
 {
     template <typename Nullable, typename Action>
-    consteval void print_diagnostics()
+    consteval Nullable* print_diagnostics()
     {
-        static_assert(
-            std::is_invocable_v<Action>,
-            "The or_else algorithm requires an action invocable without any arguments.");
-        static_assert(
-            std::same_as<Nullable, std::invoke_result_t<Action>>,
-            "The or_else algorithm requires an action returning the same nullable type.");
+        if constexpr (!std::is_invocable_v<Action>)
+        {
+            static_assert(false, "The or_else algorithm requires an action invocable without any arguments.");
+        }
+        else if constexpr (!std::same_as<Nullable, std::invoke_result_t<Action>>)
+        {
+            static_assert(false, "The or_else algorithm requires an action returning the same nullable type.");
+        }
+
+        return nullptr;
     }
 
     template <typename Action, nullable Nullable>
@@ -90,8 +94,7 @@ namespace gimo::detail::or_else
             }
             else
             {
-                or_else::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *or_else::print_diagnostics<Nullable, Action>();
             }
         }
 
@@ -108,8 +111,7 @@ namespace gimo::detail::or_else
             }
             else
             {
-                or_else::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *or_else::print_diagnostics<Nullable, Action>();
             }
         }
     };
