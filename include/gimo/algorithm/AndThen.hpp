@@ -20,6 +20,14 @@
 namespace gimo::detail::and_then
 {
     template <typename Nullable, typename Action>
+    consteval void print_diagnostics()
+    {
+        static_assert(
+            std::is_invocable_v<Action, value_result_t<Nullable>>,
+            "The and_then algorithm requires an action invocable with the nullable’s value.");
+    }
+
+    template <typename Nullable, typename Action>
     using result_t = std::invoke_result_t<
         Action,
         value_result_t<Nullable>>;
@@ -81,20 +89,36 @@ namespace gimo::detail::and_then
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return and_then::on_value(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return and_then::on_value(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                and_then::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
 
         template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return and_then::on_null(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return and_then::on_null(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                and_then::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
     };
 }
