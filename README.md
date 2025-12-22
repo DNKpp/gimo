@@ -6,10 +6,10 @@
 ▒███    █████ ▒███  ▒███ ▒▒▒  ▒███ ▒███      ▒███
 ▒▒███  ▒▒███  ▒███  ▒███      ▒███ ▒▒███     ███ 
  ▒▒█████████  █████ █████     █████ ▒▒▒███████▒  
-  ▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒ ▒▒▒▒▒     ▒▒▒▒▒    ▒▒▒▒▒▒▒                                                     
+  ▒▒▒▒▒▒▒▒▒  ▒▒▒▒▒ ▒▒▒▒▒     ▒▒▒▒▒    ▒▒▒▒▒▒▒   
 ```
 
-**G**eneric **I**nterchangeable **M**onadic **O**perations
+<b>G</b>eneric <b>I</b>nterchangeable <b>M</b>onadic <b>O</b>perations
 
 <a name="introduction"></a>
 
@@ -21,12 +21,12 @@ their real-world usability is still quite limited.
 
 In the following sections, I’ll explain the general idea behind *gimo*.
 
-## Genericity
+### Genericity
 
 The C++ standard library is well known for its generic algorithms,
 which decouple concrete container implementations from the operations performed on them.
 For example, there is no `std::vector::find`,
-because std::find (and, since C++20, `std::ranges::find`) already solves the problem generically.
+because `std::find` (and, since C++20, `std::ranges::find`) already solves the problem generically.
 
 There is no need to reimplement the same algorithm for each container
 if the actual goal is simply to perform a linear search.
@@ -44,7 +44,7 @@ Additionally, for *expected-like* types, *gimo* offers `gimo::transform_error`.
 Providing these operations as free functions also enables customization.
 Users can add their own algorithms where needed, without being constrained by member functions.
 
-## Interchangeability
+### Interchangeability
 
 C++ has a long history, and many codebases already use their own optional- or expected-like types.
 Each of these typically has to implement monadic operations on its own.
@@ -65,7 +65,7 @@ auto const result = gimo::apply(
 
 See the full example on [godbolt.org](https://godbolt.org/z/ETWxbnhce).
 
-## Zero Cost Abstraction
+### Zero Cost Abstraction
 
 This section describes more of a nice side effect,
 but it’s something I like to point out in discussions,
