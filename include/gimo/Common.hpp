@@ -92,6 +92,12 @@ namespace gimo::detail
 
 namespace gimo
 {
+    /**
+     * \brief The central customization point for the library.
+     * \tparam Nullable The type to be adapted.
+     * \details
+     * To adapt a custom type for use with the monadic algorithms, you must specialize this struct.
+     */
     template <typename Nullable>
     struct traits;
 
@@ -119,6 +125,13 @@ namespace gimo
                };
     }
 
+    /**
+     * \brief Concept describing the relationship between a Nullable type and its *null* state.
+     * \tparam Null The null type.
+     * \tparam Nullable the nullable type.
+     * \details
+     * Requires that the Nullable type can be compared to, constructed from, and assigned from the Null type defined in its traits.
+     */
     template <typename Null, typename Nullable>
     concept null_for = detail::regular_relationship<Nullable, Null>
                     && detail::weakly_equality_comparable_with<Null, Nullable>
@@ -174,20 +187,44 @@ namespace gimo
         }
     }
 
+    /**
+     * \brief Concept describing a type that can be used as a monad in the pipeline.
+     * \tparam T The type to check.
+     * \details
+     * A type is `nullable` if:
+     * 1. It has a valid `gimo::traits` specialization defining a `null` data member.
+     * 2. It satisfies the `null_for` relationship with that `null`.
+     * 3. It allows value extraction via `gimo::traits::value()`, member `operator*`, or ADL `value()` (in that priority).
+     */
     template <typename T>
     concept nullable = requires {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
         requires detail::readable_value<T>;
     };
 
+    /**
+     * \brief Concept determining whether the `Nullable` is constructible with the specified argument.
+     * \tparam T The type to check.
+     * \tparam Value The value to adapt.
+     */
     template <typename T, typename Value>
     concept constructible_from_value = nullable<T>
                                     && detail::unqualified<T>
                                     && std::constructible_from<T, Value&&>;
 
+    /**
+     * \brief Helper alias to obtain the `Nullable` type with the rebound `Value` type.
+     * \tparam Nullable The source-nullable type to adapt the new value-type.
+     * \tparam Value The new value-type to rebind to.
+     */
     template <nullable Nullable, typename Value>
     using rebind_value_t = typename traits<std::remove_cvref_t<Nullable>>::template rebind_value<Value>;
 
+    /**
+     * \brief Concept determining whether the `Nullable` type supports rebinding its value-type.
+     * \tparam Nullable The source-nullable type to adapt the new value-type.
+     * \tparam Value The new value-type to rebind to.
+     */
     template <typename Nullable, typename Value>
     concept rebindable_value_to =
         nullable<Nullable>
@@ -196,6 +233,10 @@ namespace gimo
                { detail::value(std::declval<rebind_value_t<Nullable, Value>>()) } -> std::convertible_to<Value const&>;
            };
 
+    /**
+     * \brief Helper to obtain the `null` value for a specific Nullable type.
+     * \tparam Nullable The type for which to retrieve the null value.
+     */
     template <nullable Nullable>
     inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
 
@@ -289,10 +330,22 @@ namespace gimo
         }
     }
 
+    /**
+     * \brief Concept describing a type that acts like `std::expected` (has both a value and an error channel).
+     * \tparam T The type to check.
+     * \details
+     * An `expected_like` type must satisfy `nullable` and additionally support error extraction
+     * via `gimo::traits::error()`, member `.error()`, or ADL `error()` (in that priority).
+     */
     template <typename T>
     concept expected_like = nullable<T>
                          && detail::readable_error<T>;
 
+    /**
+     * \brief Concept determining whether the `Expected` type supports rebinding its error-type.
+     * \tparam T The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <typename T, typename Error>
     concept constructible_from_error =
         expected_like<T>
@@ -301,9 +354,19 @@ namespace gimo
                { traits<T>::from_error(std::forward<Error>(e)) } -> std::same_as<T>;
            };
 
+    /**
+     * \brief Helper alias to obtain the `Expected` type with the rebound `Error` type.
+     * \tparam Expected The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <expected_like Expected, typename Error>
     using rebind_error_t = typename traits<std::remove_cvref_t<Expected>>::template rebind_error<std::remove_cvref_t<Error>>;
 
+    /**
+     * \brief Concept determining whether the `Expected` type supports rebinding its error-type.
+     * \tparam Expected The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <typename Expected, typename Error>
     concept rebindable_error_to =
         expected_like<Expected>
