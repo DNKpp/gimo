@@ -20,6 +20,14 @@
 namespace gimo::detail::transform_error
 {
     template <typename Expected, typename Action>
+    consteval void print_diagnostics()
+    {
+        static_assert(
+            std::is_invocable_v<Action, error_result_t<Expected>>,
+            "The transform_error algorithm requires an action invocable with the expected's error.");
+    }
+
+    template <typename Expected, typename Action>
     using result_t = rebind_error_t<
         Expected,
         std::invoke_result_t<Action, error_result_t<Expected>>>;
@@ -65,31 +73,47 @@ namespace gimo::detail::transform_error
 
     struct traits
     {
-        template <expected_like Expected, typename Action>
+        template <nullable Expected, typename Action>
         static constexpr bool is_applicable_on = requires {
             requires rebindable_error_to<
                 Expected,
                 std::invoke_result_t<Action, error_result_t<Expected>>>;
         };
 
-        template <typename Action, expected_like Expected, typename... Steps>
+        template <typename Action, nullable Expected, typename... Steps>
         [[nodiscard]]
         static constexpr expected_like auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
         {
-            return transform_error::on_value(
-                std::forward<Action>(action),
-                std::forward<Expected>(closure),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Expected, Action>)
+            {
+                return transform_error::on_value(
+                    std::forward<Action>(action),
+                    std::forward<Expected>(closure),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                transform_error::print_diagnostics<Expected, Action>();
+                return std::forward<Expected>(closure);
+            }
         }
 
-        template <typename Action, expected_like Expected, typename... Steps>
+        template <typename Action, nullable Expected, typename... Steps>
         [[nodiscard]]
         static constexpr expected_like auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
         {
-            return transform_error::on_null(
-                std::forward<Action>(action),
-                std::forward<Expected>(closure),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Expected, Action>)
+            {
+                return transform_error::on_null(
+                    std::forward<Action>(action),
+                    std::forward<Expected>(closure),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                transform_error::print_diagnostics<Expected, Action>();
+                return std::forward<Expected>(closure);
+            }
         }
     };
 }

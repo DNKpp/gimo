@@ -8,6 +8,8 @@
 #include <tuple>
 #include <type_traits>
 
+#include <mimic++/mimic++.hpp>
+
 #include "gimo/Common.hpp"
 #include "gimo/algorithm/BasicAlgorithm.hpp"
 

@@ -41,6 +41,7 @@ function(check_compile_error TEST_PREFIX SOURCE_FILE)
 
     target_link_libraries(${TARGET_NAME} PRIVATE
         gimo::gimo
+        mimicpp::mimicpp
     )
 
     add_test(NAME ${TEST_NAME}
@@ -68,3 +69,4 @@ check_compile_error("or_else-" "or_else/inapplicable-action.cpp")
 check_compile_error("or_else-" "or_else/action-return-mismatch.cpp")
 check_compile_error("transform-" "transform/inapplicable-action.cpp")
 check_compile_error("transform-" "transform/non-rebindable-value.cpp")
+check_compile_error("transform_error-" "transform_error/inapplicable-action.cpp")
