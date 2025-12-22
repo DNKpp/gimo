@@ -136,6 +136,22 @@ namespace gimo
         using and_then_t = BasicAlgorithm<and_then::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that applies a function returning a nullable type.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A unary operation.
+     * \return A Pipeline step containing the `and_then` algorithm.
+     * \details
+     * - **On Value**: Invokes the `action` with the underlying value of the input.
+     * The `action` **must** return a `nullable` type.
+     * - **On Null**: Propagates the null (or error) state immediately (i.e., `action` is not executed).
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the value extracted from the input nullable.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the resulting nullable-type.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto and_then(Action&& action)

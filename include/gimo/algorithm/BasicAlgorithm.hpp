@@ -50,7 +50,13 @@ namespace gimo
     };
 
     /**
+     * \brief Monadic algorithms.
+     * \defgroup ALGORITHM algorithm
+     */
+
+    /**
      * \brief The basic building block for every monadic operation.
+     * \ingroup ALGORITHM
      * \tparam Traits The policy struct defining certain behavior.
      * \tparam Action The user-provided callable (e.g., lambda, function pointer).
      * \details

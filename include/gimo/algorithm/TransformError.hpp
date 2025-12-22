@@ -135,6 +135,21 @@ namespace gimo
         using transform_error_t = BasicAlgorithm<transform_error::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that transforms the error of an expected-like type.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A nullary operation.
+     * \return A Pipeline step containing the `or_else` algorithm.
+     * \details
+     * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
+     * - **On Null**: Invokes the `action` with the underlying error of the input.
+     * The result of this invocation is wrapped as an error into a new instance of the `expected_like` container.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     *
+     * \note The `expected_like` type must support error-type rebinding.
+     * \see gimo::traits::rebind_error
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto transform_error(Action&& action)

@@ -125,6 +125,17 @@ namespace gimo
         using or_else_t = BasicAlgorithm<or_else::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that handles the null/error case.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A nullary operation.
+     * \return A Pipeline step containing the `or_else` algorithm.
+     * \details
+     * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
+     * - **On Null**: Invokes the `action`. The `action` **must** return a `nullable` type.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto or_else(Action&& action)

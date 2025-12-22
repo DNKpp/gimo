@@ -138,6 +138,25 @@ namespace gimo
         using transform_t = BasicAlgorithm<transform::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that transforms the underlying value.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A unary operation.
+     * \return A Pipeline step containing the `transform` algorithm.
+     * \details
+     * - **On Value**: Invokes the `action` with the underlying value of the input.
+     * The result of this invocation is wrapped into a new instance of the nullable container.
+     * - **On Null**: Propagates the null (or error) state immediately (i.e., `action` is not executed).
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the value extracted from the input nullable.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the value-type of the resulting nullable.
+     * \see https://en.wikipedia.org/wiki/Map_(higher-order_function)
+     *
+     * \note The `nullable` type must support value-type rebinding.
+     * \see gimo::traits::rebind_value
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto transform(Action&& action)
