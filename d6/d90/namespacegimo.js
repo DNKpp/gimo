@@ -1,0 +1,28 @@
+var namespacegimo =
+[
+    [ "BasicAlgorithm", "d5/dfb/classgimo_1_1_basic_algorithm.html", "d5/dfb/classgimo_1_1_basic_algorithm" ],
+    [ "Pipeline", "d5/d89/classgimo_1_1_pipeline.html", "d5/d89/classgimo_1_1_pipeline" ],
+    [ "traits", "d9/d18/structgimo_1_1traits.html", null ],
+    [ "traits< std::expected< Value, Error > >", "da/d78/structgimo_1_1traits_3_01std_1_1expected_3_01_value_00_01_error_01_4_01_4.html", "da/d78/structgimo_1_1traits_3_01std_1_1expected_3_01_value_00_01_error_01_4_01_4" ],
+    [ "traits< std::optional< T > >", "da/dee/structgimo_1_1traits_3_01std_1_1optional_3_01_t_01_4_01_4.html", "da/dee/structgimo_1_1traits_3_01std_1_1optional_3_01_t_01_4_01_4" ],
+    [ "traits< std::shared_ptr< T > >", "d6/d98/structgimo_1_1traits_3_01std_1_1shared__ptr_3_01_t_01_4_01_4.html", "d6/d98/structgimo_1_1traits_3_01std_1_1shared__ptr_3_01_t_01_4_01_4" ],
+    [ "traits< std::unique_ptr< T, Deleter > >", "db/d7b/structgimo_1_1traits_3_01std_1_1unique__ptr_3_01_t_00_01_deleter_01_4_01_4.html", "db/d7b/structgimo_1_1traits_3_01std_1_1unique__ptr_3_01_t_00_01_deleter_01_4_01_4" ],
+    [ "traits< T * >", "db/d87/structgimo_1_1traits_3_01_t_01_5_01_4.html", "db/d87/structgimo_1_1traits_3_01_t_01_5_01_4" ],
+    [ "applicable_on", "d6/d38/conceptgimo_1_1applicable__on.html", null ],
+    [ "null_for", "d8/db7/conceptgimo_1_1null__for.html", null ],
+    [ "nullable", "d8/d8e/conceptgimo_1_1nullable.html", null ],
+    [ "constructible_from_value", "da/d82/conceptgimo_1_1constructible__from__value.html", null ],
+    [ "rebindable_value_to", "df/dbc/conceptgimo_1_1rebindable__value__to.html", null ],
+    [ "expected_like", "dc/dcd/conceptgimo_1_1expected__like.html", null ],
+    [ "constructible_from_error", "d3/df0/conceptgimo_1_1constructible__from__error.html", null ],
+    [ "rebindable_error_to", "da/d07/conceptgimo_1_1rebindable__error__to.html", null ],
+    [ "pipeline", "de/d0a/conceptgimo_1_1pipeline.html", null ],
+    [ "rebind_error_t", "d6/d90/namespacegimo.html#a4fd99baef70bfb406fed8e99798a81c1", null ],
+    [ "rebind_value_t", "d6/d90/namespacegimo.html#af08a266fb3e85bc739e3e8a1d895f6ee", null ],
+    [ "and_then", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga00f421df375b40d755beefbf0e1019c2", null ],
+    [ "apply", "d5/d89/classgimo_1_1_pipeline.html#a7d204f95db16e5b360a16091543b78d2", null ],
+    [ "or_else", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga1562cdcb003130aab0cdb9e52a8069ae", null ],
+    [ "transform", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef", null ],
+    [ "transform_error", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga566cac50b24d7c16fe867a7f1ce6ffcc", null ],
+    [ "null_v", "d6/d90/namespacegimo.html#a5f8f7dc253864f4942be0f9cd8c25e5c", null ]
+];

@@ -1,0 +1,8 @@
+<map id="gimo::Pipeline::append" name="gimo::Pipeline::append">
+<area shape="rect" id="Node000001" title="Appends another pipeline to the end of this one." alt="" coords="211,31,360,56"/>
+<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="320,18,308,12,285,9,264,11,253,16,250,21,256,29,252,32,245,22,249,12,263,6,285,4,310,7,323,14"/>
+<area shape="rect" id="Node000002" href="$d5/d89/classgimo_1_1_pipeline.html#adec1008407828c36e99090c024484276" title="Appends another pipeline to the end of this one." alt="" coords="9,5,159,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,35,158,30,159,25,195,29"/>
+<area shape="rect" id="Node000003" href="$d5/d89/classgimo_1_1_pipeline.html#a6c52a1ec0d5cd578f88c525c29f62da7" title="Appends the right&#45;hand&#45;side pipeline to the end of the left&#45;hand&#45;side pipeline." alt="" coords="5,55,163,80"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="195,57,163,61,163,55,195,52"/>
+</map>
