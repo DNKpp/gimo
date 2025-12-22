@@ -20,14 +20,18 @@
 namespace gimo::detail::transform
 {
     template <typename Nullable, typename Action>
-    consteval void print_diagnostics()
+    consteval Nullable* print_diagnostics()
     {
-        static_assert(
-            std::is_invocable_v<Action, value_result_t<Nullable>>,
-            "The transform algorithm requires an action invocable with the nullable’s value.");
-        static_assert(
-            rebindable_value_to<Nullable, std::invoke_result_t<Action, value_result_t<Nullable>>>,
-            "The transform algorithm requires a nullable whose value-type can be rebound.");
+        if constexpr (!std::is_invocable_v<Action, value_result_t<Nullable>>)
+        {
+            static_assert(false, "The transform algorithm requires an action invocable with the nullable’s value.");
+        }
+        else if constexpr (!rebindable_value_to<Nullable, std::invoke_result_t<Action, value_result_t<Nullable>>>)
+        {
+            static_assert(false, "The transform algorithm requires a nullable whose value-type can be rebound.");
+        }
+
+        return nullptr;
     }
 
     template <typename Nullable, typename Action>
@@ -103,8 +107,7 @@ namespace gimo::detail::transform
             }
             else
             {
-                transform::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *transform::print_diagnostics<Nullable, Action>();
             }
         }
 
@@ -121,8 +124,7 @@ namespace gimo::detail::transform
             }
             else
             {
-                transform::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *transform::print_diagnostics<Nullable, Action>();
             }
         }
     };
