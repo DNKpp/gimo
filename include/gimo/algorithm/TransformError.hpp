@@ -28,6 +28,9 @@ namespace gimo::detail::transform_error
         static_assert(
             std::is_invocable_v<Action, error_result_t<Expected>>,
             "The transform_error algorithm requires an action invocable with the expected's error.");
+        static_assert(
+            rebindable_error_to<Expected, std::invoke_result_t<Action, error_result_t<Expected>>>,
+            "The transform_error algorithm requires an expected-like whose error-type can be rebound.");
     }
 
     template <typename Expected, typename Action>
@@ -85,7 +88,7 @@ namespace gimo::detail::transform_error
 
         template <typename Action, nullable Expected, typename... Steps>
         [[nodiscard]]
-        static constexpr expected_like auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
+        static constexpr auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
         {
             if constexpr (is_applicable_on<Expected, Action>)
             {
@@ -103,7 +106,7 @@ namespace gimo::detail::transform_error
 
         template <typename Action, nullable Expected, typename... Steps>
         [[nodiscard]]
-        static constexpr expected_like auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
+        static constexpr auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
         {
             if constexpr (is_applicable_on<Expected, Action>)
             {
