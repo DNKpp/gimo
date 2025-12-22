@@ -139,6 +139,12 @@ namespace gimo::detail
 
 namespace gimo
 {
+    /**
+     * \brief The central customization point for the library.
+     * \tparam Nullable The type to be adapted.
+     * \details
+     * To adapt a custom type for use with the monadic algorithms, you must specialize this struct.
+     */
     template <typename Nullable>
     struct traits;
 
@@ -154,6 +160,10 @@ namespace gimo
             && (std::convertible_to<U const&, C const&>
                 || std::convertible_to<U, C const&>);
 
+        template <typename T, typename U>
+        concept regular_relationship =
+            regular_relationship_impl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
+
         template <typename Lhs, typename Rhs>
         concept weakly_assignable_from =
             std::is_lvalue_reference_v<Lhs>
@@ -162,12 +172,15 @@ namespace gimo
                };
     }
 
-    template <typename T, typename U>
-    concept regular_relationship =
-        detail::regular_relationship_impl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
-
+    /**
+     * \brief Concept describing the relationship between a Nullable type and its *null* state.
+     * \tparam Null The null type.
+     * \tparam Nullable the nullable type.
+     * \details
+     * Requires that the Nullable type can be compared to, constructed from, and assigned from the Null type defined in its traits.
+     */
     template <typename Null, typename Nullable>
-    concept null_for = regular_relationship<Nullable, Null>
+    concept null_for = detail::regular_relationship<Nullable, Null>
                     && detail::weakly_equality_comparable_with<Null, Nullable>
                     && std::constructible_from<Nullable, Null const&>
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
@@ -221,20 +234,44 @@ namespace gimo
         }
     }
 
+    /**
+     * \brief Concept describing a type that can be used as a monad in the pipeline.
+     * \tparam T The type to check.
+     * \details
+     * A type is `nullable` if:
+     * 1. It has a valid `gimo::traits` specialization defining a `null` data member.
+     * 2. It satisfies the `null_for` relationship with that `null`.
+     * 3. It allows value extraction via `gimo::traits::value()`, member `operator*`, or ADL `value()` (in that priority).
+     */
     template <typename T>
     concept nullable = requires {
         requires null_for<decltype(traits<std::remove_cvref_t<T>>::null), std::remove_cvref_t<T>>;
         requires detail::readable_value<T>;
     };
 
+    /**
+     * \brief Concept determining whether the `Nullable` is constructible with the specified argument.
+     * \tparam T The type to check.
+     * \tparam Value The value to adapt.
+     */
     template <typename T, typename Value>
     concept constructible_from_value = nullable<T>
                                     && detail::unqualified<T>
                                     && std::constructible_from<T, Value&&>;
 
+    /**
+     * \brief Helper alias to obtain the `Nullable` type with the rebound `Value` type.
+     * \tparam Nullable The source-nullable type to adapt the new value-type.
+     * \tparam Value The new value-type to rebind to.
+     */
     template <nullable Nullable, typename Value>
     using rebind_value_t = typename traits<std::remove_cvref_t<Nullable>>::template rebind_value<Value>;
 
+    /**
+     * \brief Concept determining whether the `Nullable` type supports rebinding its value-type.
+     * \tparam Nullable The source-nullable type to adapt the new value-type.
+     * \tparam Value The new value-type to rebind to.
+     */
     template <typename Nullable, typename Value>
     concept rebindable_value_to =
         nullable<Nullable>
@@ -243,6 +280,10 @@ namespace gimo
                { detail::value(std::declval<rebind_value_t<Nullable, Value>>()) } -> std::convertible_to<Value const&>;
            };
 
+    /**
+     * \brief Helper to obtain the `null` value for a specific Nullable type.
+     * \tparam Nullable The type for which to retrieve the null value.
+     */
     template <nullable Nullable>
     inline constexpr auto null_v{traits<std::remove_cvref_t<Nullable>>::null};
 
@@ -336,10 +377,22 @@ namespace gimo
         }
     }
 
+    /**
+     * \brief Concept describing a type that acts like `std::expected` (has both a value and an error channel).
+     * \tparam T The type to check.
+     * \details
+     * An `expected_like` type must satisfy `nullable` and additionally support error extraction
+     * via `gimo::traits::error()`, member `.error()`, or ADL `error()` (in that priority).
+     */
     template <typename T>
     concept expected_like = nullable<T>
                          && detail::readable_error<T>;
 
+    /**
+     * \brief Concept determining whether the `Expected` type supports rebinding its error-type.
+     * \tparam T The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <typename T, typename Error>
     concept constructible_from_error =
         expected_like<T>
@@ -348,9 +401,19 @@ namespace gimo
                { traits<T>::from_error(std::forward<Error>(e)) } -> std::same_as<T>;
            };
 
+    /**
+     * \brief Helper alias to obtain the `Expected` type with the rebound `Error` type.
+     * \tparam Expected The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <expected_like Expected, typename Error>
     using rebind_error_t = typename traits<std::remove_cvref_t<Expected>>::template rebind_error<std::remove_cvref_t<Error>>;
 
+    /**
+     * \brief Concept determining whether the `Expected` type supports rebinding its error-type.
+     * \tparam Expected The source-expected type to adapt the new error-type.
+     * \tparam Error The new error-type to rebind to.
+     */
     template <typename Expected, typename Error>
     concept rebindable_error_to =
         expected_like<Expected>
@@ -393,10 +456,10 @@ namespace gimo
 
 
 /*** Start of inlined file: Pipeline.hpp ***/
-//           Copyright Dominic (DNKpp) Koepke 2025
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_PIPELINE_HPP
 #define GIMO_PIPELINE_HPP
@@ -410,6 +473,13 @@ namespace gimo
 
 namespace gimo
 {
+    /**
+     * \brief A composite object representing a sequence of monadic operations.
+     * \tparam Steps The sequence of algorithm types contained in this pipeline.
+     * \details
+     * Pipelines are created by chaining algorithms (like `transform` or `and_then`) and are executed by calling `apply` member-function,
+     * or `gimo::apply`.
+     */
     template <typename... Steps>
     class Pipeline
     {
@@ -417,48 +487,80 @@ namespace gimo
         friend class Pipeline;
 
     public:
+        /**
+         * \brief Constructs a pipeline from a tuple of steps.
+         * \param steps The tuple containing the algorithm instances.
+         */
         [[nodiscard]]
         explicit constexpr Pipeline(std::tuple<Steps...> steps)
             : m_Steps{std::move(steps)}
         {
         }
 
+        /**
+         * \brief Applies nullable input on the pipeline.
+         * \tparam Nullable The input type.
+         * \param opt The input value to process.
+         * \return The result of the pipeline execution.
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) &
         {
             return apply(*this, std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) const&
         {
             return apply(*this, std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) &&
         {
             return apply(std::move(*this), std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) const&&
         {
             return apply(std::move(*this), std::forward<Nullable>(opt));
         }
 
+        /**
+         * \brief Appends another pipeline to the end of this one.
+         * \tparam SuffixSteps The steps of the appended pipeline.
+         * \return A new Pipeline containing all steps from both pipelines.
+         */
         template <typename... SuffixSteps>
         constexpr auto append(Pipeline<SuffixSteps...> suffix) const&
         {
             return append(*this, std::move(suffix.m_Steps));
         }
 
+        /**
+         * \copydoc append
+         */
         template <typename... SuffixSteps>
         constexpr auto append(Pipeline<SuffixSteps...> suffix) &&
         {
             return append(std::move(*this), std::move(suffix.m_Steps));
         }
 
+        /**
+         * \brief Appends the right-hand-side pipeline to the end of the left-hand-side pipeline.
+         * \tparam SuffixSteps The steps of the appended pipeline.
+         * \return A new Pipeline containing all steps from both pipelines.
+         */
         template <typename... SuffixSteps>
         [[nodiscard]]
         friend constexpr auto operator|(Pipeline const& prefix, Pipeline<SuffixSteps...> suffix)
@@ -466,6 +568,9 @@ namespace gimo
             return prefix.append(std::move(suffix));
         }
 
+        /**
+         * \copydoc operator|
+         */
         template <typename... SuffixSteps>
         [[nodiscard]]
         friend constexpr auto operator|(Pipeline&& prefix, Pipeline<SuffixSteps...> suffix)
@@ -516,9 +621,22 @@ namespace gimo
         };
     }
 
+    /**
+     * \brief Checks whether the given type is a specialization of `gimo::Pipeline`.
+     * \tparam T The type to check.
+     */
     template <typename T>
     concept pipeline = detail::is_pipeline<std::remove_cvref_t<T>>::value;
 
+    /**
+     * \brief Applies nullable input on the pipeline.
+     * \relates Pipeline
+     * \tparam Nullable The input type.
+     * \tparam Pipeline The pipeline type.
+     * \param opt The input value to process.
+     * \param steps The pipeline to execute.
+     * \return The result of the pipeline execution.
+     */
     template <nullable Nullable, pipeline Pipeline>
     [[nodiscard]]
     constexpr auto apply(Nullable&& opt, Pipeline&& steps)
@@ -543,6 +661,7 @@ namespace gimo
 
 #pragma once
 
+#include <concepts>
 #include <type_traits>
 #include <utility>
 
@@ -580,6 +699,20 @@ namespace gimo
             detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
     };
 
+    /**
+     * \brief Monadic algorithms.
+     * \defgroup ALGORITHM algorithm
+     */
+
+    /**
+     * \brief The basic building block for every monadic operation.
+     * \ingroup ALGORITHM
+     * \tparam Traits The policy struct defining certain behavior.
+     * \tparam Action The user-provided callable (e.g., lambda, function pointer).
+     * \details
+     * This class wraps a user-provided callable (`Action`) and associates it with specific behavior traits
+     * that dictate how the action is applied to a Nullable input.
+     */
     template <detail::unqualified Traits, detail::unqualified Action>
     class BasicAlgorithm
     {
@@ -876,6 +1009,22 @@ namespace gimo
         using and_then_t = BasicAlgorithm<and_then::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that applies a function returning a nullable type.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A unary operation.
+     * \return A Pipeline step containing the `and_then` algorithm.
+     * \details
+     * - **On Value**: Invokes the `action` with the underlying value of the input.
+     * The `action` **must** return a `nullable` type.
+     * - **On Null**: Propagates the null (or error) state immediately (i.e., `action` is not executed).
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the value extracted from the input nullable.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the resulting nullable-type.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto and_then(Action&& action)
@@ -1015,6 +1164,17 @@ namespace gimo
         using or_else_t = BasicAlgorithm<or_else::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that handles the null/error case.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A nullary operation.
+     * \return A Pipeline step containing the `or_else` algorithm.
+     * \details
+     * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
+     * - **On Null**: Invokes the `action`. The `action` **must** return a `nullable` type.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto or_else(Action&& action)
@@ -1167,6 +1327,25 @@ namespace gimo
         using transform_t = BasicAlgorithm<transform::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that transforms the underlying value.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A unary operation.
+     * \return A Pipeline step containing the `transform` algorithm.
+     * \details
+     * - **On Value**: Invokes the `action` with the underlying value of the input.
+     * The result of this invocation is wrapped into a new instance of the nullable container.
+     * - **On Null**: Propagates the null (or error) state immediately (i.e., `action` is not executed).
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the value extracted from the input nullable.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the value-type of the resulting nullable.
+     * \see https://en.wikipedia.org/wiki/Map_(higher-order_function)
+     *
+     * \note The `nullable` type must support value-type rebinding.
+     * \see gimo::traits::rebind_value
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto transform(Action&& action)
@@ -1316,6 +1495,25 @@ namespace gimo
         using transform_error_t = BasicAlgorithm<transform_error::traits, std::remove_cvref_t<Action>>;
     }
 
+    /**
+     * \brief Creates a pipeline step that transforms the error of an expected-like type.
+     * \ingroup ALGORITHM
+     * \tparam Action The action type.
+     * \param action A nullary operation.
+     * \return A Pipeline step containing the `or_else` algorithm.
+     * \details
+     * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
+     * - **On Null**: Invokes the `action` with the underlying error of the input.
+     * The result of this invocation is wrapped as an error into a new instance of the `expected_like` container.
+     *
+     * Let `T` be the (possibly cv-qualified) reference to the error extracted from the input `expected_like`.
+     * `Action` must be invocable with an argument of type `T` (or a type to which `T` is implicitly convertible),
+     * while the decayed return-type will become the error-type of the resulting nullable.
+     * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
+     *
+     * \note The `expected_like` type must support error-type rebinding.
+     * \see gimo::traits::rebind_error
+     */
     template <typename Action>
     [[nodiscard]]
     constexpr auto transform_error(Action&& action)
