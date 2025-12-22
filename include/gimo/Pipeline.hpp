@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_PIPELINE_HPP
 #define GIMO_PIPELINE_HPP
@@ -17,6 +17,13 @@
 
 namespace gimo
 {
+    /**
+     * \brief A composite object representing a sequence of monadic operations.
+     * \tparam Steps The sequence of algorithm types contained in this pipeline.
+     * \details
+     * Pipelines are created by chaining algorithms (like `transform` or `and_then`) and are executed by calling `apply` member-function,
+     * or `gimo::apply`.
+     */
     template <typename... Steps>
     class Pipeline
     {
@@ -24,48 +31,80 @@ namespace gimo
         friend class Pipeline;
 
     public:
+        /**
+         * \brief Constructs a pipeline from a tuple of steps.
+         * \param steps The tuple containing the algorithm instances.
+         */
         [[nodiscard]]
         explicit constexpr Pipeline(std::tuple<Steps...> steps)
             : m_Steps{std::move(steps)}
         {
         }
 
+        /**
+         * \brief Applies nullable input on the pipeline.
+         * \tparam Nullable The input type.
+         * \param opt The input value to process.
+         * \return The result of the pipeline execution.
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) &
         {
             return apply(*this, std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) const&
         {
             return apply(*this, std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) &&
         {
             return apply(std::move(*this), std::forward<Nullable>(opt));
         }
 
+        /**
+         * \copydoc apply
+         */
         template <nullable Nullable>
         constexpr auto apply(Nullable&& opt) const&&
         {
             return apply(std::move(*this), std::forward<Nullable>(opt));
         }
 
+        /**
+         * \brief Appends another pipeline to the end of this one.
+         * \tparam SuffixSteps The steps of the appended pipeline.
+         * \return A new Pipeline containing all steps from both pipelines.
+         */
         template <typename... SuffixSteps>
         constexpr auto append(Pipeline<SuffixSteps...> suffix) const&
         {
             return append(*this, std::move(suffix.m_Steps));
         }
 
+        /**
+         * \copydoc append
+         */
         template <typename... SuffixSteps>
         constexpr auto append(Pipeline<SuffixSteps...> suffix) &&
         {
             return append(std::move(*this), std::move(suffix.m_Steps));
         }
 
+        /**
+         * \brief Appends the right-hand-side pipeline to the end of the left-hand-side pipeline.
+         * \tparam SuffixSteps The steps of the appended pipeline.
+         * \return A new Pipeline containing all steps from both pipelines.
+         */
         template <typename... SuffixSteps>
         [[nodiscard]]
         friend constexpr auto operator|(Pipeline const& prefix, Pipeline<SuffixSteps...> suffix)
@@ -73,6 +112,9 @@ namespace gimo
             return prefix.append(std::move(suffix));
         }
 
+        /**
+         * \copydoc operator|
+         */
         template <typename... SuffixSteps>
         [[nodiscard]]
         friend constexpr auto operator|(Pipeline&& prefix, Pipeline<SuffixSteps...> suffix)
@@ -123,9 +165,22 @@ namespace gimo
         };
     }
 
+    /**
+     * \brief Checks whether the given type is a specialization of `gimo::Pipeline`.
+     * \tparam T The type to check.
+     */
     template <typename T>
     concept pipeline = detail::is_pipeline<std::remove_cvref_t<T>>::value;
 
+    /**
+     * \brief Applies nullable input on the pipeline.
+     * \relates Pipeline
+     * \tparam Nullable The input type.
+     * \tparam Pipeline The pipeline type.
+     * \param opt The input value to process.
+     * \param steps The pipeline to execute.
+     * \return The result of the pipeline execution.
+     */
     template <nullable Nullable, pipeline Pipeline>
     [[nodiscard]]
     constexpr auto apply(Nullable&& opt, Pipeline&& steps)
