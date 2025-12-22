@@ -20,14 +20,18 @@
 namespace gimo::detail::and_then
 {
     template <typename Nullable, typename Action>
-    consteval void print_diagnostics()
+    consteval Nullable* print_diagnostics()
     {
-        static_assert(
-            std::is_invocable_v<Action, value_result_t<Nullable>>,
-            "The and_then algorithm requires an action invocable with the nullable’s value.");
-        static_assert(
-            nullable<std::invoke_result_t<Action, value_result_t<Nullable>>>,
-            "The and_then algorithm requires an action with a nullable return-type.");
+        if constexpr (!std::is_invocable_v<Action, value_result_t<Nullable>>)
+        {
+            static_assert(false, "The and_then algorithm requires an action invocable with the nullable’s value.");
+        }
+        else if constexpr (!nullable<std::invoke_result_t<Action, value_result_t<Nullable>>>)
+        {
+            static_assert(false, "The and_then algorithm requires an action with a nullable return-type.");
+        }
+
+        return nullptr;
     }
 
     template <typename Nullable, typename Action>
@@ -101,8 +105,7 @@ namespace gimo::detail::and_then
             }
             else
             {
-                and_then::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *and_then::print_diagnostics<Nullable, Action>();
             }
         }
 
@@ -119,8 +122,7 @@ namespace gimo::detail::and_then
             }
             else
             {
-                and_then::print_diagnostics<Nullable, Action>();
-                return std::forward<Nullable>(opt);
+                return *and_then::print_diagnostics<Nullable, Action>();
             }
         }
     };
