@@ -23,6 +23,9 @@ namespace gimo::detail::transform_error
     consteval void print_diagnostics()
     {
         static_assert(
+            expected_like<Expected>,
+            "The transform_error algorithm requires an expected-like input.");
+        static_assert(
             std::is_invocable_v<Action, error_result_t<Expected>>,
             "The transform_error algorithm requires an action invocable with the expected's error.");
     }
