@@ -17,10 +17,19 @@
 
 namespace gimo::detail
 {
+    template <typename...>
+    struct always_false
+        : public std::bool_constant<false>
+    {
+    };
+
+    template <typename... Args>
+    inline constexpr bool always_false_v = always_false<Args...>::value;
+
     template <std::size_t priority>
     struct priority_tag
         /** \cond Help doxygen with recursion.*/
-        : public priority_tag<priority - 1>
+        : public priority_tag<priority - 1u>
     /** \endcond */
     {
     };

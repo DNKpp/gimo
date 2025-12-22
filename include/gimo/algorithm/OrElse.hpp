@@ -25,11 +25,11 @@ namespace gimo::detail::or_else
     {
         if constexpr (!std::is_invocable_v<Action>)
         {
-            static_assert(false, "The or_else algorithm requires an action invocable without any arguments.");
+            static_assert(always_false_v<Nullable>, "The or_else algorithm requires an action invocable without any arguments.");
         }
         else if constexpr (!std::same_as<Nullable, std::invoke_result_t<Action>>)
         {
-            static_assert(false, "The or_else algorithm requires an action returning the same nullable type.");
+            static_assert(always_false_v<Nullable>, "The or_else algorithm requires an action returning the same nullable type.");
         }
 
         return nullptr;

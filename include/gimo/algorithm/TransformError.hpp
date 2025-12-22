@@ -24,15 +24,15 @@ namespace gimo::detail::transform_error
     {
         if constexpr (!expected_like<Expected>)
         {
-            static_assert(false, "The transform_error algorithm requires an expected-like input.");
+            static_assert(always_false_v<Expected>, "The transform_error algorithm requires an expected-like input.");
         }
         else if constexpr (!std::is_invocable_v<Action, error_result_t<Expected>>)
         {
-            static_assert(false, "The transform_error algorithm requires an action invocable with the expected's error.");
+            static_assert(always_false_v<Expected>, "The transform_error algorithm requires an action invocable with the expected's error.");
         }
         else if constexpr (!rebindable_error_to<Expected, std::invoke_result_t<Action, error_result_t<Expected>>>)
         {
-            static_assert(false, "The transform_error algorithm requires an expected-like whose error-type can be rebound.");
+            static_assert(always_false_v<Expected>, "The transform_error algorithm requires an expected-like whose error-type can be rebound.");
         }
 
         return nullptr;
