@@ -107,6 +107,10 @@ namespace gimo
             && (std::convertible_to<U const&, C const&>
                 || std::convertible_to<U, C const&>);
 
+        template <typename T, typename U>
+        concept regular_relationship =
+            regular_relationship_impl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
+
         template <typename Lhs, typename Rhs>
         concept weakly_assignable_from =
             std::is_lvalue_reference_v<Lhs>
@@ -115,12 +119,8 @@ namespace gimo
                };
     }
 
-    template <typename T, typename U>
-    concept regular_relationship =
-        detail::regular_relationship_impl<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
-
     template <typename Null, typename Nullable>
-    concept null_for = regular_relationship<Nullable, Null>
+    concept null_for = detail::regular_relationship<Nullable, Null>
                     && detail::weakly_equality_comparable_with<Null, Nullable>
                     && std::constructible_from<Nullable, Null const&>
                     && detail::weakly_assignable_from<Nullable&, Null const&>;
