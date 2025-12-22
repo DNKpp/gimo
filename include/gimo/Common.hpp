@@ -182,9 +182,9 @@ namespace gimo
     template <typename Nullable, typename Value>
     concept rebindable_value_to =
         nullable<Nullable>
-        && requires(rebind_value_t<Nullable, Value> result) {
-               requires constructible_from_value<decltype(result), Value>;
-               { detail::value(result) } -> std::convertible_to<Value const&>;
+        && requires {
+               requires constructible_from_value<rebind_value_t<Nullable, Value>, Value>;
+               { detail::value(std::declval<rebind_value_t<Nullable, Value>>()) } -> std::convertible_to<Value const&>;
            };
 
     template <nullable Nullable>
