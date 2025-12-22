@@ -8,7 +8,7 @@
 
 /*
 <begin-expected-compile-error>
-The and_then algorithm requires an action invocable with the nullable’s value\.
+The and_then algorithm requires an action invocable with the nullable's value\.
 <end-expected-compile-error>
 */
 

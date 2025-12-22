@@ -24,7 +24,7 @@ namespace gimo::detail::transform
     {
         if constexpr (!std::is_invocable_v<Action, value_result_t<Nullable>>)
         {
-            static_assert(always_false_v<Nullable>, "The transform algorithm requires an action invocable with the nullable’s value.");
+            static_assert(always_false_v<Nullable>, "The transform algorithm requires an action invocable with the nullable's value.");
         }
         else if constexpr (!rebindable_value_to<Nullable, std::invoke_result_t<Action, value_result_t<Nullable>>>)
         {

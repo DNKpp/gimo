@@ -24,7 +24,7 @@ namespace gimo::detail::and_then
     {
         if constexpr (!std::is_invocable_v<Action, value_result_t<Nullable>>)
         {
-            static_assert(always_false_v<Nullable>, "The and_then algorithm requires an action invocable with the nullable’s value.");
+            static_assert(always_false_v<Nullable>, "The and_then algorithm requires an action invocable with the nullable's value.");
         }
         else if constexpr (!nullable<std::invoke_result_t<Action, value_result_t<Nullable>>>)
         {
