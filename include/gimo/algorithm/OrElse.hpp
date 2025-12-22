@@ -26,6 +26,9 @@ namespace gimo::detail::or_else
         static_assert(
             std::is_invocable_v<Action>,
             "The or_else algorithm requires an action invocable without any arguments.");
+        static_assert(
+            std::same_as<Nullable, std::invoke_result_t<Action>>,
+            "The or_else algorithm requires an action returning the same nullable type.");
     }
 
     template <typename Action, nullable Nullable>
