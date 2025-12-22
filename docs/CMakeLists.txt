@@ -9,7 +9,7 @@
 
 message(TRACE "Begin generating docs")
 
-include(get_cpm)
+include(Gimo-get_cpm)
 
 CPMAddPackage("gh:jothepro/doxygen-awesome-css@2.3.4")
 
@@ -29,8 +29,7 @@ cmake_path(
 )
 set(DOXY_HTML_EXTRA_STYLESHEET "${DOXY_HTML_EXTRA_STYLESHEET}/doxygen-awesome.css")
 
-if (NULLABLES_ENABLE_GENERATE_DOCS)
-
+if (GIMO_ENABLE_GENERATE_DOCS)
 	message(TRACE "Start configure docs target")
 
 	find_package(Doxygen REQUIRED COMPONENTS dot)
@@ -41,7 +40,7 @@ if (NULLABLES_ENABLE_GENERATE_DOCS)
 	get_target_property(DOXY_DOT_PATH Doxygen::dot LOCATION)
 	message(VERBOSE "Using dot at: ${DOXY_DOT_PATH}")
 
-	add_custom_target(nullables-generate-docs
+	add_custom_target(gimo-generate-docs
 		COMMAND "$<TARGET_FILE:Doxygen::doxygen>" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
 		COMMENT "Generate Documentation"
 		WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
@@ -51,7 +50,6 @@ if (NULLABLES_ENABLE_GENERATE_DOCS)
 	)
 
 	message(TRACE "End configure docs target")
-
 endif()
 
 configure_file(Doxyfile.in Doxyfile @ONLY)
