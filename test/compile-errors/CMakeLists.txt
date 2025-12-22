@@ -63,5 +63,6 @@ function(check_compile_error TEST_PREFIX SOURCE_FILE)
 endfunction()
 
 check_compile_error("and_then-" "and_then/inapplicable-action.cpp")
+check_compile_error("and_then-" "and_then/non-nullable-return.cpp")
 check_compile_error("transform-" "transform/inapplicable-action.cpp")
 check_compile_error("transform-" "transform/non-rebindable-value.cpp")

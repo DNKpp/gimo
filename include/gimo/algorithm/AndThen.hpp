@@ -25,6 +25,9 @@ namespace gimo::detail::and_then
         static_assert(
             std::is_invocable_v<Action, value_result_t<Nullable>>,
             "The and_then algorithm requires an action invocable with the nullable’s value.");
+        static_assert(
+            nullable<std::invoke_result_t<Action, value_result_t<Nullable>>>,
+            "The and_then algorithm requires an action with a nullable return-type.");
     }
 
     template <typename Nullable, typename Action>
