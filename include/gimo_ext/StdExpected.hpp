@@ -1,17 +1,20 @@
-
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_EXT_STD_EXPECTED_HPP
 #define GIMO_EXT_STD_EXPECTED_HPP
 
 #pragma once
 
-#include "gimo/Common.hpp"
-
 #include <expected>
+
+namespace gimo
+{
+    template <typename T>
+    struct traits;
+}
 
 template <typename Value, typename Error>
 struct gimo::traits<std::expected<Value, Error>>
@@ -39,9 +42,13 @@ struct gimo::traits<std::expected<Value, Error>>
     using rebind_value =  std::expected<V, Error>;
 
     template <typename E>
-    static constexpr std::expected<Value, std::remove_cvref_t<E>> from_error(E&& error)
+    using rebind_error = std::expected<Value, E>;
+
+    template <typename E>
+        requires std::constructible_from<expected, std::unexpect_t, E&&>
+    static constexpr expected from_error(E&& error)
     {
-        return std::unexpected{std::forward<E>(error)};
+        return expected{std::unexpect, std::forward<E>(error)};
     }
 };
 

@@ -4,6 +4,7 @@
 //          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo_ext/StdExpected.hpp"
+#include "gimo.hpp"
 
 TEST_CASE(
     "std::expected satisfies the gimo::expected_like requirements.",
