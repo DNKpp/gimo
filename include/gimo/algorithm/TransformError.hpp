@@ -20,17 +20,22 @@
 namespace gimo::detail::transform_error
 {
     template <typename Expected, typename Action>
-    consteval void print_diagnostics()
+    consteval Expected* print_diagnostics()
     {
-        static_assert(
-            expected_like<Expected>,
-            "The transform_error algorithm requires an expected-like input.");
-        static_assert(
-            std::is_invocable_v<Action, error_result_t<Expected>>,
-            "The transform_error algorithm requires an action invocable with the expected's error.");
-        static_assert(
-            rebindable_error_to<Expected, std::invoke_result_t<Action, error_result_t<Expected>>>,
-            "The transform_error algorithm requires an expected-like whose error-type can be rebound.");
+        if constexpr (!expected_like<Expected>)
+        {
+            static_assert(false, "The transform_error algorithm requires an expected-like input.");
+        }
+        else if constexpr (!std::is_invocable_v<Action, error_result_t<Expected>>)
+        {
+            static_assert(false, "The transform_error algorithm requires an action invocable with the expected's error.");
+        }
+        else if constexpr (!rebindable_error_to<Expected, std::invoke_result_t<Action, error_result_t<Expected>>>)
+        {
+            static_assert(false, "The transform_error algorithm requires an expected-like whose error-type can be rebound.");
+        }
+
+        return nullptr;
     }
 
     template <typename Expected, typename Action>
@@ -99,8 +104,7 @@ namespace gimo::detail::transform_error
             }
             else
             {
-                transform_error::print_diagnostics<Expected, Action>();
-                return std::forward<Expected>(closure);
+                return *transform_error::print_diagnostics<Expected, Action>();
             }
         }
 
@@ -117,8 +121,7 @@ namespace gimo::detail::transform_error
             }
             else
             {
-                transform_error::print_diagnostics<Expected, Action>();
-                return std::forward<Expected>(closure);
+                return *transform_error::print_diagnostics<Expected, Action>();
             }
         }
     };
