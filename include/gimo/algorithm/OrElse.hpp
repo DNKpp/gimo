@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GIMO_ALGORITHM_OR_ELSE_HPP
 #define GIMO_ALGORITHM_OR_ELSE_HPP
@@ -20,6 +20,14 @@
 
 namespace gimo::detail::or_else
 {
+    template <typename Nullable, typename Action>
+    consteval void print_diagnostics()
+    {
+        static_assert(
+            std::is_invocable_v<Action>,
+            "The or_else algorithm requires an action invocable without any arguments.");
+    }
+
     template <typename Action, nullable Nullable>
     [[nodiscard]]
     constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
@@ -70,20 +78,36 @@ namespace gimo::detail::or_else
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return or_else::on_value(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return or_else::on_value(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                or_else::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
 
         template <typename Action, nullable Nullable, typename... Steps>
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
-            return or_else::on_null(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
+            if constexpr (is_applicable_on<Nullable, Action>)
+            {
+                return or_else::on_null(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+            else
+            {
+                or_else::print_diagnostics<Nullable, Action>();
+                return std::forward<Nullable>(opt);
+            }
         }
     };
 }
