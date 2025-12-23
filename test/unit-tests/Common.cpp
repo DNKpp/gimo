@@ -202,3 +202,121 @@ TEST_CASE(
 
     STATIC_CHECK("Error" == gimo::detail::error(test));
 }
+
+namespace
+{
+    struct DirectlyConstructibleNullable
+    {
+        struct null_t
+        {
+            [[nodiscard, maybe_unused]]
+            friend constexpr bool operator==([[maybe_unused]] DirectlyConstructibleNullable const& nullable, [[maybe_unused]] null_t const tag) noexcept
+            {
+                return true;
+            }
+
+            [[nodiscard, maybe_unused]]
+            explicit(false) constexpr operator DirectlyConstructibleNullable() const noexcept
+            {
+                return DirectlyConstructibleNullable{-1};
+            }
+        };
+
+        explicit constexpr DirectlyConstructibleNullable(int const value)
+            : value{value}
+        {
+        }
+
+        int value;
+
+        [[nodiscard]]
+        constexpr int const& operator*() const noexcept
+        {
+            return value;
+        }
+    };
+
+}
+
+template <>
+struct gimo::traits<DirectlyConstructibleNullable>
+{
+    static constexpr DirectlyConstructibleNullable::null_t null{};
+};
+
+static_assert(gimo::nullable<DirectlyConstructibleNullable>);
+
+TEST_CASE(
+    "construct_from_value customization point supports direct initialization.",
+    "[customization-point]")
+{
+    STATIC_CHECK(gimo::constructible_from_value<DirectlyConstructibleNullable, int>);
+    constexpr auto obj = gimo::detail::construct_from_value<DirectlyConstructibleNullable>(42);
+
+    STATIC_CHECK(42 == *obj);
+}
+
+namespace
+{
+    struct IndirectlyConstructibleNullable
+    {
+        struct null_t
+        {
+            [[nodiscard, maybe_unused]]
+            friend constexpr bool operator==([[maybe_unused]] IndirectlyConstructibleNullable const& nullable, [[maybe_unused]] null_t const tag) noexcept
+            {
+                return true;
+            }
+
+            [[nodiscard, maybe_unused]]
+            explicit(false) constexpr operator IndirectlyConstructibleNullable() const noexcept
+            {
+                return Make(-1);
+            }
+        };
+
+        static constexpr IndirectlyConstructibleNullable Make([[maybe_unused]] int const value)
+        {
+            IndirectlyConstructibleNullable obj{};
+            obj.m_Value = value;
+
+            return obj;
+        }
+
+        [[nodiscard]]
+        constexpr int const& operator*() const noexcept
+        {
+            return m_Value;
+        }
+
+    private:
+        int m_Value;
+
+        IndirectlyConstructibleNullable() = default;
+    };
+
+}
+
+template <>
+struct gimo::traits<IndirectlyConstructibleNullable>
+{
+    static constexpr IndirectlyConstructibleNullable::null_t null{};
+
+    [[nodiscard]]
+    static constexpr IndirectlyConstructibleNullable from_value(int const value)
+    {
+        return IndirectlyConstructibleNullable::Make(value);
+    }
+};
+
+static_assert(gimo::nullable<IndirectlyConstructibleNullable>);
+
+TEST_CASE(
+    "construct_from_value customization point supports trait definition.",
+    "[customization-point]")
+{
+    STATIC_CHECK(gimo::constructible_from_value<IndirectlyConstructibleNullable, int>);
+    constexpr auto obj = gimo::detail::construct_from_value<IndirectlyConstructibleNullable>(42);
+
+    STATIC_CHECK(42 == *obj);
+}

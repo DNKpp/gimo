@@ -202,15 +202,55 @@ namespace gimo
         requires detail::readable_value<T>;
     };
 
+    namespace detail
+    {
+        template <typename Nullable, typename Value>
+        concept trait_value_constructible = requires(Value&& value) {
+            { traits<Nullable>::from_value(std::forward<Value>(value)) } -> std::same_as<Nullable>;
+        };
+
+        template <typename Nullable, typename Arg>
+            requires trait_value_constructible<Nullable, Arg>
+        constexpr Nullable construct_from_value_impl([[maybe_unused]] priority_tag<1u> const tag, Arg&& arg)
+        {
+            return traits<Nullable>::from_value(std::forward<Arg>(arg));
+        }
+
+        template <typename Nullable, typename Arg>
+            requires std::constructible_from<Nullable, Arg&&>
+        constexpr Nullable construct_from_value_impl([[maybe_unused]] priority_tag<0u> const tag, Arg&& arg)
+        {
+            return Nullable{std::forward<Arg>(arg)};
+        }
+
+        inline constexpr priority_tag<1u> max_value_constructible_tag{};
+
+        template <typename Nullable, typename Value>
+        concept constructible_from_value = requires(Value&& value) {
+            { detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Value>(value)) } -> std::same_as<Nullable>;
+        };
+
+        template <typename Nullable, typename Arg>
+            requires constructible_from_value<Nullable, Arg&&>
+        constexpr Nullable construct_from_value(Arg&& arg)
+        {
+            return detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Arg>(arg));
+        }
+    }
+
     /**
      * \brief Concept determining whether the `Nullable` is constructible with the specified argument.
      * \tparam T The type to check.
      * \tparam Value The value to adapt.
+     * \details
+     * A `nullable` is *constructible from value* if at least one of the following is true:
+     * 1. Its `gimo::traits` specialization defines a `from_value` static member function, which takes `Value` as argument and returns `T`.
+     * 2. It's (possibly explicitly) constructible from `Value`.
      */
     template <typename T, typename Value>
     concept constructible_from_value = nullable<T>
                                     && detail::unqualified<T>
-                                    && std::constructible_from<T, Value&&>;
+                                    && detail::constructible_from_value<T, Value&&>;
 
     /**
      * \brief Helper alias to obtain the `Nullable` type with the rebound `Value` type.
@@ -265,12 +305,6 @@ namespace gimo
         constexpr auto construct_empty()
         {
             return Nullable{null_v<Nullable>};
-        }
-
-        template <nullable Nullable, typename Value>
-        constexpr Nullable construct_from_value(Value&& value)
-        {
-            return Nullable{std::forward<Value>(value)};
         }
 
         template <nullable Nullable, nullable Source>
