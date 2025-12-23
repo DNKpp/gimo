@@ -28,6 +28,7 @@ TEST_CASE(
     "[ext][raw-ptr]")
 {
     STATIC_REQUIRE(!gimo::applicable_to<int const*, gimo::detail::transform_t<std::identity>>);
+    STATIC_CHECK_FALSE(gimo::processable_by<int const*, decltype(gimo::transform(std::identity{}))>);
 }
 
 TEST_CASE(

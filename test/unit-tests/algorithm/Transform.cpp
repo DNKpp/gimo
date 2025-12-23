@@ -182,6 +182,7 @@ TEMPLATE_LIST_TEST_CASE(
     decltype(auto) pipeline = transform(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::transform_t<DummyAction>>, decltype(pipeline)>);
     STATIC_CHECK(gimo::applicable_to<std::optional<int>, detail::transform_t<DummyAction>>);
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
 
     SCOPED_EXP inner.expect_call(1337)
         and finally::returns(4.2f);

@@ -174,6 +174,7 @@ TEMPLATE_LIST_TEST_CASE(
     decltype(auto) pipeline = or_else(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::or_else_t<DummyAction>>, decltype(pipeline)>);
     STATIC_CHECK(gimo::applicable_to<std::optional<int>, detail::or_else_t<DummyAction>>);
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
 
     SCOPED_EXP inner.expect_call()
         and finally::returns(1337);

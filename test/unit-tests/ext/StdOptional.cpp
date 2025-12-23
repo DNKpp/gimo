@@ -28,6 +28,7 @@ TEMPLATE_LIST_TEST_CASE(
     using with_qualification = TestType;
     static constexpr gimo::Pipeline pipeline = gimo::transform(
         [](int const v) { return static_cast<float>(v + 1); });
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
 
     SECTION("When a value is contained.")
     {
@@ -66,6 +67,7 @@ TEMPLATE_LIST_TEST_CASE(
     using with_qualification = TestType;
     static constexpr gimo::Pipeline pipeline = gimo::and_then(
         [](int const v) { return std::optional{static_cast<float>(v + 1)}; });
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
 
     SECTION("When a value is contained.")
     {
@@ -104,6 +106,7 @@ TEMPLATE_LIST_TEST_CASE(
     using with_qualification = TestType;
     static constexpr gimo::Pipeline pipeline = gimo::or_else(
         [] { return std::optional{1337}; });
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
 
     SECTION("When a value is contained.")
     {

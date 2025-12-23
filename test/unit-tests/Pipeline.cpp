@@ -1,7 +1,7 @@
-//           Copyright Dominic (DNKpp) Koepke 2025.
-//  Distributed under the Boost Software License, Version 1.0.
-//     (See accompanying file LICENSE_1_0.txt or copy at
-//           https://www.boost.org/LICENSE_1_0.txt)
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
 
 #include "gimo/algorithm/AndThen.hpp"
 
@@ -96,6 +96,7 @@ TEST_CASE(
     NullableMock<float> nullable{};
     auto pipeline = gimo::and_then(std::ref(action1))
                   | gimo::and_then(std::ref(action2));
+    STATIC_CHECK(gimo::processable_by<NullableMock<float>, decltype(pipeline)>);
 
     mimicpp::ScopedSequence sequence{};
     SECTION("When the nullable is null.")

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "gimo/Common.hpp"
+#include "gimo/algorithm/BasicAlgorithm.hpp"
 
 #include <functional>
 #include <tuple>
@@ -187,6 +188,44 @@ namespace gimo
     {
         return std::forward<Pipeline>(steps).apply(std::forward<Nullable>(opt));
     }
+
+    namespace detail
+    {
+        template <typename Nullable, typename ConstRefSource, typename... Steps>
+        struct is_processable_by_impl
+            : public std::bool_constant<0u == sizeof...(Steps)>
+        {
+        };
+
+        template <typename Nullable, typename ConstRefSource, typename First, typename... Rest>
+            requires applicable_to<Nullable, const_ref_like_t<ConstRefSource, First>>
+        struct is_processable_by_impl<Nullable, ConstRefSource, First, Rest...>
+            : public is_processable_by_impl<
+                  std::invoke_result_t<const_ref_like_t<ConstRefSource, First>, Nullable>,
+                  ConstRefSource,
+                  Rest...>
+        {
+        };
+
+        template <typename Nullable, typename Pipeline, typename StepList = std::remove_cvref_t<Pipeline>>
+        struct is_processable_by;
+
+        template <typename Nullable, typename ConstRefSource, typename... Steps>
+        struct is_processable_by<Nullable, ConstRefSource, Pipeline<Steps...>>
+            : public is_processable_by_impl<Nullable, ConstRefSource, Steps...>
+        {
+        };
+    }
+
+    /**
+     * \brief Evaluates whether a `Nullable` type can be processed by the entire pipeline.
+     * \tparam Nullable The nullable type.
+     * \tparam Pipeline A `Pipeline` specialization.
+     */
+    template <typename Nullable, typename Pipeline>
+    concept processable_by = nullable<Nullable>
+                          && pipeline<Pipeline>
+                          && detail::is_processable_by<Nullable, Pipeline>::value;
 }
 
 #endif

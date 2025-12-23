@@ -38,6 +38,7 @@ TEST_CASE(
     "[ext][std::unique_ptr]")
 {
     STATIC_CHECK_FALSE(gimo::applicable_to<std::unique_ptr<int>, gimo::detail::transform_t<std::identity>>);
+    STATIC_CHECK_FALSE(gimo::processable_by<std::unique_ptr<int>, decltype(gimo::transform(std::identity{}))>);
 }
 
 TEMPLATE_LIST_TEST_CASE(
@@ -48,6 +49,7 @@ TEMPLATE_LIST_TEST_CASE(
     using with_qualification = TestType;
     static constexpr gimo::Pipeline pipeline = gimo::and_then(
         [](int const v) { return std::make_unique<float>(static_cast<float>(v + 1)); });
+    STATIC_CHECK(gimo::processable_by<std::unique_ptr<int>, decltype(pipeline)>);
 
     SECTION("When a value is contained.")
     {
@@ -80,6 +82,7 @@ TEST_CASE(
 {
     static constexpr gimo::Pipeline pipeline = gimo::or_else(
         [] { return std::make_unique<int>(1337); });
+    STATIC_CHECK(gimo::processable_by<std::unique_ptr<int>, decltype(pipeline)>);
 
     SECTION("When a value is contained.")
     {

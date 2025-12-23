@@ -151,6 +151,7 @@ TEMPLATE_LIST_TEST_CASE(
     decltype(auto) pipeline = transform_error(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::transform_error_t<DummyAction>>, decltype(pipeline)>);
     STATIC_CHECK(gimo::applicable_to<ExpectedFake<float>, detail::transform_error_t<DummyAction>>);
+    STATIC_CHECK(gimo::processable_by<ExpectedFake<float>, decltype(pipeline)>);
 
     SCOPED_EXP inner.expect_call("An error")
         and finally::returns(42);
