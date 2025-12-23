@@ -21,8 +21,7 @@ TEMPLATE_TEST_CASE(
     STATIC_CHECK(gimo::nullable<TestType const&>);
     STATIC_CHECK(gimo::nullable<TestType&&>);
     STATIC_CHECK(gimo::nullable<TestType const&&>);
-    STATIC_CHECK_FALSE(gimo::constructible_from_value<TestType, int>);
-    STATIC_CHECK_FALSE(gimo::rebindable_value_to<TestType, int>);
+    STATIC_CHECK(gimo::rebindable_value_to<TestType, int>);
     STATIC_CHECK_FALSE(gimo::expected_like<TestType>);
 }
 
@@ -33,12 +32,39 @@ TEST_CASE(
     STATIC_CHECK_FALSE(gimo::nullable<std::shared_ptr<int[]>>);
 }
 
-TEST_CASE(
-    "std::shared_ptr can not be used with transform algorithm",
-    "[ext][std::shared_ptr]")
+TEMPLATE_LIST_TEST_CASE(
+    "std::shared_ptr can be used with transform algorithm",
+    "[ext][std::shared_ptr]",
+    gimo::testing::with_qualification_list)
 {
-    STATIC_CHECK_FALSE(gimo::applicable_to<std::shared_ptr<int>, gimo::detail::transform_t<std::identity>>);
-    STATIC_CHECK_FALSE(gimo::processable_by<std::shared_ptr<int>, decltype(gimo::transform(std::identity{}))>);
+    using with_qualification = TestType;
+    static constexpr gimo::Pipeline pipeline = gimo::transform(
+        [](int const v) { return static_cast<float>(v + 1); });
+    STATIC_CHECK(gimo::processable_by<std::shared_ptr<int>, decltype(pipeline)>);
+
+    SECTION("When a value is contained.")
+    {
+        auto ptr = std::make_shared<int>(42);
+
+        std::shared_ptr const result = gimo::apply(
+            with_qualification::cast(ptr),
+            pipeline);
+
+        STATIC_CHECK(std::same_as<std::shared_ptr<float> const, decltype(result)>);
+        CHECK(43.f == *result);
+    }
+
+    SECTION("When nullptr is provided.")
+    {
+        std::shared_ptr<int> ptr{};
+
+        std::shared_ptr const result = gimo::apply(
+            with_qualification::cast(ptr),
+            pipeline);
+
+        STATIC_CHECK(std::same_as<std::shared_ptr<float> const, decltype(result)>);
+        CHECK_FALSE(result);
+    }
 }
 
 TEMPLATE_LIST_TEST_CASE(
