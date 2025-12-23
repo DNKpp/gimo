@@ -212,6 +212,7 @@ namespace gimo
         template <typename Nullable, typename Arg>
             requires trait_value_constructible<Nullable, Arg>
         constexpr Nullable construct_from_value_impl([[maybe_unused]] priority_tag<1u> const tag, Arg&& arg)
+            noexcept(noexcept(traits<Nullable>::from_value(std::forward<Arg>(arg))))
         {
             return traits<Nullable>::from_value(std::forward<Arg>(arg));
         }
@@ -219,6 +220,7 @@ namespace gimo
         template <typename Nullable, typename Arg>
             requires std::constructible_from<Nullable, Arg&&>
         constexpr Nullable construct_from_value_impl([[maybe_unused]] priority_tag<0u> const tag, Arg&& arg)
+            noexcept(std::is_nothrow_constructible_v<Nullable, Arg&&>)
         {
             return Nullable{std::forward<Arg>(arg)};
         }
@@ -228,6 +230,11 @@ namespace gimo
         template <typename Nullable, typename Value>
         concept constructible_from_value = requires(Value&& value) {
             { detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Value>(value)) } -> std::same_as<Nullable>;
+        };
+
+        template <typename Nullable, typename Value>
+        concept nothrow_constructible_from_value = requires(Value&& value) {
+            { detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Value>(value)) } noexcept;
         };
     }
 
@@ -251,6 +258,7 @@ namespace gimo
      * \tparam Arg The construction argument type to forward.
      * \param arg The argument forwarded to the actual construction strategy.
      * \return A newly created `Nullable` instance in a non-null state.
+     * \note The exception specification matches the underlying construction strategy.
      * \details
      * The construction strategy is selected based on the following precedence:
      * - **Priority 1:** `gimo::traits<Nullable>::from_value`
@@ -258,7 +266,7 @@ namespace gimo
      */
     template <nullable Nullable, typename Arg>
         requires constructible_from_value<Nullable, Arg&&>
-    constexpr Nullable construct_from_value(Arg&& arg)
+    constexpr Nullable construct_from_value(Arg&& arg) noexcept(detail::nothrow_constructible_from_value<Nullable, Arg&&>)
     {
         return detail::construct_from_value_impl<Nullable>(detail::max_value_tag, std::forward<Arg>(arg));
     }

@@ -222,7 +222,7 @@ namespace
             }
         };
 
-        explicit constexpr DirectlyConstructibleNullable(int const value)
+        explicit constexpr DirectlyConstructibleNullable(int const value) noexcept
             : value{value}
         {
         }
@@ -251,6 +251,7 @@ TEST_CASE(
     "[customization-point]")
 {
     STATIC_CHECK(gimo::constructible_from_value<DirectlyConstructibleNullable, int>);
+    STATIC_CHECK(gimo::detail::nothrow_constructible_from_value<DirectlyConstructibleNullable, int>);
     constexpr auto obj = gimo::construct_from_value<DirectlyConstructibleNullable>(42);
 
     STATIC_CHECK(42 == *obj);
@@ -316,6 +317,7 @@ TEST_CASE(
     "[customization-point]")
 {
     STATIC_CHECK(gimo::constructible_from_value<IndirectlyConstructibleNullable, int>);
+    STATIC_CHECK_FALSE(gimo::detail::nothrow_constructible_from_value<IndirectlyConstructibleNullable, int>);
     constexpr auto obj = gimo::construct_from_value<IndirectlyConstructibleNullable>(42);
 
     STATIC_CHECK(42 == *obj);
