@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>gimo: gimo::applicable_on Concept Reference</title>
+<title>gimo: gimo::processable_by Concept Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -71,7 +71,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(function(){initNavTree('d6/d38/conceptgimo_1_1applicable__on.html','../../'); initResizable(true); });
+$(function(){initNavTree('d1/d5d/conceptgimo_1_1processable__by.html','../../'); initResizable(true); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -97,27 +97,38 @@ $(function(){initNavTree('d6/d38/conceptgimo_1_1applicable__on.html','../../'); 
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">gimo::applicable_on Concept Reference</div></div>
+  <div class="headertitle"><div class="title">gimo::processable_by Concept Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="../../de/dca/_basic_algorithm_8hpp_source.html">BasicAlgorithm.hpp</a>&gt;</code></p>
+<p>Evaluates whether a <code>Nullable</code> type can be processed by the entire pipeline.  
+<a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="../../d1/da8/_pipeline_8hpp_source.html">Pipeline.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Nullable, <span class="keyword">typename</span> Algorithm&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="../../d6/d38/conceptgimo_1_1applicable__on.html">gimo::applicable_on</a> =  <span class="keyword">requires</span> {</div>
-<div class="line">        <span class="keyword">requires</span> detail::applicable_on&lt;</div>
-<div class="line">            Nullable,</div>
-<div class="line">            <span class="keyword">typename</span> std::remove_cvref_t&lt;Algorithm&gt;::traits_type,</div>
-<div class="line">            detail::const_ref_like_t&lt;Algorithm, typename std::remove_cvref_t&lt;Algorithm&gt;::action_type&gt;&gt;;</div>
-<div class="line">    }</div>
-<div class="ttc" id="aconceptgimo_1_1applicable__on_html"><div class="ttname"><a href="../../d6/d38/conceptgimo_1_1applicable__on.html">gimo::applicable_on</a></div><div class="ttdef"><b>Definition</b> BasicAlgorithm.hpp:45</div></div>
-</div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Nullable, <span class="keyword">typename</span> Pipeline&gt;</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="../../d1/d5d/conceptgimo_1_1processable__by.html">gimo::processable_by</a> =  <a class="code hl_concept" href="../../d8/d8e/conceptgimo_1_1nullable.html">nullable&lt;Nullable&gt;</a></div>
+<div class="line">                          &amp;&amp; <a class="code hl_concept" href="../../de/d0a/conceptgimo_1_1pipeline.html">pipeline&lt;Pipeline&gt;</a></div>
+<div class="line">                          &amp;&amp; detail::is_processable_by&lt;Nullable, Pipeline&gt;::value</div>
+<div class="ttc" id="aconceptgimo_1_1nullable_html"><div class="ttname"><a href="../../d8/d8e/conceptgimo_1_1nullable.html">gimo::nullable</a></div><div class="ttdoc">Concept describing a type that can be used as a monad in the pipeline.</div><div class="ttdef"><b>Definition</b> Common.hpp:200</div></div>
+<div class="ttc" id="aconceptgimo_1_1pipeline_html"><div class="ttname"><a href="../../de/d0a/conceptgimo_1_1pipeline.html">gimo::pipeline</a></div><div class="ttdoc">Checks whether the given type is a specialization of gimo::Pipeline.</div><div class="ttdef"><b>Definition</b> Pipeline.hpp:174</div></div>
+<div class="ttc" id="aconceptgimo_1_1processable__by_html"><div class="ttname"><a href="../../d1/d5d/conceptgimo_1_1processable__by.html">gimo::processable_by</a></div><div class="ttdoc">Evaluates whether a Nullable type can be processed by the entire pipeline.</div><div class="ttdef"><b>Definition</b> Pipeline.hpp:226</div></div>
+</div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Evaluates whether a <code>Nullable</code> type can be processed by the entire pipeline. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Nullable</td><td>The nullable type. </td></tr>
+    <tr><td class="paramname">Pipeline</td><td>A <code>Pipeline</code> specialization. </td></tr>
+  </table>
+  </dd>
+</dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="../../d6/d90/namespacegimo.html">gimo</a></li><li class="navelem"><a class="el" href="../../d6/d38/conceptgimo_1_1applicable__on.html">applicable_on</a></li>
-    <li class="footer">Generated on Mon Dec 22 2025 for gimo by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="navelem"><a class="el" href="../../d6/d90/namespacegimo.html">gimo</a></li><li class="navelem"><a class="el" href="../../d1/d5d/conceptgimo_1_1processable__by.html">processable_by</a></li>
+    <li class="footer">Generated on Tue Dec 23 2025 for gimo by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

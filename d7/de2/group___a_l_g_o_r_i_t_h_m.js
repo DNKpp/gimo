@@ -1,5 +1,6 @@
 var group___a_l_g_o_r_i_t_h_m =
 [
+    [ "gimo::applicable_to", "d4/d8f/conceptgimo_1_1applicable__to.html", null ],
     [ "gimo::BasicAlgorithm< Traits, Action >", "d5/dfb/classgimo_1_1_basic_algorithm.html", [
       [ "action_type", "d5/dfb/classgimo_1_1_basic_algorithm.html#a3fa273fa5b8fa65cb72a010c26202f84", null ],
       [ "traits_type", "d5/dfb/classgimo_1_1_basic_algorithm.html#a3bb86c75460fc385be99dddadfbf51a7", null ],
