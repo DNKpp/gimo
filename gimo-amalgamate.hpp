@@ -466,6 +466,236 @@ namespace gimo
 
 #pragma once
 
+
+/*** Start of inlined file: BasicAlgorithm.hpp ***/
+//          Copyright Dominic (DNKpp) Koepke 2025.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          https://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef GIMO_ALGORITHM_COMMON_HPP
+#define GIMO_ALGORITHM_COMMON_HPP
+
+#pragma once
+
+#include <concepts>
+#include <type_traits>
+#include <utility>
+
+namespace gimo
+{
+    /**
+     * \brief Monadic algorithms.
+     * \defgroup ALGORITHM algorithm
+     */
+
+    namespace detail
+    {
+        template <typename Traits, typename Action, typename Nullable, typename... Steps>
+        [[nodiscard]]
+        static constexpr auto test_and_execute(Action&& action, Nullable&& opt, Steps&&... steps)
+        {
+            if (detail::has_value(opt))
+            {
+                return Traits::on_value(
+                    std::forward<Action>(action),
+                    std::forward<Nullable>(opt),
+                    std::forward<Steps>(steps)...);
+            }
+
+            return Traits::on_null(
+                std::forward<Action>(action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename Traits, typename Action>
+        concept applicable_to_impl = Traits::template is_applicable_on<Nullable, Action>;
+    }
+
+    /**
+     * \brief Evaluates whether a `Nullable` type is compatible with the specific `Algorithm`.
+     * \ingroup ALGORITHM
+     * \tparam Nullable The nullable type.
+     * \tparam Algorithm The monadic operation to be performed.
+     */
+    template <typename Nullable, typename Algorithm>
+    concept applicable_to = requires {
+        requires detail::applicable_to_impl<
+            Nullable,
+            typename std::remove_cvref_t<Algorithm>::traits_type,
+            detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
+    };
+
+    /**
+     * \brief The basic building block for every monadic operation.
+     * \ingroup ALGORITHM
+     * \tparam Traits The policy struct defining certain behavior.
+     * \tparam Action The user-provided callable (e.g., lambda, function pointer).
+     * \details
+     * This class wraps a user-provided callable (`Action`) and associates it with specific behavior traits
+     * that dictate how the action is applied to a Nullable input.
+     */
+    template <detail::unqualified Traits, detail::unqualified Action>
+    class BasicAlgorithm
+    {
+    public:
+        using traits_type = Traits;
+        using action_type = Action;
+
+        template <typename... Args>
+            requires std::constructible_from<Action, Args&&...>
+        [[nodiscard]] //
+        explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
+            : m_Action{std::forward<Args>(args)...}
+        {
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto operator()(Nullable&& opt, Steps&&... steps) &
+        {
+            return detail::test_and_execute<Traits>(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto operator()(Nullable&& opt, Steps&&... steps) const&
+        {
+            return detail::test_and_execute<Traits>(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto operator()(Nullable&& opt, Steps&&... steps) &&
+        {
+            return detail::test_and_execute<Traits>(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto operator()(Nullable&& opt, Steps&&... steps) const&&
+        {
+            return detail::test_and_execute<Traits>(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_value(Nullable&& opt, Steps&&... steps) &
+        {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
+
+            return Traits::on_value(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_value(Nullable&& opt, Steps&&... steps) const&
+        {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
+
+            return Traits::on_value(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_value(Nullable&& opt, Steps&&... steps) &&
+        {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
+
+            return Traits::on_value(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_value(Nullable&& opt, Steps&&... steps) const&&
+        {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
+
+            return Traits::on_value(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &
+        {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&
+        {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
+                m_Action,
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &&
+        {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+        template <typename Nullable, typename... Steps>
+        [[nodiscard]]
+        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&&
+        {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
+
+            return Traits::on_null(
+                std::move(m_Action),
+                std::forward<Nullable>(opt),
+                std::forward<Steps>(steps)...);
+        }
+
+    private:
+        [[no_unique_address]] Action m_Action;
+    };
+}
+
+#endif
+
+/*** End of inlined file: BasicAlgorithm.hpp ***/
+
 #include <functional>
 #include <tuple>
 #include <type_traits>
@@ -643,235 +873,49 @@ namespace gimo
     {
         return std::forward<Pipeline>(steps).apply(std::forward<Nullable>(opt));
     }
+
+    namespace detail
+    {
+        template <typename Nullable, typename ConstRefSource, typename... Steps>
+        struct is_processable_by_impl
+            : public std::bool_constant<0u == sizeof...(Steps)>
+        {
+        };
+
+        template <typename Nullable, typename ConstRefSource, typename First, typename... Rest>
+            requires applicable_to<Nullable, const_ref_like_t<ConstRefSource, First>>
+        struct is_processable_by_impl<Nullable, ConstRefSource, First, Rest...>
+            : public is_processable_by_impl<
+                  std::invoke_result_t<const_ref_like_t<ConstRefSource, First>, Nullable>,
+                  ConstRefSource,
+                  Rest...>
+        {
+        };
+
+        template <typename Nullable, typename Pipeline, typename StepList = std::remove_cvref_t<Pipeline>>
+        struct is_processable_by;
+
+        template <typename Nullable, typename ConstRefSource, typename... Steps>
+        struct is_processable_by<Nullable, ConstRefSource, Pipeline<Steps...>>
+            : public is_processable_by_impl<Nullable, ConstRefSource, Steps...>
+        {
+        };
+    }
+
+    /**
+     * \brief Evaluates whether a `Nullable` type can be processed by the entire pipeline.
+     * \tparam Nullable The nullable type.
+     * \tparam Pipeline A `Pipeline` specialization.
+     */
+    template <typename Nullable, typename Pipeline>
+    concept processable_by = nullable<Nullable>
+                          && pipeline<Pipeline>
+                          && detail::is_processable_by<Nullable, Pipeline>::value;
 }
 
 #endif
 
 /*** End of inlined file: Pipeline.hpp ***/
-
-
-/*** Start of inlined file: BasicAlgorithm.hpp ***/
-//          Copyright Dominic (DNKpp) Koepke 2025.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          https://www.boost.org/LICENSE_1_0.txt)
-
-#ifndef GIMO_ALGORITHM_COMMON_HPP
-#define GIMO_ALGORITHM_COMMON_HPP
-
-#pragma once
-
-#include <concepts>
-#include <type_traits>
-#include <utility>
-
-namespace gimo
-{
-    namespace detail
-    {
-        template <typename Traits, typename Action, typename Nullable, typename... Steps>
-        [[nodiscard]]
-        static constexpr auto test_and_execute(Action&& action, Nullable&& opt, Steps&&... steps)
-        {
-            if (detail::has_value(opt))
-            {
-                return Traits::on_value(
-                    std::forward<Action>(action),
-                    std::forward<Nullable>(opt),
-                    std::forward<Steps>(steps)...);
-            }
-
-            return Traits::on_null(
-                std::forward<Action>(action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename Traits, typename Action>
-        concept applicable_on = Traits::template is_applicable_on<Nullable, Action>;
-    }
-
-    template <typename Nullable, typename Algorithm>
-    concept applicable_on = requires {
-        requires detail::applicable_on<
-            Nullable,
-            typename std::remove_cvref_t<Algorithm>::traits_type,
-            detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
-    };
-
-    /**
-     * \brief Monadic algorithms.
-     * \defgroup ALGORITHM algorithm
-     */
-
-    /**
-     * \brief The basic building block for every monadic operation.
-     * \ingroup ALGORITHM
-     * \tparam Traits The policy struct defining certain behavior.
-     * \tparam Action The user-provided callable (e.g., lambda, function pointer).
-     * \details
-     * This class wraps a user-provided callable (`Action`) and associates it with specific behavior traits
-     * that dictate how the action is applied to a Nullable input.
-     */
-    template <detail::unqualified Traits, detail::unqualified Action>
-    class BasicAlgorithm
-    {
-    public:
-        using traits_type = Traits;
-        using action_type = Action;
-
-        template <typename... Args>
-            requires std::constructible_from<Action, Args&&...>
-        [[nodiscard]] //
-        explicit constexpr BasicAlgorithm(Args&&... args) noexcept(std::is_nothrow_constructible_v<Action, Args&&...>)
-            : m_Action{std::forward<Args>(args)...}
-        {
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto operator()(Nullable&& opt, Steps&&... steps) &
-        {
-            return detail::test_and_execute<Traits>(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto operator()(Nullable&& opt, Steps&&... steps) const&
-        {
-            return detail::test_and_execute<Traits>(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto operator()(Nullable&& opt, Steps&&... steps) &&
-        {
-            return detail::test_and_execute<Traits>(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto operator()(Nullable&& opt, Steps&&... steps) const&&
-        {
-            return detail::test_and_execute<Traits>(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_value(Nullable&& opt, Steps&&... steps) &
-        {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
-
-            return Traits::on_value(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_value(Nullable&& opt, Steps&&... steps) const&
-        {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
-
-            return Traits::on_value(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_value(Nullable&& opt, Steps&&... steps) &&
-        {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
-
-            return Traits::on_value(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_value(Nullable&& opt, Steps&&... steps) const&&
-        {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable must contain a value.", opt);
-
-            return Traits::on_value(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &
-        {
-            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
-
-            return Traits::on_null(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&
-        {
-            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
-
-            return Traits::on_null(
-                m_Action,
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_null(Nullable&& opt, Steps&&... steps) &&
-        {
-            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
-
-            return Traits::on_null(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-        template <typename Nullable, typename... Steps>
-        [[nodiscard]]
-        constexpr auto on_null(Nullable&& opt, Steps&&... steps) const&&
-        {
-            GIMO_ASSERT(!detail::has_value(opt), "Nullable must not contain a value.", opt);
-
-            return Traits::on_null(
-                std::move(m_Action),
-                std::forward<Nullable>(opt),
-                std::forward<Steps>(steps)...);
-        }
-
-    private:
-        [[no_unique_address]] Action m_Action;
-    };
-}
-
-#endif
-
-/*** End of inlined file: BasicAlgorithm.hpp ***/
 
 
 /*** Start of inlined file: AndThen.hpp ***/
