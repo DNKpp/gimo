@@ -251,7 +251,7 @@ TEST_CASE(
     "[customization-point]")
 {
     STATIC_CHECK(gimo::constructible_from_value<DirectlyConstructibleNullable, int>);
-    constexpr auto obj = gimo::detail::construct_from_value<DirectlyConstructibleNullable>(42);
+    constexpr auto obj = gimo::construct_from_value<DirectlyConstructibleNullable>(42);
 
     STATIC_CHECK(42 == *obj);
 }
@@ -316,7 +316,7 @@ TEST_CASE(
     "[customization-point]")
 {
     STATIC_CHECK(gimo::constructible_from_value<IndirectlyConstructibleNullable, int>);
-    constexpr auto obj = gimo::detail::construct_from_value<IndirectlyConstructibleNullable>(42);
+    constexpr auto obj = gimo::construct_from_value<IndirectlyConstructibleNullable>(42);
 
     STATIC_CHECK(42 == *obj);
 }

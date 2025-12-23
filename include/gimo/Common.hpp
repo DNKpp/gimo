@@ -229,28 +229,39 @@ namespace gimo
         concept constructible_from_value = requires(Value&& value) {
             { detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Value>(value)) } -> std::same_as<Nullable>;
         };
-
-        template <typename Nullable, typename Arg>
-            requires constructible_from_value<Nullable, Arg&&>
-        constexpr Nullable construct_from_value(Arg&& arg)
-        {
-            return detail::construct_from_value_impl<Nullable>(max_value_tag, std::forward<Arg>(arg));
-        }
     }
 
     /**
      * \brief Concept determining whether the `Nullable` is constructible with the specified argument.
      * \tparam T The type to check.
-     * \tparam Value The value to adapt.
+     * \tparam Arg The construction argument type to forward.
      * \details
-     * A `nullable` is *constructible from value* if at least one of the following is true:
-     * 1. Its `gimo::traits` specialization defines a `from_value` static member function, which takes `Value` as argument and returns `T`.
-     * 2. It's (possibly explicitly) constructible from `Value`.
+     * A `nullable` is considered *constructible from value* if at least one of the following is true:
+     * - **Priority 1:** Its `gimo::traits` specialization has an accessible `from_value` static function, which takes `Arg` as argument and returns `T`.
+     * - **Priority 2:** It's (possibly explicitly) constructible from `Arg`.
      */
-    template <typename T, typename Value>
+    template <typename T, typename Arg>
     concept constructible_from_value = nullable<T>
                                     && detail::unqualified<T>
-                                    && detail::constructible_from_value<T, Value&&>;
+                                    && detail::constructible_from_value<T, Arg&&>;
+
+    /**
+     * \brief Constructs the specified `Nullable` with the provided value.
+     * \tparam Nullable The target-nullable type.
+     * \tparam Arg The construction argument type to forward.
+     * \param arg The argument forwarded to the actual construction strategy.
+     * \return A newly created `Nullable` instance in a non-null state.
+     * \details
+     * The construction strategy is selected based on the following precedence:
+     * - **Priority 1:** `gimo::traits<Nullable>::from_value`
+     * - **Priority 2:** Direct initialization
+     */
+    template <nullable Nullable, typename Arg>
+        requires constructible_from_value<Nullable, Arg&&>
+    constexpr Nullable construct_from_value(Arg&& arg)
+    {
+        return detail::construct_from_value_impl<Nullable>(detail::max_value_tag, std::forward<Arg>(arg));
+    }
 
     /**
      * \brief Helper alias to obtain the `Nullable` type with the rebound `Value` type.
@@ -311,7 +322,7 @@ namespace gimo
         [[nodiscard]]
         constexpr Nullable rebind_value(std::remove_reference_t<Source>& source)
         {
-            return detail::construct_from_value<Nullable>(forward_value<Source>(source));
+            return construct_from_value<Nullable>(forward_value<Source>(source));
         }
     }
 

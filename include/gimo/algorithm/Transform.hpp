@@ -43,7 +43,7 @@ namespace gimo::detail::transform
     [[nodiscard]]
     constexpr result_t<Nullable, Action> on_value([[maybe_unused]] Action&& action, Nullable&& opt)
     {
-        return detail::construct_from_value<result_t<Nullable, Action>>(
+        return construct_from_value<result_t<Nullable, Action>>(
             std::invoke(
                 std::forward<Action>(action),
                 detail::forward_value<Nullable>(opt)));
