@@ -37,7 +37,7 @@ TEST_CASE(
     "std::shared_ptr can not be used with transform algorithm",
     "[ext][std::shared_ptr]")
 {
-    STATIC_CHECK_FALSE(gimo::applicable_on<std::shared_ptr<int>, gimo::detail::transform_t<std::identity>>);
+    STATIC_CHECK_FALSE(gimo::applicable_to<std::shared_ptr<int>, gimo::detail::transform_t<std::identity>>);
 }
 
 TEMPLATE_LIST_TEST_CASE(

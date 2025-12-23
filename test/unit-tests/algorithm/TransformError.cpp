@@ -25,7 +25,7 @@ TEMPLATE_LIST_TEST_CASE(
         action{};
 
     using Algorithm = detail::transform_error_t<decltype(action)>;
-    STATIC_REQUIRE(gimo::applicable_on<ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
 
     SECTION("When input has a value, the action is not invoked.")
     {
@@ -65,7 +65,7 @@ TEMPLATE_LIST_TEST_CASE(
         int(std::string&&) const,
         int(std::string const&&) const> const action{};
     using Algorithm = detail::transform_error_t<decltype(std::cref(action))>;
-    STATIC_REQUIRE(gimo::applicable_on<ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
 
     Algorithm const algorithm{std::cref(action)};
     auto expected = ExpectedFake<float>::from_error("An error");
@@ -150,7 +150,7 @@ TEMPLATE_LIST_TEST_CASE(
 
     decltype(auto) pipeline = transform_error(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::transform_error_t<DummyAction>>, decltype(pipeline)>);
-    STATIC_CHECK(gimo::applicable_on<ExpectedFake<float>, detail::transform_error_t<DummyAction>>);
+    STATIC_CHECK(gimo::applicable_to<ExpectedFake<float>, detail::transform_error_t<DummyAction>>);
 
     SCOPED_EXP inner.expect_call("An error")
         and finally::returns(42);

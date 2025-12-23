@@ -27,7 +27,7 @@ TEST_CASE(
     "raw-pointers can not be used with transform algorithm",
     "[ext][raw-ptr]")
 {
-    STATIC_REQUIRE(!gimo::applicable_on<int const*, gimo::detail::transform_t<std::identity>>);
+    STATIC_REQUIRE(!gimo::applicable_to<int const*, gimo::detail::transform_t<std::identity>>);
 }
 
 TEST_CASE(

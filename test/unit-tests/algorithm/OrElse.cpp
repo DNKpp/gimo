@@ -25,7 +25,7 @@ TEMPLATE_LIST_TEST_CASE(
         action{};
 
     using Algorithm = detail::or_else_t<decltype(action)>;
-    STATIC_REQUIRE(gimo::applicable_on<std::optional<int>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<std::optional<int>, typename with_qualification::template type<Algorithm>>);
 
     SECTION("When input has no value, the action is invoked.")
     {
@@ -61,7 +61,7 @@ TEMPLATE_LIST_TEST_CASE(
     mimicpp::Mock<std::optional<int>() const> const action{};
 
     using Algorithm = detail::or_else_t<decltype(std::cref(action))>;
-    STATIC_REQUIRE(gimo::applicable_on<std::optional<int>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<std::optional<int>, typename with_qualification::template type<Algorithm>>);
 
     Algorithm const orElse{std::cref(action)};
     std::optional<int> opt{};
@@ -134,7 +134,7 @@ TEMPLATE_LIST_TEST_CASE(
         action{};
 
     using Algorithm = detail::or_else_t<decltype(action)>;
-    STATIC_REQUIRE(gimo::applicable_on<testing::ExpectedFake<int>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<testing::ExpectedFake<int>, typename with_qualification::template type<Algorithm>>);
 
     SECTION("When input holds an error, the action is invoked.")
     {
@@ -173,7 +173,7 @@ TEMPLATE_LIST_TEST_CASE(
 
     decltype(auto) pipeline = or_else(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::or_else_t<DummyAction>>, decltype(pipeline)>);
-    STATIC_CHECK(gimo::applicable_on<std::optional<int>, detail::or_else_t<DummyAction>>);
+    STATIC_CHECK(gimo::applicable_to<std::optional<int>, detail::or_else_t<DummyAction>>);
 
     SCOPED_EXP inner.expect_call()
         and finally::returns(1337);

@@ -17,6 +17,11 @@
 
 namespace gimo
 {
+    /**
+     * \brief Monadic algorithms.
+     * \defgroup ALGORITHM algorithm
+     */
+
     namespace detail
     {
         template <typename Traits, typename Action, typename Nullable, typename... Steps>
@@ -38,21 +43,22 @@ namespace gimo
         }
 
         template <typename Nullable, typename Traits, typename Action>
-        concept applicable_on = Traits::template is_applicable_on<Nullable, Action>;
+        concept applicable_to_impl = Traits::template is_applicable_on<Nullable, Action>;
     }
 
+    /**
+     * \brief Evaluates whether a `Nullable` type is compatible with the specific `Algorithm`.
+     * \ingroup ALGORITHM
+     * \tparam Nullable The nullable type.
+     * \tparam Algorithm The monadic operation to be performed.
+     */
     template <typename Nullable, typename Algorithm>
-    concept applicable_on = requires {
-        requires detail::applicable_on<
+    concept applicable_to = requires {
+        requires detail::applicable_to_impl<
             Nullable,
             typename std::remove_cvref_t<Algorithm>::traits_type,
             detail::const_ref_like_t<Algorithm, typename std::remove_cvref_t<Algorithm>::action_type>>;
     };
-
-    /**
-     * \brief Monadic algorithms.
-     * \defgroup ALGORITHM algorithm
-     */
 
     /**
      * \brief The basic building block for every monadic operation.

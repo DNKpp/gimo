@@ -25,7 +25,7 @@ TEMPLATE_LIST_TEST_CASE(
         action{};
 
     using Algorithm = detail::transform_t<decltype(action)>;
-    STATIC_REQUIRE(gimo::applicable_on<std::optional<float>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<std::optional<float>, typename with_qualification::template type<Algorithm>>);
 
     SECTION("When input has a value, the action is invoked.")
     {
@@ -64,7 +64,7 @@ TEMPLATE_LIST_TEST_CASE(
         int(float&&) const,
         int(float const&&) const> const action{};
     using Algorithm = detail::transform_t<decltype(std::cref(action))>;
-    STATIC_REQUIRE(gimo::applicable_on<std::optional<float>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<std::optional<float>, typename with_qualification::template type<Algorithm>>);
 
     Algorithm const andThen{std::cref(action)};
     std::optional opt{1337.f};
@@ -139,7 +139,7 @@ TEMPLATE_LIST_TEST_CASE(
         action{};
 
     using Algorithm = detail::transform_t<decltype(action)>;
-    STATIC_REQUIRE(gimo::applicable_on<testing::ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
+    STATIC_REQUIRE(gimo::applicable_to<testing::ExpectedFake<float>, typename with_qualification::template type<Algorithm>>);
 
     SECTION("When input has a value, the action is invoked.")
     {
@@ -181,7 +181,7 @@ TEMPLATE_LIST_TEST_CASE(
 
     decltype(auto) pipeline = transform(with_qualification::cast(action));
     STATIC_CHECK(std::same_as<Pipeline<detail::transform_t<DummyAction>>, decltype(pipeline)>);
-    STATIC_CHECK(gimo::applicable_on<std::optional<int>, detail::transform_t<DummyAction>>);
+    STATIC_CHECK(gimo::applicable_to<std::optional<int>, detail::transform_t<DummyAction>>);
 
     SCOPED_EXP inner.expect_call(1337)
         and finally::returns(4.2f);
