@@ -6,6 +6,8 @@
 #ifndef GIMO_EXT_STD_UNIQUE_PTR_HPP
 #define GIMO_EXT_STD_UNIQUE_PTR_HPP
 
+#pragma once
+
 #include <memory>
 
 namespace gimo
@@ -32,6 +34,17 @@ struct gimo::traits<std::unique_ptr<T, Deleter>>
     static constexpr std::add_rvalue_reference_t<T> value(Pointer&& ptr) noexcept(noexcept(*ptr))
     {
         return std::move(*ptr);
+    }
+
+    template <typename V>
+    using rebind_value = std::unique_ptr<V>;
+
+    template <typename Arg>
+        requires std::constructible_from<T, Arg&&>
+    [[nodiscard]]
+    static constexpr Pointer from_value(Arg&& arg)
+    {
+        return std::make_unique<T>(std::forward<Arg>(arg));
     }
 };
 
