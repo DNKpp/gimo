@@ -22,6 +22,7 @@ var namespacegimo =
     [ "rebind_value_t", "d6/d90/namespacegimo.html#af08a266fb3e85bc739e3e8a1d895f6ee", null ],
     [ "and_then", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga00f421df375b40d755beefbf0e1019c2", null ],
     [ "apply", "d5/d89/classgimo_1_1_pipeline.html#a7d204f95db16e5b360a16091543b78d2", null ],
+    [ "construct_from_value", "d6/d90/namespacegimo.html#aa8096b9ac7dce4934e3fce490846caa6", null ],
     [ "or_else", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga1562cdcb003130aab0cdb9e52a8069ae", null ],
     [ "transform", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef", null ],
     [ "transform_error", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga566cac50b24d7c16fe867a7f1ce6ffcc", null ],

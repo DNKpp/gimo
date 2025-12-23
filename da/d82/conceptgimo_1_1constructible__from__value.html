@@ -106,21 +106,25 @@ $(function(){initNavTree('da/d82/conceptgimo_1_1constructible__from__value.html'
 
 <p><code>#include &lt;<a class="el" href="../../d3/d58/_common_8hpp_source.html">Common.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
-<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Value&gt;</div>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> Arg&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="../../da/d82/conceptgimo_1_1constructible__from__value.html">gimo::constructible_from_value</a> =  <a class="code hl_concept" href="../../d8/d8e/conceptgimo_1_1nullable.html">nullable&lt;T&gt;</a></div>
 <div class="line">                                    &amp;&amp; detail::unqualified&lt;T&gt;</div>
-<div class="line">                                    &amp;&amp; std::constructible_from&lt;T, Value&amp;&amp;&gt;</div>
-<div class="ttc" id="aconceptgimo_1_1constructible__from__value_html"><div class="ttname"><a href="../../da/d82/conceptgimo_1_1constructible__from__value.html">gimo::constructible_from_value</a></div><div class="ttdoc">Concept determining whether the Nullable is constructible with the specified argument.</div><div class="ttdef"><b>Definition</b> Common.hpp:211</div></div>
+<div class="line">                                    &amp;&amp; detail::constructible_from_value&lt;T, Arg&amp;&amp;&gt;</div>
+<div class="ttc" id="aconceptgimo_1_1constructible__from__value_html"><div class="ttname"><a href="../../da/d82/conceptgimo_1_1constructible__from__value.html">gimo::constructible_from_value</a></div><div class="ttdoc">Concept determining whether the Nullable is constructible with the specified argument.</div><div class="ttdef"><b>Definition</b> Common.hpp:251</div></div>
 <div class="ttc" id="aconceptgimo_1_1nullable_html"><div class="ttname"><a href="../../d8/d8e/conceptgimo_1_1nullable.html">gimo::nullable</a></div><div class="ttdoc">Concept describing a type that can be used as a monad in the pipeline.</div><div class="ttdef"><b>Definition</b> Common.hpp:200</div></div>
 </div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Concept determining whether the <code>Nullable</code> is constructible with the specified argument. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">T</td><td>The type to check. </td></tr>
-    <tr><td class="paramname">Value</td><td>The value to adapt. </td></tr>
+    <tr><td class="paramname">Arg</td><td>The construction argument type to forward.</td></tr>
   </table>
   </dd>
 </dl>
+<p>A <code>nullable</code> is considered <em>constructible from value</em> if at least one of the following is true:</p><ul>
+<li><b>Priority 1:</b> Its <code><a class="el" href="../../d9/d18/structgimo_1_1traits.html" title="The central customization point for the library.">gimo::traits</a></code> specialization has an accessible <code>from_value</code> static function, which takes <code>Arg</code> as argument and returns <code>T</code>.</li>
+<li><b>Priority 2:</b> It's (possibly explicitly) constructible from <code>Arg</code>. </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

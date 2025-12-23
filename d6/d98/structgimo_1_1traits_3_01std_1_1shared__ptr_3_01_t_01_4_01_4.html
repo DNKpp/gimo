@@ -98,6 +98,8 @@ $(function(){initNavTree('d6/d98/structgimo_1_1traits_3_01std_1_1shared__ptr_3_0
 
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="../../d5/dcb/structgimo_1_1traits_3_01std_1_1shared__ptr_3_01_t_01_4_01_4-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">gimo::traits&lt; std::shared_ptr&lt; T &gt; &gt; Struct Template Reference</div></div>
@@ -120,11 +122,74 @@ $(function(){initNavTree('d6/d98/structgimo_1_1traits_3_01std_1_1shared__ptr_3_0
 <div class="center"><iframe scrolling="no" frameborder="0" src="../../d2/dcf/structgimo_1_1traits_3_01std_1_1shared__ptr_3_01_t_01_4_01_4__coll__graph.svg" width="195" height="155"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="../../graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a1c95973062381f45cad8e445d0be9d99" id="r_a1c95973062381f45cad8e445d0be9d99"><td class="memTemplParams" colspan="2">template&lt;typename V&gt; </td></tr>
+<tr class="memitem:a1c95973062381f45cad8e445d0be9d99"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a1c95973062381f45cad8e445d0be9d99">rebind_value</a> = std::shared_ptr&lt;V&gt;</td></tr>
+<tr class="separator:a1c95973062381f45cad8e445d0be9d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac70f708c1375fdf06aac793666575d99" id="r_ac70f708c1375fdf06aac793666575d99"><td class="memTemplParams" colspan="2">template&lt;typename Arg&gt; <br />
+requires std::constructible_from&lt;T, Arg&amp;&amp;&gt;</td></tr>
+<tr class="memitem:ac70f708c1375fdf06aac793666575d99"><td class="memTemplItemLeft" align="right" valign="top">static constexpr std::shared_ptr&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac70f708c1375fdf06aac793666575d99">from_value</a> (Arg &amp;&amp;arg)</td></tr>
+<tr class="separator:ac70f708c1375fdf06aac793666575d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a44801c4cda93b1a9718bc68a602dacb6" id="r_a44801c4cda93b1a9718bc68a602dacb6"><td class="memItemLeft" align="right" valign="top">static constexpr std::nullptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44801c4cda93b1a9718bc68a602dacb6">null</a> {}</td></tr>
 <tr class="separator:a44801c4cda93b1a9718bc68a602dacb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a1c95973062381f45cad8e445d0be9d99" name="a1c95973062381f45cad8e445d0be9d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c95973062381f45cad8e445d0be9d99">&#9670;&#160;</a></span>rebind_value</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<div class="memtemplate">
+template&lt;typename V&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="../../d9/d18/structgimo_1_1traits.html">gimo::traits</a>&lt; std::shared_ptr&lt; T &gt; &gt;::rebind_value = std::shared_ptr&lt;V&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ac70f708c1375fdf06aac793666575d99" name="ac70f708c1375fdf06aac793666575d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac70f708c1375fdf06aac793666575d99">&#9670;&#160;</a></span>from_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T&gt; </div>
+<div class="memtemplate">
+template&lt;typename Arg&gt; <br />
+requires std::constructible_from&lt;T, Arg&amp;&amp;&gt;</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr std::shared_ptr&lt; T &gt; <a class="el" href="../../d9/d18/structgimo_1_1traits.html">gimo::traits</a>&lt; std::shared_ptr&lt; T &gt; &gt;::from_value </td>
+          <td>(</td>
+          <td class="paramtype">Arg &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>arg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel static">static</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a44801c4cda93b1a9718bc68a602dacb6" name="a44801c4cda93b1a9718bc68a602dacb6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a44801c4cda93b1a9718bc68a602dacb6">&#9670;&#160;</a></span>null</h2>

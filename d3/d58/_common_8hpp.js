@@ -9,5 +9,6 @@ var _common_8hpp =
     [ "gimo::rebindable_error_to", "da/d07/conceptgimo_1_1rebindable__error__to.html", null ],
     [ "gimo::rebind_error_t", "d6/d90/namespacegimo.html#a4fd99baef70bfb406fed8e99798a81c1", null ],
     [ "gimo::rebind_value_t", "d6/d90/namespacegimo.html#af08a266fb3e85bc739e3e8a1d895f6ee", null ],
+    [ "gimo::construct_from_value", "d6/d90/namespacegimo.html#aa8096b9ac7dce4934e3fce490846caa6", null ],
     [ "gimo::null_v", "d6/d90/namespacegimo.html#a5f8f7dc253864f4942be0f9cd8c25e5c", null ]
 ];

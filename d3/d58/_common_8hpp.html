@@ -101,6 +101,7 @@ $(function(){initNavTree('d3/d58/_common_8hpp.html','../../'); initResizable(tru
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#concepts">Concepts</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Common.hpp File Reference</div></div>
 </div><!--header-->
@@ -166,6 +167,14 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a4fd99baef70bfb406fed8e99798a81c1"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d90/namespacegimo.html#a4fd99baef70bfb406fed8e99798a81c1">gimo::rebind_error_t</a> = typename <a class="el" href="../../d9/d18/structgimo_1_1traits.html">traits</a>&lt;std::remove_cvref_t&lt;Expected&gt;&gt;::template rebind_error&lt;std::remove_cvref_t&lt;Error&gt;&gt;</td></tr>
 <tr class="memdesc:a4fd99baef70bfb406fed8e99798a81c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper alias to obtain the <code>Expected</code> type with the rebound <code>Error</code> type.  <br /></td></tr>
 <tr class="separator:a4fd99baef70bfb406fed8e99798a81c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aa8096b9ac7dce4934e3fce490846caa6" id="r_aa8096b9ac7dce4934e3fce490846caa6"><td class="memTemplParams" colspan="2">template&lt;nullable Nullable, typename Arg&gt; <br />
+requires constructible_from_value&lt;Nullable, Arg&amp;&amp;&gt;</td></tr>
+<tr class="memitem:aa8096b9ac7dce4934e3fce490846caa6"><td class="memTemplItemLeft" align="right" valign="top">constexpr Nullable&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/d90/namespacegimo.html#aa8096b9ac7dce4934e3fce490846caa6">gimo::construct_from_value</a> (Arg &amp;&amp;arg) noexcept(detail::nothrow_constructible_from_value&lt; Nullable, Arg &amp;&amp; &gt;)</td></tr>
+<tr class="memdesc:aa8096b9ac7dce4934e3fce490846caa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the specified <code>Nullable</code> with the provided value.  <br /></td></tr>
+<tr class="separator:aa8096b9ac7dce4934e3fce490846caa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>

@@ -191,6 +191,11 @@ Functions</h2></td></tr>
 <tr class="memitem:ga566cac50b24d7c16fe867a7f1ce6ffcc"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga566cac50b24d7c16fe867a7f1ce6ffcc">transform_error</a> (Action &amp;&amp;action)</td></tr>
 <tr class="memdesc:ga566cac50b24d7c16fe867a7f1ce6ffcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a pipeline step that transforms the error of an expected-like type.  <br /></td></tr>
 <tr class="separator:ga566cac50b24d7c16fe867a7f1ce6ffcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8096b9ac7dce4934e3fce490846caa6" id="r_aa8096b9ac7dce4934e3fce490846caa6"><td class="memTemplParams" colspan="2">template&lt;nullable Nullable, typename Arg&gt; <br />
+requires constructible_from_value&lt;Nullable, Arg&amp;&amp;&gt;</td></tr>
+<tr class="memitem:aa8096b9ac7dce4934e3fce490846caa6"><td class="memTemplItemLeft" align="right" valign="top">constexpr Nullable&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa8096b9ac7dce4934e3fce490846caa6">construct_from_value</a> (Arg &amp;&amp;arg) noexcept(detail::nothrow_constructible_from_value&lt; Nullable, Arg &amp;&amp; &gt;)</td></tr>
+<tr class="memdesc:aa8096b9ac7dce4934e3fce490846caa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the specified <code>Nullable</code> with the provided value.  <br /></td></tr>
+<tr class="separator:aa8096b9ac7dce4934e3fce490846caa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d204f95db16e5b360a16091543b78d2" id="r_a7d204f95db16e5b360a16091543b78d2"><td class="memTemplParams" colspan="2">template&lt;nullable Nullable, pipeline Pipeline&gt; </td></tr>
 <tr class="memitem:a7d204f95db16e5b360a16091543b78d2"><td class="memTemplItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html#a7d204f95db16e5b360a16091543b78d2">apply</a> (Nullable &amp;&amp;opt, <a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html">Pipeline</a> &amp;&amp;steps)</td></tr>
 <tr class="memdesc:a7d204f95db16e5b360a16091543b78d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies nullable input on the pipeline.  <br /></td></tr>
@@ -251,6 +256,56 @@ template&lt;nullable Nullable, typename Value&gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aa8096b9ac7dce4934e3fce490846caa6" name="aa8096b9ac7dce4934e3fce490846caa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8096b9ac7dce4934e3fce490846caa6">&#9670;&#160;</a></span>construct_from_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;nullable Nullable, typename Arg&gt; <br />
+requires constructible_from_value&lt;Nullable, Arg&amp;&amp;&gt;</div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Nullable gimo::construct_from_value </td>
+          <td>(</td>
+          <td class="paramtype">Arg &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>arg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel constexpr">constexpr</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs the specified <code>Nullable</code> with the provided value. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Nullable</td><td>The target-nullable type. </td></tr>
+    <tr><td class="paramname">Arg</td><td>The construction argument type to forward. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arg</td><td>The argument forwarded to the actual construction strategy. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A newly created <code>Nullable</code> instance in a non-null state. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The exception specification matches the underlying construction strategy.</dd></dl>
+<p>The construction strategy is selected based on the following precedence:</p><ul>
+<li><b>Priority 1:</b> <code><a class="el" href="../../d9/d18/structgimo_1_1traits.html" title="The central customization point for the library.">gimo::traits</a>&lt;Nullable&gt;::from_value</code></li>
+<li><b>Priority 2:</b> Direct initialization </li>
+</ul>
 
 </div>
 </div>
