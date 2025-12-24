@@ -384,6 +384,7 @@ jobs:
 
       - name: Build Framework
         shell: bash
+        id: build
         run: |
           cmake --build build \
               -j5 \
@@ -406,12 +407,14 @@ jobs:
       #############
 
       - name: Upload test results to Codecov
+        if: ${{ steps.build.outcome == 'success' && !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           flags: ${{matrix.config.compiler.name}},${{matrix.config.compiler.version}}
           report_type: test_results
-          files: ${{env.JUNIT_REPORT}}
+          files: /__w/gimo/gimo/${{env.JUNIT_REPORT}}
           disable_search: true
           fail_ci_if_error: true
+          handle_no_reports_found: true
           verbose: true

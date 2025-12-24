@@ -177,7 +177,7 @@ jobs:
           token: ${{secrets.CODECOV_TOKEN}}
           flags: coverage
           report_type: test_results
-          files: ${{env.JUNIT_REPORT}}
+          files: ./${{env.JUNIT_REPORT}}
           disable_search: true
           fail_ci_if_error: true
           verbose: true
