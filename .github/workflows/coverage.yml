@@ -1,0 +1,200 @@
+#          Copyright Dominic (DNKpp) Koepke 2025.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          https://www.boost.org/LICENSE_1_0.txt)
+
+name: coverage
+
+env:
+  COBERTURA_REPORT: cobertura.xml
+  COVERALLS_REPORT: coveralls.json
+  JSON_REPORT: report.json
+  JSON_SUMMARY: summary.json
+  HTML_REPORT_DIR: html/
+  COVERAGE_ARTIFACT_NAME: coverage-report
+  JUNIT_REPORT: junit.xml
+
+on:
+  push:
+    branches: [ main, development ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main, development ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+
+jobs:
+  create-coverage-report:
+    runs-on: ubuntu-latest
+    container:
+      image: "ghcr.io/dnkpp/gcc:15"
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install gcovr
+        run: |
+          python -m pip install gcovr
+
+      - name: Print versions
+        run: |
+          cmake --version
+          gcc --version
+          g++ --version
+          gcov --version
+          gcovr --version
+
+      - name: Configure
+        shell: bash
+        env:
+          COMPILER_FLAGS: "--coverage;-fno-inline;-fprofile-abs-path;-fkeep-inline-functions;-fkeep-static-functions"
+          LINKER_FLAGS: "--coverage"
+          LDFLAGS: "-Wl,--whole-archive -lstdc++exp -Wl,--no-whole-archive"
+        run: |
+          cmake -S . \
+              -B build \
+              --log-level=DEBUG \
+              -D CMAKE_VERBOSE_MAKEFILE=YES \
+              -D CMAKE_BUILD_TYPE="Debug" \
+              -D MIMICPP_CONFIG_EXPERIMENTAL_STACKTRACE=c++23 \
+              -D MIMICPP_CONFIG_EXPERIMENTAL_PRETTY_TYPES=OFF \
+              -D MIMICPP_CONFIG_USE_FMT=OFF \
+              -D GIMO_TEST_ADDITIONAL_COMPILER_FLAGS=${COMPILER_FLAGS} \
+              -D GIMO_TEST_ADDITIONAL_LINKER_FLAGS=${LINKER_FLAGS} \
+              -D GIMO_CONFIG_CXX_STANDARD=23 \
+              -D GIMO_BUILD_BENCHMARKS=NO \
+              -D GIMO_BUILD_EXAMPLES=YES \
+              -D GIMO_BUILD_TESTS=YES
+
+      - name: Build
+        run: |
+          cmake --build build --parallel
+
+      - name: Run tests
+        shell: bash
+        run: |
+          ctest --test-dir build \
+              --output-junit ${{env.JUNIT_REPORT}} \
+              --output-on-failure \
+              --no-tests=error \
+              --parallel \
+              -C Debug
+          mv build/${{env.JUNIT_REPORT}} .
+
+      - name: Run gcovr
+        run: |
+          # circumvent "fatal: detected dubious ownership in repository" error
+          git config --global --add safe.directory ${GITHUB_WORKSPACE}
+          cd build
+          gcovr --root .. \
+              --verbose \
+              --include "${GITHUB_WORKSPACE}/include/gimo(_ext)?" \
+              --filter "${GITHUB_WORKSPACE}/include/gimo(_ext)?" \
+              --exclude-lines-by-pattern "\s*GIMO_ASSERT\(" \
+              --exclude-unreachable-branches \
+              --exclude-function-lines \
+              --exclude-noncode-lines \
+              --exclude-throw-branches \
+              --decisions \
+              --calls \
+              --keep \
+              --merge-lines \
+              --txt \
+              --cobertura ${{env.COBERTURA_REPORT}} --cobertura-pretty \
+              --html-nested ${{env.HTML_REPORT_DIR}} --html-title "gimo Coverage Report" \
+              --coveralls ${{env.COVERALLS_REPORT}} --coveralls-pretty \
+              --json-summary ${{env.JSON_SUMMARY}} --json-summary-pretty \
+              --json ${{env.JSON_REPORT}} --json-pretty
+          
+          mv ${{env.COBERTURA_REPORT}} ..
+          mv ${{env.HTML_REPORT_DIR}} ..
+          mv ${{env.COVERALLS_REPORT}} ..
+          mv ${{env.JSON_SUMMARY}} ..
+          mv ${{env.JSON_REPORT}} ..
+
+      - name: Find gcov-files
+        shell: bash
+        run: find . -type f -name "*.gcov"
+
+      - name: Upload gcov coverage report artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: gcov-files
+          path: "**/*.json.gz"
+          if-no-files-found: error
+
+      - name: Upload generated report artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{env.COVERAGE_ARTIFACT_NAME}}
+          path: |
+            ${{env.COBERTURA_REPORT}}
+            ${{env.COVERALLS_REPORT}}
+            ${{env.JSON_REPORT}}
+            ${{env.JSON_SUMMARY}}
+            ${{env.JUNIT_REPORT}}
+            ${{env.HTML_REPORT_DIR}}
+          if-no-files-found: error
+
+  codacy-report:
+    needs: create-coverage-report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{env.COVERAGE_ARTIFACT_NAME}}
+
+      - name: Upload coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{secrets.CODACY_PROJECT_TOKEN}}
+          coverage-reports: ${{env.COBERTURA_REPORT}}
+
+  codecov-report:
+    needs: create-coverage-report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{env.COVERAGE_ARTIFACT_NAME}}
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          name: $GITHUB_REPOSITORY
+          token: ${{secrets.CODECOV_TOKEN}}
+          files: ${{env.COBERTURA_REPORT}}
+          disable_search: true
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload test results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          flags: coverage
+          report_type: test_results
+          files: ./${{env.JUNIT_REPORT}}
+          disable_search: true
+          fail_ci_if_error: true
+          verbose: true
+
+  coveralls-report:
+    needs: create-coverage-report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{env.COVERAGE_ARTIFACT_NAME}}
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          file: ${{env.COVERALLS_REPORT}}
+          format: coveralls
+          debug: true
+          fail-on-error: true

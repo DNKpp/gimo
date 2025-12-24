@@ -3,7 +3,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          https://www.boost.org/LICENSE_1_0.txt)
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15...3.31)
 set(MESSAGE_PREFIX "gimo:")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -12,10 +12,10 @@ include(GimoReadVersion)
 gimo_read_version("include/gimo/Version.hpp" GIMO_VERSION)
 
 project(gimo
-	LANGUAGES		CXX
-    VERSION ${GIMO_VERSION}
-	DESCRIPTION		"TBD"
-	HOMEPAGE_URL	"https://github.com/DNKpp/nullables"
+	LANGUAGES CXX
+	VERSION ${GIMO_VERSION}
+	DESCRIPTION "TBD"
+	HOMEPAGE_URL "https://github.com/DNKpp/gimo"
 )
 
 message(STATUS "${MESSAGE_PREFIX} version: v${PROJECT_VERSION} from: ${gimo_SOURCE_DIR}")
