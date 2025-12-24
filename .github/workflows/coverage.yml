@@ -52,6 +52,7 @@ jobs:
         env:
           COMPILER_FLAGS: "--coverage;-fno-inline;-fprofile-abs-path;-fkeep-inline-functions;-fkeep-static-functions"
           LINKER_FLAGS: "--coverage"
+          LDFLAGS: "-Wl,--whole-archive -lstdc++exp -Wl,--no-whole-archive"
         run: |
           cmake -S . \
               -B build \
