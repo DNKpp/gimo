@@ -384,6 +384,7 @@ jobs:
 
       - name: Build Framework
         shell: bash
+        id: build
         run: |
           cmake --build build \
               -j5 \
@@ -398,7 +399,7 @@ jobs:
               --schedule-random \
               --no-tests=error \
               --parallel \
-              -C ${{ matrix.build_mode }} \
+              -C ${{ matrix.build_mode }}
           mv build/${{env.JUNIT_REPORT}} .
       #
       # End Build
@@ -406,12 +407,19 @@ jobs:
       #############
 
       - name: Upload test results to Codecov
+        if: ${{ steps.build.outcome == 'success' && !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
-          flags: ${{matrix.config.compiler.name}},${{matrix.config.compiler.version}}
+          flags: >-
+            ${{matrix.config.compiler.name}}-${{matrix.config.compiler.version}},
+            ${{matrix.config.prefix}},
+            ${{matrix.architecture}},
+            ${{matrix.build_mode}},
+            c++-${{matrix.cxx_standard}}
           report_type: test_results
           files: ${{env.JUNIT_REPORT}}
           disable_search: true
           fail_ci_if_error: true
+          handle_no_reports_found: false
           verbose: true
