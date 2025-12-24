@@ -12,7 +12,7 @@ env:
   JSON_SUMMARY: summary.json
   HTML_REPORT_DIR: html/
   COVERAGE_ARTIFACT_NAME: coverage-report
-  JUNIT_REPORT: junit.cml
+  JUNIT_REPORT: junit.xml
 
 on:
   push:
@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: |
           ctest --test-dir build \
-              --output-junit 
+              --output-junit ${{env.JUNIT_REPORT}} \
               -C Debug \
               --output-on-failure \
               --no-tests=error \
@@ -113,7 +113,6 @@ jobs:
           mv ${{env.COVERALLS_REPORT}} ..
           mv ${{env.JSON_SUMMARY}} ..
           mv ${{env.JSON_REPORT}} ..
-          mv ${{env.JUNIT_REPORT}} ..
 
       - name: Find gcov-files
         shell: bash
