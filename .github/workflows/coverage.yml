@@ -78,10 +78,11 @@ jobs:
         run: |
           ctest --test-dir build \
               --output-junit ${{env.JUNIT_REPORT}} \
-              -C Debug \
               --output-on-failure \
               --no-tests=error \
-              --parallel
+              --parallel \
+              -C Debug
+          mv build/${{env.JUNIT_REPORT}} .
 
       - name: Run gcovr
         run: |
@@ -174,6 +175,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
+          flags: coverage
           report_type: test_results
           files: ${{env.JUNIT_REPORT}}
           disable_search: true
