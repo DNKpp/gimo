@@ -96,6 +96,8 @@ jobs:
               --decisions \
               --calls \
               --keep \
+              --merge-lines \
+              --json-trace-data-source \
               --txt \
               --cobertura ${{env.COBERTURA_REPORT}} --cobertura-pretty \
               --html-nested ${{env.HTML_REPORT_DIR}} --html-title "gimo Coverage Report" \
