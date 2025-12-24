@@ -117,7 +117,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: gcov-files
-          path: "**/*.gcov"
+          path: "**/*.json.gz"
           if-no-files-found: error
 
       - name: Upload generated report artifacts
