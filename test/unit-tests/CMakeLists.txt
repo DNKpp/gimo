@@ -21,11 +21,13 @@ include(EnableSanitizers)
 enable_sanitizers(${TARGET_NAME})
 
 include(EnableWarnings)
+include(Gimo-EnableTestFlags)
 find_package(Catch2 REQUIRED)
 find_package(gimo-mimic++ REQUIRED)
 target_link_libraries(${TARGET_NAME} PRIVATE
     gimo::gimo
     gimo::internal::enable-warnings
+    gimo::internal::enable-test-flags
 
     Catch2::Catch2WithMain
     mimicpp::mimicpp
