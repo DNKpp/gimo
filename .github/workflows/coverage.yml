@@ -195,9 +195,6 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           file: ${{env.COVERALLS_REPORT}}
-          # can not use ${{ github.workspace }} here
-          # see: https://github.com/actions/checkout/issues/785
-          base-path: "/__w/gimo/gimo/include"
           format: coveralls
           debug: true
           fail-on-error: true
