@@ -16,6 +16,9 @@ on:
       - 'README.md'
       - 'docs/**'
 
+env:
+  JUNIT_REPORT: junit.xml
+
 jobs:
   build-and-test:
     runs-on: ${{ matrix.config.os }}
@@ -390,12 +393,25 @@ jobs:
         shell: bash
         run: |
           ctest --test-dir build \
+              --output-junit ${{env.JUNIT_REPORT}} \
               --output-on-failure \
               --schedule-random \
               --no-tests=error \
               --parallel \
               -C ${{ matrix.build_mode }} \
+          mv build/${{env.JUNIT_REPORT}} .
       #
       # End Build
       #
       #############
+
+      - name: Upload test results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          flags: ${{matrix.config.compiler.name}},${{matrix.config.compiler.version}}
+          report_type: test_results
+          files: ${{env.JUNIT_REPORT}}
+          disable_search: true
+          fail_ci_if_error: true
+          verbose: true
