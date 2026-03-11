@@ -18,26 +18,22 @@
 
 namespace gimo::detail::value_or
 {
-    /*template <typename Nullable, typename Action>
+    template <typename Nullable>
+    using result_t = std::remove_cvref_t<value_result_t<Nullable>>;
+
+    template <typename Nullable, typename Action>
     consteval Nullable* print_diagnostics()
     {
-        if constexpr (!std::is_invocable_v<Action, value_result_t<Nullable>>)
+        if constexpr (!std::convertible_to<std::invoke_result_t<Action>, result_t<Nullable>>)
         {
-            static_assert(always_false_v<Nullable>, "The and_then algorithm requires an action invocable with the nullable's value.");
-        }
-        else if constexpr (!nullable<std::invoke_result_t<Action, value_result_t<Nullable>>>)
-        {
-            static_assert(always_false_v<Nullable>, "The and_then algorithm requires an action with a nullable return-type.");
+            static_assert(always_false_v<Nullable>, "The value_or algorithm requires an alternative that is convertible to the nullable's value-type.");
         }
 
         return nullptr;
-    }*/
+    }
 
     struct traits
     {
-        template <typename Nullable>
-        using result_t = std::remove_cvref_t<value_result_t<Nullable>>;
-
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
             requires std::convertible_to<
@@ -53,10 +49,10 @@ namespace gimo::detail::value_or
             {
                 return detail::forward_value<Nullable>(opt);
             }
-            /*else
+            else
             {
                 return *value_or::print_diagnostics<Nullable, Action>();
-            }*/
+            }
         }
 
         template <typename Action, nullable Nullable>
@@ -68,10 +64,10 @@ namespace gimo::detail::value_or
                 return static_cast<result_t<Nullable>>(
                     std::invoke(std::forward<Action>(action)));
             }
-            /*else
+            else
             {
-                return *and_then::print_diagnostics<Nullable, Action>();
-            }*/
+                return *value_or::print_diagnostics<Nullable, Action>();
+            }
         }
     };
 }
@@ -121,7 +117,7 @@ namespace gimo
         template <typename Alternative>
         using value_or_t = BasicAlgorithm<
             value_or::traits,
-            ValueStorageFun<std::remove_cvref_t<Alternative>>>;
+            ValueStorageFun<std::decay_t<Alternative>>>;
     }
 
     template <typename Alternative>
