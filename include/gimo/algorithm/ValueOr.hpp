@@ -120,6 +120,18 @@ namespace gimo
             ValueStorageFun<std::decay_t<Alternative>>>;
     }
 
+    /**
+     * \brief Creates a pipeline terminating step that either forwards a contained value or the specified alternative.
+     * \ingroup ALGORITHM
+     * \tparam Alternative The alternative type.
+     * \param alternative The alternative value.
+     * \return A Pipeline step containing the `value_or` algorithm.
+     * \details
+     * - **On Value**: Forwards the underlying value of the input.
+     * - **On Null**: Forwards the specified alternative value.
+     *
+     * Let `T` be the value-type of the input nullable, then `Alternative` must be convertible to `T`.
+     */
     template <typename Alternative>
     [[nodiscard]]
     constexpr auto value_or(Alternative&& alternative)
