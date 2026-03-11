@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -9,43 +9,6 @@
 #include "TestCommons.hpp"
 
 using namespace gimo;
-
-namespace
-{
-
-    /*
-    template <typename Alternative>
-struct value_or_algorithm
-{
-    template <typename Nullable>
-    [[nodiscard]]
-    constexpr auto operator()(Nullable&& opt)
-    {
-        if (detail::has_value(opt))
-        {
-            return std::invoke(*this, has_value_tag{}, std::forward<Nullable>());
-        }
-
-        return std::invoke(*this, is_empty_tag{}, std::forward<Nullable>());
-    }
-
-    template <typename Nullable>
-    [[nodiscard]]
-    constexpr auto operator()(detail::has_value_tag const, Nullable&& opt)
-    {
-        return value(std::forward<Nullable>(opt));
-    }
-
-    template <typename Nullable>
-    [[nodiscard]]
-    constexpr auto operator()(is_empty_tag const, [[maybe_unused]] Nullable&& opt)
-    {
-        return alternative;
-    }
-
-    Alternative alternative;
-};*/
-}
 
 TEMPLATE_LIST_TEST_CASE(
     "and_then algorithm invokes its action only when the input has a value.",
