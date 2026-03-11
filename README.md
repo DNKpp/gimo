@@ -15,15 +15,15 @@
 
 ## Table of Contents
 
-* [Introduction](#introduction)
-    * [Genericity](#genericity)
-    * [Interchangeability](#interchangeability)
-    * [Zero Cost Abstraction](#zero-cost-abstraction)
-* [Integration](#integration)
-    * [Optional Extensions](#optional-extensions)
-    * [Portability](#portability)
-    * [CMake](#cmake)
-    * [Single-Header](#single-header)
+- [Introduction](#introduction)
+  - [Genericity](#genericity)
+  - [Interchangeability](#interchangeability)
+  - [Zero Cost Abstraction](#zero-cost-abstraction)
+- [Integration](#integration)
+  - [Optional Extensions](#optional-extensions)
+  - [Portability](#portability)
+  - [CMake](#cmake)
+  - [Single-Header](#single-header)
 
 ---
 
@@ -51,9 +51,10 @@ Doing so would only result in more code, without any real benefit.
 This is exactly what I’d like to have for monadic operations.
 Therefore, gimo provides the following algorithms for all *nullable* types out of the box:
 
-- `gimo::and_then`
-- `gimo::or_else`
-- `gimo::transform`
+-`gimo::and_then`
+-`gimo::or_else`
+-`gimo::transform`
+-`gimo::value_or`
 
 Additionally, for *expected-like* types, *gimo* offers `gimo::transform_error`.
 
