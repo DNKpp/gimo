@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -54,4 +54,29 @@ TEST_CASE(
         x,
         gimo::or_else([] { return &y; }));
     STATIC_CHECK(1337 == *result);
+}
+
+TEST_CASE(
+    "raw-pointers can be used with value_or algorithm",
+    "[ext][raw-ptr]")
+{
+    SECTION("When the pointer is not null.")
+    {
+        constexpr int x{42};
+
+        constexpr int result = gimo::apply(
+            &x,
+            gimo::value_or(1337));
+        STATIC_CHECK(42 == result);
+    }
+
+    SECTION("When the pointer is null.")
+    {
+        constexpr int* ptr{};
+
+        constexpr int result = gimo::apply(
+            ptr,
+            gimo::value_or(1337));
+        STATIC_CHECK(1337 == result);
+    }
 }

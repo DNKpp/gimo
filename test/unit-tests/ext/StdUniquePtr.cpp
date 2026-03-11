@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -132,5 +132,39 @@ TEST_CASE(
 
         STATIC_CHECK(std::same_as<std::unique_ptr<int> const, decltype(result)>);
         CHECK(1337.f == *result);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+    "std::unique_ptr can be used with value_or algorithm.",
+    "[ext][std::optional]",
+    gimo::testing::with_qualification_list)
+{
+    using with_qualification = TestType;
+    static constexpr gimo::Pipeline pipeline = gimo::value_or(1337);
+    STATIC_CHECK(gimo::processable_by<std::unique_ptr<int>, decltype(pipeline)>);
+
+    SECTION("When a value is contained.")
+    {
+        auto ptr = std::make_unique<int>(42);
+
+        int const result = gimo::apply(
+            with_qualification::cast(ptr),
+            pipeline);
+
+        STATIC_CHECK(std::same_as<int const, decltype(result)>);
+        CHECK(42 == result);
+    }
+
+    SECTION("When nullptr is provided.")
+    {
+        std::unique_ptr<int> ptr{};
+
+        int const result = gimo::apply(
+            with_qualification::cast(ptr),
+            pipeline);
+
+        STATIC_CHECK(std::same_as<int const, decltype(result)>);
+        CHECK(1337 == result);
     }
 }

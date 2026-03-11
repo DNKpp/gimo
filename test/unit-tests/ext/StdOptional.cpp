@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -133,6 +133,44 @@ TEMPLATE_LIST_TEST_CASE(
         }();
 
         STATIC_CHECK(std::same_as<std::optional<int> const, decltype(result)>);
+        STATIC_CHECK(1337 == result);
+    }
+}
+
+TEMPLATE_LIST_TEST_CASE(
+    "std::optional can be used with value_or algorithm.",
+    "[ext][std::optional]",
+    gimo::testing::with_qualification_list)
+{
+    using with_qualification = TestType;
+    static constexpr gimo::Pipeline pipeline = gimo::value_or(1337);
+    STATIC_CHECK(gimo::processable_by<std::optional<int>, decltype(pipeline)>);
+
+    SECTION("When a value is contained.")
+    {
+        constexpr int result = [] {
+            std::optional opt{42};
+
+            return gimo::apply(
+                with_qualification::cast(opt),
+                pipeline);
+        }();
+
+        STATIC_CHECK(std::same_as<int const, decltype(result)>);
+        STATIC_CHECK(42 == result);
+    }
+
+    SECTION("When nullopt is provided.")
+    {
+        constexpr int result = [] {
+            std::optional<int> opt{};
+
+            return gimo::apply(
+                with_qualification::cast(opt),
+                pipeline);
+        }();
+
+        STATIC_CHECK(std::same_as<int const, decltype(result)>);
         STATIC_CHECK(1337 == result);
     }
 }
