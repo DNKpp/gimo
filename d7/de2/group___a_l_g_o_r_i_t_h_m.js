@@ -1,10 +1,10 @@
 var group___a_l_g_o_r_i_t_h_m =
 [
     [ "gimo::applicable_to", "d4/d8f/conceptgimo_1_1applicable__to.html", null ],
-    [ "gimo::BasicAlgorithm< Traits, Action >", "d5/dfb/classgimo_1_1_basic_algorithm.html", [
+    [ "gimo::BasicAlgorithm&lt; Traits, Action &gt;", "d5/dfb/classgimo_1_1_basic_algorithm.html", [
       [ "action_type", "d5/dfb/classgimo_1_1_basic_algorithm.html#a3fa273fa5b8fa65cb72a010c26202f84", null ],
       [ "traits_type", "d5/dfb/classgimo_1_1_basic_algorithm.html#a3bb86c75460fc385be99dddadfbf51a7", null ],
-      [ "BasicAlgorithm", "d5/dfb/classgimo_1_1_basic_algorithm.html#a2a56f523c7d5d06d03d61d9c0411e558", null ],
+      [ "BasicAlgorithm", "d5/dfb/classgimo_1_1_basic_algorithm.html#a7261b73c7aac27898645f84004b40d77", null ],
       [ "on_null", "d5/dfb/classgimo_1_1_basic_algorithm.html#a5b914663106d4adc97299d9270985a2a", null ],
       [ "on_null", "d5/dfb/classgimo_1_1_basic_algorithm.html#aff86bd9a53c87ceebbe5d77ebcbc8f91", null ],
       [ "on_null", "d5/dfb/classgimo_1_1_basic_algorithm.html#a66fc30bec59014d65962f5bb29c60d32", null ],

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gimo_0',['gimo',['../index.html',1,'']]]
+  ['abstraction_0',['Zero Cost Abstraction',['../index.html#autotoc_md6',1,'']]]
 ];
