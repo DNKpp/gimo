@@ -171,17 +171,6 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: Upload test results to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          flags: coverage
-          report_type: test_results
-          files: ./${{env.JUNIT_REPORT}}
-          disable_search: true
-          fail_ci_if_error: true
-          verbose: true
-
   coveralls-report:
     needs: create-coverage-report
     runs-on: ubuntu-latest
