@@ -51,10 +51,11 @@ Doing so would only result in more code, without any real benefit.
 This is exactly what I’d like to have for monadic operations.
 Therefore, gimo provides the following algorithms for all *nullable* types out of the box:
 
--`gimo::and_then`
--`gimo::or_else`
--`gimo::transform`
--`gimo::value_or`
+- `gimo::and_then`
+- `gimo::or_else`
+- `gimo::transform`
+- `gimo::value_or`
+- `gimo::value_or_else`
 
 Additionally, for *expected-like* types, *gimo* offers `gimo::transform_error`.
 

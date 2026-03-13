@@ -19,6 +19,6 @@
 #include "gimo/algorithm/OrElse.hpp"
 #include "gimo/algorithm/Transform.hpp"
 #include "gimo/algorithm/TransformError.hpp"
-#include "gimo/algorithm/ValueOr.hpp"
+#include "gimo/algorithm/ValueOrElse.hpp"
 
 #endif

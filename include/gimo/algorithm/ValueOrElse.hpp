@@ -3,8 +3,8 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef GIMO_ALGORITHM_VALUE_OR_HPP
-#define GIMO_ALGORITHM_VALUE_OR_HPP
+#ifndef GIMO_ALGORITHM_VALUE_OR_ELSE_HPP
+#define GIMO_ALGORITHM_VALUE_OR_ELSE_HPP
 
 #pragma once
 
@@ -14,9 +14,10 @@
 
 #include <concepts>
 #include <functional>
+#include <tuple>
 #include <utility>
 
-namespace gimo::detail::value_or
+namespace gimo::detail::value_or_else
 {
     template <typename Nullable>
     using result_t = std::remove_cvref_t<value_result_t<Nullable>>;
@@ -51,7 +52,7 @@ namespace gimo::detail::value_or
             }
             else
             {
-                return *value_or::print_diagnostics<Nullable, Action>();
+                return *value_or_else::print_diagnostics<Nullable, Action>();
             }
         }
 
@@ -66,7 +67,7 @@ namespace gimo::detail::value_or
             }
             else
             {
-                return *value_or::print_diagnostics<Nullable, Action>();
+                return *value_or_else::print_diagnostics<Nullable, Action>();
             }
         }
     };
@@ -76,6 +77,11 @@ namespace gimo
 {
     namespace detail
     {
+        template <typename Action>
+        using value_or_else_t = BasicAlgorithm<
+            value_or_else::traits,
+            std::remove_cvref_t<Action>>;
+
         template <unqualified T>
         class ValueStorageFun
         {
@@ -115,22 +121,44 @@ namespace gimo
         };
 
         template <typename Alternative>
-        using value_or_t = BasicAlgorithm<
-            value_or::traits,
+        using value_or_t = value_or_else_t<
             ValueStorageFun<std::decay_t<Alternative>>>;
     }
 
     /**
-     * \brief Creates a pipeline terminating step that either forwards a contained value or the specified alternative.
+     * \brief Creates a terminating pipeline step that returns the contained value or invokes a fallback action if the nullable is null.
      * \ingroup ALGORITHM
-     * \tparam Alternative The alternative type.
-     * \param alternative The alternative value.
+     * \tparam Action The fallback action type.
+     * \param action A nullary operation that produces an alternative value.
+     * \return A Pipeline step containing the `value_or_else` algorithm.
+     * \details
+     * - **On Value**: Forwards the underlying value of the input.
+     * - **On Null**: Invokes `action` and returns its result converted to the nullable's value type.
+     *
+     * The action is invoked only if the input nullable does not contain a value.
+     * The return type of `action` must be convertible to the nullable's value type.
+     */
+    template <std::invocable Action>
+    [[nodiscard]]
+    constexpr auto value_or_else(Action&& action)
+    {
+        using Algorithm = detail::value_or_else_t<Action>;
+
+        return Pipeline{
+            std::tuple<Algorithm>{std::forward<Action>(action)}};
+    }
+
+    /**
+     * \brief Creates a terminating pipeline step that returns the contained value or a specified alternative if the nullable is null.
+     * \ingroup ALGORITHM
+     * \tparam Alternative The alternative value type.
+     * \param alternative The alternative value to use if the nullable is null.
      * \return A Pipeline step containing the `value_or` algorithm.
      * \details
      * - **On Value**: Forwards the underlying value of the input.
-     * - **On Null**: Forwards the specified alternative value.
+     * - **On Null**: Returns the specified alternative converted to the nullable's value type.
      *
-     * Let `T` be the value-type of the input nullable, then `Alternative` must be convertible to `T`.
+     * `Alternative` must be convertible to the nullable's value type.
      */
     template <typename Alternative>
     [[nodiscard]]
