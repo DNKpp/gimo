@@ -17,7 +17,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
 )
 
-include(EnableSanitizers)
+include(Gimo-EnableSanitizers)
 enable_sanitizers(${TARGET_NAME})
 
 include(EnableWarnings)

@@ -15,7 +15,7 @@ target_compile_features(${TARGET_NAME} PRIVATE
     cxx_std_23
 )
 
-include(EnableSanitizers)
+include(Gimo-EnableSanitizers)
 enable_sanitizers(${TARGET_NAME})
 
 include(EnableWarnings)
