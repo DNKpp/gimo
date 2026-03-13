@@ -51,8 +51,13 @@ target_compile_options(${TARGET_NAME} PRIVATE
     ${DISABLED_WARNINGS}
 )
 
+option(GIMO_TEST_COVERAGE_RUN "Toggles some internal build changes to enhance the coverage reports." OFF)
 target_compile_definitions(${TARGET_NAME} PRIVATE
     CATCH_CONFIG_FALLBACK_STRINGIFIER=mimicpp::print
+
+    # When a coverage report is done, it's beneficial to disable compile-time tests and actually run them,
+    # because otherwise they are not actually contributing to the coverage.
+    $<$<BOOL:${GIMO_TEST_COVERAGE_RUN}>:CATCH_CONFIG_RUNTIME_STATIC_REQUIRE>
 )
 target_precompile_headers(${TARGET_NAME} PRIVATE
     "pch.hpp"
