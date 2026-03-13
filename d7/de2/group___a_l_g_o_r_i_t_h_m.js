@@ -21,5 +21,7 @@ var group___a_l_g_o_r_i_t_h_m =
     [ "gimo::and_then", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga00f421df375b40d755beefbf0e1019c2", null ],
     [ "gimo::or_else", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga1562cdcb003130aab0cdb9e52a8069ae", null ],
     [ "gimo::transform", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef", null ],
-    [ "gimo::transform_error", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga566cac50b24d7c16fe867a7f1ce6ffcc", null ]
+    [ "gimo::transform_error", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga566cac50b24d7c16fe867a7f1ce6ffcc", null ],
+    [ "gimo::value_or", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga7e0acef4717e898b796b37320bf4ac81", null ],
+    [ "gimo::value_or_else", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga06c2c7d6ce8659a8356a7460cfa43d02", null ]
 ];

@@ -134,6 +134,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga566cac50b24d7c16fe867a7f1ce6ffcc" id="r_ga566cac50b24d7c16fe867a7f1ce6ffcc"><td class="memTemplParams" colspan="2">template&lt;typename Action&gt; </td></tr>
 <tr class="memitem:ga566cac50b24d7c16fe867a7f1ce6ffcc template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="#ga566cac50b24d7c16fe867a7f1ce6ffcc">gimo::transform_error</a> (Action &amp;&amp;action)</td></tr>
 <tr class="memdesc:ga566cac50b24d7c16fe867a7f1ce6ffcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a pipeline step that transforms the error of an expected-like type.  <br /></td></tr>
+<tr class="memitem:ga06c2c7d6ce8659a8356a7460cfa43d02" id="r_ga06c2c7d6ce8659a8356a7460cfa43d02"><td class="memTemplParams" colspan="2">template&lt;std::invocable Action&gt; </td></tr>
+<tr class="memitem:ga06c2c7d6ce8659a8356a7460cfa43d02 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="#ga06c2c7d6ce8659a8356a7460cfa43d02">gimo::value_or_else</a> (Action &amp;&amp;action)</td></tr>
+<tr class="memdesc:ga06c2c7d6ce8659a8356a7460cfa43d02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a terminating pipeline step that returns the contained value or invokes a fallback action if the nullable is null.  <br /></td></tr>
+<tr class="memitem:ga7e0acef4717e898b796b37320bf4ac81" id="r_ga7e0acef4717e898b796b37320bf4ac81"><td class="memTemplParams" colspan="2">template&lt;typename Alternative&gt; </td></tr>
+<tr class="memitem:ga7e0acef4717e898b796b37320bf4ac81 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="#ga7e0acef4717e898b796b37320bf4ac81">gimo::value_or</a> (Alternative &amp;&amp;alternative)</td></tr>
+<tr class="memdesc:ga7e0acef4717e898b796b37320bf4ac81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a terminating pipeline step that returns the contained value or a specified alternative if the nullable is null.  <br /></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Monadic algorithms. </p>
@@ -327,6 +333,100 @@ template&lt;typename Action&gt; </div>
 <p>Let <span class="tt">T</span> be the (possibly cv-qualified) reference to the error extracted from the input <span class="tt"><a class="el" href="../../dc/dcd/conceptgimo_1_1expected__like.html" title="Concept describing a type that acts like std::expected (has both a value and an error channel).">expected_like</a></span>. <span class="tt">Action</span> must be invocable with an argument of type <span class="tt">T</span> (or a type to which <span class="tt">T</span> is implicitly convertible), while the decayed return-type will become the error-type of the resulting nullable. </p><dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">https://en.wikipedia.org/wiki/Monad_(functional_programming)</a></dd></dl>
 <dl class="section note"><dt>Note</dt><dd>The <span class="tt"><a class="el" href="../../dc/dcd/conceptgimo_1_1expected__like.html" title="Concept describing a type that acts like std::expected (has both a value and an error channel).">expected_like</a></span> type must support error-type rebinding. </dd></dl>
 <dl class="section see"><dt>See also</dt><dd>gimo::traits::rebind_error </dd></dl>
+
+</div>
+</div>
+<a id="ga7e0acef4717e898b796b37320bf4ac81" name="ga7e0acef4717e898b796b37320bf4ac81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7e0acef4717e898b796b37320bf4ac81">&#9670;&#160;</a></span>value_or()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Alternative&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto gimo::value_or </td>
+          <td>(</td>
+          <td class="paramtype">Alternative &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>alternative</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a terminating pipeline step that returns the contained value or a specified alternative if the nullable is null. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Alternative</td><td>The alternative value type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alternative</td><td>The alternative value to use if the nullable is null. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html" title="A composite object representing a sequence of monadic operations.">Pipeline</a> step containing the <span class="tt"><a class="el" href="#ga7e0acef4717e898b796b37320bf4ac81" title="Creates a terminating pipeline step that returns the contained value or a specified alternative if th...">value_or</a></span> algorithm.</dd></dl>
+<ul>
+<li><b>On Value</b>: Forwards the underlying value of the input.</li>
+<li><b>On Null</b>: Returns the specified alternative converted to the nullable's value type.</li>
+</ul>
+<p><span class="tt">Alternative</span> must be convertible to the nullable's value type. </p>
+
+</div>
+</div>
+<a id="ga06c2c7d6ce8659a8356a7460cfa43d02" name="ga06c2c7d6ce8659a8356a7460cfa43d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga06c2c7d6ce8659a8356a7460cfa43d02">&#9670;&#160;</a></span>value_or_else()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::invocable Action&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto gimo::value_or_else </td>
+          <td>(</td>
+          <td class="paramtype">Action &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>action</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a terminating pipeline step that returns the contained value or invokes a fallback action if the nullable is null. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Action</td><td>The fallback action type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>A nullary operation that produces an alternative value. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html" title="A composite object representing a sequence of monadic operations.">Pipeline</a> step containing the <span class="tt"><a class="el" href="#ga06c2c7d6ce8659a8356a7460cfa43d02" title="Creates a terminating pipeline step that returns the contained value or invokes a fallback action if ...">value_or_else</a></span> algorithm.</dd></dl>
+<ul>
+<li><b>On Value</b>: Forwards the underlying value of the input.</li>
+<li><b>On Null</b>: Invokes <span class="tt">action</span> and returns its result converted to the nullable's value type.</li>
+</ul>
+<p>The action is invoked only if the input nullable does not contain a value. The return type of <span class="tt">action</span> must be convertible to the nullable's value type. </p>
 
 </div>
 </div>

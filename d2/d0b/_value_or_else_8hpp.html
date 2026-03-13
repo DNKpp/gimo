@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.16.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>gimo: gimo.hpp File Reference</title>
+<title>gimo: gimo/algorithm/ValueOrElse.hpp File Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript">var page_layout=1;</script>
 <script type="text/javascript" src="../../jquery.js"></script>
@@ -70,7 +70,7 @@ $(function() { codefold.init(); });
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('d4/d5a/gimo_8hpp.html','../../',''); });
+$(function(){initNavTree('d2/d0b/_value_or_else_8hpp.html','../../',''); });
 </script>
 <script type="text/javascript" src="../../menudata.js"></script>
 <script type="text/javascript" src="../../menu.js"></script>
@@ -103,27 +103,44 @@ $(function() {
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">gimo.hpp File Reference</div></div>
+  <div class="headertitle"><div class="title">ValueOrElse.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="../../d7/d67/_version_8hpp_source.html">gimo/Version.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d8/dd2/_config_8hpp_source.html">gimo/Config.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d3/d58/_common_8hpp_source.html">gimo/Common.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="../../d3/d58/_common_8hpp_source.html">gimo/Common.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../d1/da8/_pipeline_8hpp_source.html">gimo/Pipeline.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../de/dca/_basic_algorithm_8hpp_source.html">gimo/algorithm/BasicAlgorithm.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d6/d3f/_and_then_8hpp_source.html">gimo/algorithm/AndThen.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d4/d96/_or_else_8hpp_source.html">gimo/algorithm/OrElse.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d9/d8c/_transform_8hpp_source.html">gimo/algorithm/Transform.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d9/d45/_transform_error_8hpp_source.html">gimo/algorithm/TransformError.hpp</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../d2/d0b/_value_or_else_8hpp_source.html">gimo/algorithm/ValueOrElse.hpp</a>&quot;</code><br />
-</div><div class="textblock"><div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Include dependency graph for gimo.hpp:</div>
+<code>#include &lt;concepts&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div><div class="textblock"><div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Include dependency graph for ValueOrElse.hpp:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="../../d2/da6/gimo_8hpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" loading="lazy" frameborder="0" src="../../d6/d89/_value_or_else_8hpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+</div><div class="textblock"><div id="dynsection-1" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>This graph shows which files directly or indirectly include this file:</div>
+<div id="dynsection-1-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-1-content" class="dyncontent" style="display:none;">
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="../../dc/d59/_value_or_else_8hpp__dep__incl.svg" width="218" height="111"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
-<p><a href="../../d4/d5a/gimo_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="../../d2/d0b/_value_or_else_8hpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:gimo" id="r_gimo"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="../../d6/d90/namespacegimo.html">gimo</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga06c2c7d6ce8659a8356a7460cfa43d02" id="r_ga06c2c7d6ce8659a8356a7460cfa43d02"><td class="memTemplParams" colspan="2">template&lt;std::invocable Action&gt; </td></tr>
+<tr class="memitem:ga06c2c7d6ce8659a8356a7460cfa43d02 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga06c2c7d6ce8659a8356a7460cfa43d02">gimo::value_or_else</a> (Action &amp;&amp;action)</td></tr>
+<tr class="memdesc:ga06c2c7d6ce8659a8356a7460cfa43d02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a terminating pipeline step that returns the contained value or invokes a fallback action if the nullable is null.  <br /></td></tr>
+<tr class="memitem:ga7e0acef4717e898b796b37320bf4ac81" id="r_ga7e0acef4717e898b796b37320bf4ac81"><td class="memTemplParams" colspan="2">template&lt;typename Alternative&gt; </td></tr>
+<tr class="memitem:ga7e0acef4717e898b796b37320bf4ac81 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga7e0acef4717e898b796b37320bf4ac81">gimo::value_or</a> (Alternative &amp;&amp;alternative)</td></tr>
+<tr class="memdesc:ga7e0acef4717e898b796b37320bf4ac81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a terminating pipeline step that returns the contained value or a specified alternative if the nullable is null.  <br /></td></tr>
+</table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
@@ -137,7 +154,7 @@ $(function() {
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="../../d4/d5a/gimo_8hpp.html">gimo.hpp</a></li>
+    <li class="navelem"><a href="../../dir_0ba2145ccbcfb4ce9c49d2018d4c61f9.html">gimo</a></li><li class="navelem"><a href="../../dir_7b80b7bebfe849b9687fffbfb039db57.html">algorithm</a></li><li class="navelem"><a href="../../d2/d0b/_value_or_else_8hpp.html">ValueOrElse.hpp</a></li>
     <li class="footer">Generated on <span class="timestamp"></span> for gimo by <a href="https://www.doxygen.org/index.html"><img class="footer" src="../../doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.16.1 </li>
   </ul>
 </div>
