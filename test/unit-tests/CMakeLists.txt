@@ -20,7 +20,7 @@ target_include_directories(${TARGET_NAME} PRIVATE
 include(Gimo-EnableSanitizers)
 enable_sanitizers(${TARGET_NAME})
 
-include(EnableWarnings)
+include(Gimo-EnableWarnings)
 include(Gimo-EnableTestFlags)
 find_package(gimo-catch2 REQUIRED)
 find_package(gimo-mimic++ REQUIRED)
