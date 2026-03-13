@@ -4,7 +4,7 @@
 #          https://www.boost.org/LICENSE_1_0.txt)
 
 function(enable_sanitizers TARGET_NAME)
-	find_package(sanitizers-cmake)
+	find_package(gimo-sanitizers-cmake)
 
 	if (SANITIZE_ADDRESS)
 		# workaround linker errors on msvc
