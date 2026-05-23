@@ -37,7 +37,7 @@ namespace gimo::detail::or_else
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr std::remove_cvref_t<Nullable> on_value([[maybe_unused]] Action&& action, Nullable&& opt)
+    constexpr std::remove_cvref_t<Nullable> on_value(Action&& /*action*/, Nullable&& opt)
     {
         return std::forward<Nullable>(opt);
     }
@@ -45,7 +45,7 @@ namespace gimo::detail::or_else
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
     [[nodiscard]]
     constexpr auto on_value(
-        [[maybe_unused]] Action&& action,
+        Action&& /*action*/,
         Nullable&& opt,
         Next&& next,
         Steps&&... steps)
@@ -57,7 +57,7 @@ namespace gimo::detail::or_else
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr std::remove_cvref_t<Nullable> on_null(Action&& action, [[maybe_unused]] Nullable&& opt)
+    constexpr std::remove_cvref_t<Nullable> on_null(Action&& action, Nullable&& /*opt*/)
     {
         if constexpr (std::is_void_v<std::invoke_result_t<Action>>)
         {
