@@ -232,7 +232,7 @@ template&lt;typename Action&gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html" title="A composite object representing a sequence of monadic operations.">Pipeline</a> step containing the <span class="tt"><a class="el" href="#ga1562cdcb003130aab0cdb9e52a8069ae" title="Creates a pipeline step that handles the null/error case.">or_else</a></span> algorithm.</dd></dl>
 <ul>
 <li><b>On Value</b>: Propagates the value state immediately (i.e., <span class="tt">action</span> is not executed).</li>
-<li><b>On Null</b>: Invokes the <span class="tt">action</span>. The <span class="tt">action</span> <b>must</b> return a <span class="tt"><a class="el" href="../../d8/d8e/conceptgimo_1_1nullable.html" title="Concept describing a type that can be used as a monad in the pipeline.">nullable</a></span> type. <dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">https://en.wikipedia.org/wiki/Monad_(functional_programming)</a> </dd></dl>
+<li><b>On Null</b>: Invokes the <span class="tt">action</span>. The <span class="tt">action</span> must either return the <b>exact same</b> <span class="tt"><a class="el" href="../../d8/d8e/conceptgimo_1_1nullable.html" title="Concept describing a type that can be used as a monad in the pipeline.">nullable</a></span> type or <span class="tt">void</span>. <dl class="section see"><dt>See also</dt><dd><a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">https://en.wikipedia.org/wiki/Monad_(functional_programming)</a> </dd></dl>
 </li>
 </ul>
 
