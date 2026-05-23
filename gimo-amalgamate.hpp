@@ -1138,7 +1138,7 @@ namespace gimo
 
 
 /*** Start of inlined file: OrElse.hpp ***/
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -1157,23 +1157,23 @@ namespace gimo
 namespace gimo::detail::or_else
 {
     template <typename Nullable, typename Action>
-    consteval Nullable* print_diagnostics()
+    consteval Nullable& print_diagnostics()
     {
         if constexpr (!std::is_invocable_v<Action>)
         {
             static_assert(always_false_v<Nullable>, "The or_else algorithm requires an action invocable without any arguments.");
         }
-        else if constexpr (!std::same_as<Nullable, std::invoke_result_t<Action>>)
+        else if constexpr (!std::same_as<Nullable, std::invoke_result_t<Action>> && !std::is_void_v<std::invoke_result_t<Action>>)
         {
-            static_assert(always_false_v<Nullable>, "The or_else algorithm requires an action returning the same nullable type.");
+            static_assert(always_false_v<Nullable>, "The or_else algorithm requires an action returning the same nullable type or void.");
         }
 
-        return nullptr;
+        return std::declval<Nullable&>();
     }
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr std::remove_cvref_t<Nullable> on_value([[maybe_unused]] Action&& action, Nullable&& opt)
+    constexpr std::remove_cvref_t<Nullable> on_value(Action&& /*action*/, Nullable&& opt)
     {
         return std::forward<Nullable>(opt);
     }
@@ -1181,7 +1181,7 @@ namespace gimo::detail::or_else
     template <typename Action, nullable Nullable, typename Next, typename... Steps>
     [[nodiscard]]
     constexpr auto on_value(
-        [[maybe_unused]] Action&& action,
+        Action&& /*action*/,
         Nullable&& opt,
         Next&& next,
         Steps&&... steps)
@@ -1193,9 +1193,17 @@ namespace gimo::detail::or_else
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr std::remove_cvref_t<Nullable> on_null(Action&& action, [[maybe_unused]] Nullable&& opt)
+    constexpr std::remove_cvref_t<Nullable> on_null(Action&& action, Nullable&& /*opt*/)
     {
-        return std::invoke(std::forward<Action>(action));
+        if constexpr (std::is_void_v<std::invoke_result_t<Action>>)
+        {
+            std::invoke(std::forward<Action>(action));
+            return null_v<Nullable>;
+        }
+        else
+        {
+            return std::invoke(std::forward<Action>(action));
+        }
     }
 
     template <nullable Nullable, typename Action, typename Next, typename... Steps>
@@ -1208,13 +1216,24 @@ namespace gimo::detail::or_else
             std::forward<Steps>(steps)...);
     }
 
+    template <nullable Nullable, typename Action, typename Next, typename... Steps>
+        requires std::is_void_v<std::invoke_result_t<Action>>
+    [[nodiscard]]
+    constexpr auto on_null(Action&& action, Nullable&& opt, Next&& next, Steps&&... steps)
+    {
+        return std::forward<Next>(next).on_null(
+            or_else::on_null(std::forward<Action>(action), std::forward<Nullable>(opt)),
+            std::forward<Steps>(steps)...);
+    }
+
     struct traits
     {
         template <nullable Nullable, typename Action>
         static constexpr bool is_applicable_on = requires {
             requires std::same_as<
-                std::remove_cvref_t<Nullable>,
-                std::remove_cvref_t<std::invoke_result_t<Action>>>;
+                         std::remove_cvref_t<Nullable>,
+                         std::remove_cvref_t<std::invoke_result_t<Action>>>
+                         || std::is_void_v<std::invoke_result_t<Action>>;
         };
 
         template <typename Action, nullable Nullable, typename... Steps>
@@ -1230,7 +1249,7 @@ namespace gimo::detail::or_else
             }
             else
             {
-                return *or_else::print_diagnostics<Nullable, Action>();
+                return or_else::print_diagnostics<Nullable, Action>();
             }
         }
 
@@ -1247,7 +1266,7 @@ namespace gimo::detail::or_else
             }
             else
             {
-                return *or_else::print_diagnostics<Nullable, Action>();
+                return or_else::print_diagnostics<Nullable, Action>();
             }
         }
     };
@@ -1269,7 +1288,7 @@ namespace gimo
      * \return A Pipeline step containing the `or_else` algorithm.
      * \details
      * - **On Value**: Propagates the value state immediately (i.e., `action` is not executed).
-     * - **On Null**: Invokes the `action`. The `action` **must** return a `nullable` type.
+     * - **On Null**: Invokes the `action`. The `action` must either return the **exact same** `nullable` type or `void`.
      * \see https://en.wikipedia.org/wiki/Monad_(functional_programming)
      */
     template <typename Action>
