@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -8,7 +8,7 @@
 
 /*
 <begin-expected-compile-error>
-The or_else algorithm requires an action returning the same nullable type\.
+The or_else algorithm requires an action returning the same nullable type or void\.
 <end-expected-compile-error>
 */
 

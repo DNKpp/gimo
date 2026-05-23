@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -179,4 +179,23 @@ TEMPLATE_LIST_TEST_CASE(
     SCOPED_EXP inner.expect_call()
         and finally::returns(1337);
     CHECK(1337 == pipeline.apply(std::optional<int>{}));
+}
+
+TEST_CASE(
+    "gimo::or_else accepts actions returning void.",
+    "[algorithm]")
+{
+    mimicpp::Mock<void()> action{};
+    auto const pipeline = or_else(std::ref(action));
+
+    SECTION("When a value is contained, the action is not invoked.")
+    {
+        CHECK(1337 == pipeline.apply(std::optional{1337}));
+    }
+
+    SECTION("When no value is contained, the action is invoked and null is returned.")
+    {
+        SCOPED_EXP action.expect_call();
+        CHECK(!pipeline.apply(std::optional<int>{}));
+    }
 }
