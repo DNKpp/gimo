@@ -20,7 +20,7 @@
 
 #define GIMO_VERSION_MAJOR 0
 #define GIMO_VERSION_MINOR 3
-#define GIMO_VERSION_PATCH 0
+#define GIMO_VERSION_PATCH 1
 
 #endif
 
@@ -1683,7 +1683,7 @@ namespace gimo::detail::transform_error
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
         {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
+            GIMO_ASSERT(detail::has_value(closure), "Nullable is empty while it's expected to contain a value.");
 
             if constexpr (is_applicable_on<Expected, Action>)
             {
@@ -1702,7 +1702,7 @@ namespace gimo::detail::transform_error
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
         {
-            GIMO_ASSERT(!detail::has_value(opt), "Nullable contains a value while it's expected to be empty.");
+            GIMO_ASSERT(!detail::has_value(closure), "Nullable contains a value while it's expected to be empty.");
 
             if constexpr (is_applicable_on<Expected, Action>)
             {
