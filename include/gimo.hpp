@@ -15,6 +15,7 @@
 
 #include "gimo/algorithm/BasicAlgorithm.hpp"
 
+#include "gimo/algorithm/AndForward.hpp"
 #include "gimo/algorithm/AndThen.hpp"
 #include "gimo/algorithm/OrElse.hpp"
 #include "gimo/algorithm/Transform.hpp"
