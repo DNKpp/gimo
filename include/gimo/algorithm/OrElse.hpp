@@ -62,7 +62,7 @@ namespace gimo::detail::or_else
         if constexpr (std::is_void_v<std::invoke_result_t<Action>>)
         {
             std::invoke(std::forward<Action>(action));
-            return null_v<Nullable>;
+            return detail::construct_empty<Nullable>();
         }
         else
         {
@@ -104,6 +104,8 @@ namespace gimo::detail::or_else
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Nullable&& opt, Steps&&... steps)
         {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return or_else::on_value(
@@ -121,6 +123,8 @@ namespace gimo::detail::or_else
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable contains a value while it's expected to be empty.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return or_else::on_null(

@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -45,7 +45,7 @@ namespace gimo::detail::transform_error
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr result_t<Expected, Action> on_value([[maybe_unused]] Action&& action, Expected&& closure)
+    constexpr result_t<Expected, Action> on_value(Action&& /*action*/, Expected&& closure)
     {
         return detail::rebind_value<result_t<Expected, Action>, Expected>(closure);
     }
@@ -95,6 +95,8 @@ namespace gimo::detail::transform_error
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Expected&& closure, Steps&&... steps)
         {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
+
             if constexpr (is_applicable_on<Expected, Action>)
             {
                 return transform_error::on_value(
@@ -112,6 +114,8 @@ namespace gimo::detail::transform_error
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Expected&& closure, Steps&&... steps)
         {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable contains a value while it's expected to be empty.");
+
             if constexpr (is_applicable_on<Expected, Action>)
             {
                 return transform_error::on_null(

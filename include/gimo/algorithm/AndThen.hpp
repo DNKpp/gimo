@@ -1,4 +1,4 @@
-//          Copyright Dominic (DNKpp) Koepke 2025.
+//          Copyright Dominic (DNKpp) Koepke 2025-2026.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          https://www.boost.org/LICENSE_1_0.txt)
@@ -64,14 +64,14 @@ namespace gimo::detail::and_then
 
     template <typename Action, nullable Nullable>
     [[nodiscard]]
-    constexpr result_t<Nullable, Action> on_null([[maybe_unused]] Action&& action, [[maybe_unused]] Nullable&& opt)
+    constexpr result_t<Nullable, Action> on_null(Action&& /*action*/, Nullable&& /*opt*/)
     {
         return detail::construct_empty<result_t<Nullable, Action>>();
     }
 
     template <typename Action, expected_like Expected>
     [[nodiscard]]
-    constexpr result_t<Expected, Action> on_null([[maybe_unused]] Action&& action, Expected&& expected)
+    constexpr result_t<Expected, Action> on_null(Action&& /*action*/, Expected&& expected)
     {
         return detail::rebind_error<result_t<Expected, Action>, Expected>(expected);
     }
@@ -96,6 +96,8 @@ namespace gimo::detail::and_then
         [[nodiscard]]
         static constexpr auto on_value(Action&& action, Nullable&& opt, Steps&&... steps)
         {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return and_then::on_value(
@@ -113,6 +115,8 @@ namespace gimo::detail::and_then
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, Nullable&& opt, Steps&&... steps)
         {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable contains a value while it's expected to be empty.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return and_then::on_null(

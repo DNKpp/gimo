@@ -38,7 +38,7 @@ namespace gimo::detail::and_forward
         template <typename Action, nullable Nullable>
         static constexpr void on_value(Action&& action, Nullable&& opt)
         {
-            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected contain a value.");
+            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
 
             if constexpr (is_applicable_on<Nullable, Action>)
             {

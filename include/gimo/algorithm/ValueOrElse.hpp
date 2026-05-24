@@ -44,8 +44,10 @@ namespace gimo::detail::value_or_else
 
         template <typename Action, nullable Nullable>
         [[nodiscard]]
-        static constexpr auto on_value([[maybe_unused]] Action&& action, Nullable&& opt)
+        static constexpr auto on_value(Action&& /*action*/, Nullable&& opt)
         {
+            GIMO_ASSERT(detail::has_value(opt), "Nullable is empty while it's expected to contain a value.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return detail::forward_value<Nullable>(opt);
@@ -60,6 +62,8 @@ namespace gimo::detail::value_or_else
         [[nodiscard]]
         static constexpr auto on_null(Action&& action, [[maybe_unused]] Nullable&& opt)
         {
+            GIMO_ASSERT(!detail::has_value(opt), "Nullable contains a value while it's expected to be empty.");
+
             if constexpr (is_applicable_on<Nullable, Action>)
             {
                 return static_cast<result_t<Nullable>>(
