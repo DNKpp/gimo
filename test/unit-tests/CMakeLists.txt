@@ -7,6 +7,7 @@ set(TARGET_NAME gimo-tests)
 
 add_executable(${TARGET_NAME}
     "Common.cpp"
+    "Integration.cpp"
     "Pipeline.cpp"
 )
 add_subdirectory(algorithm)
