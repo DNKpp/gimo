@@ -1,5 +1,6 @@
 var dir_7b80b7bebfe849b9687fffbfb039db57 =
 [
+    [ "AndForward.hpp", "d5/d86/_and_forward_8hpp.html", "d5/d86/_and_forward_8hpp" ],
     [ "AndThen.hpp", "d6/d3f/_and_then_8hpp.html", "d6/d3f/_and_then_8hpp" ],
     [ "BasicAlgorithm.hpp", "de/dca/_basic_algorithm_8hpp.html", null ],
     [ "OrElse.hpp", "d4/d96/_or_else_8hpp.html", "d4/d96/_or_else_8hpp" ],

@@ -106,7 +106,7 @@ $(function() {
   <div class="headertitle"><div class="title">Transform.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="../../d9/d8c/_transform_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">//          Copyright Dominic (DNKpp) Koepke 2025.</span></div>
+<a href="../../d9/d8c/_transform_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">//          Copyright Dominic (DNKpp) Koepke 2025-2026.</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Distributed under the Boost Software License, Version 1.0.</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">//    (See accompanying file LICENSE_1_0.txt or copy at</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//          https://www.boost.org/LICENSE_1_0.txt)</span></div>
@@ -149,7 +149,7 @@ $(function() {
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, nullable Nullable&gt;</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    [[nodiscard]]</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">constexpr</span> result_t&lt;Nullable, Action&gt; on_value([[maybe_unused]] Action&amp;&amp; action, Nullable&amp;&amp; opt)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">constexpr</span> result_t&lt;Nullable, Action&gt; on_value(Action&amp;&amp; action, Nullable&amp;&amp; opt)</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    {</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="../../d6/d90/namespacegimo.html#aa52288768cf8d76d3cbfbdd2da6229b7">construct_from_value&lt;result_t&lt;Nullable, Action&gt;</a>&gt;(</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            std::invoke(</div>
@@ -160,7 +160,7 @@ $(function() {
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, nullable Nullable, <span class="keyword">typename</span> Next, <span class="keyword">typename</span>... Steps&gt;</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]]</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_value(</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        [[maybe_unused]] Action&amp;&amp; action,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        Action&amp;&amp; action,</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        Nullable&amp;&amp; opt,</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        Next&amp;&amp; next,</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        Steps&amp;&amp;... steps)</div>
@@ -172,14 +172,14 @@ $(function() {
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, nullable Nullable&gt;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]]</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">constexpr</span> result_t&lt;Nullable, Action&gt; on_null([[maybe_unused]] Action&amp;&amp; action, [[maybe_unused]] Nullable&amp;&amp; opt)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">constexpr</span> result_t&lt;Nullable, Action&gt; on_null(Action&amp;&amp; <span class="comment">/*action*/</span>, Nullable&amp;&amp; <span class="comment">/*opt*/</span>)</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> detail::construct_empty&lt;result_t&lt;Nullable, Action&gt;&gt;();</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, expected_like Expected&gt;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    [[nodiscard]]</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">constexpr</span> result_t&lt;Expected, Action&gt; on_null([[maybe_unused]] Action&amp;&amp; action, Expected&amp;&amp; expected)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">constexpr</span> result_t&lt;Expected, Action&gt; on_null(Action&amp;&amp; <span class="comment">/*action*/</span>, Expected&amp;&amp; expected)</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    {</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">return</span> detail::rebind_error&lt;result_t&lt;Expected, Action&gt;, Expected&gt;(expected);</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
@@ -206,65 +206,70 @@ $(function() {
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        [[nodiscard]]</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_value(Action&amp;&amp; action, Nullable&amp;&amp; opt, Steps&amp;&amp;... steps)</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Nullable, Action&gt;)</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="keywordflow">return</span> transform::on_value(</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    std::forward&lt;Action&gt;(action),</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                    std::forward&lt;Nullable&gt;(opt),</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    std::forward&lt;Steps&gt;(steps)...);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                <span class="keywordflow">return</span> *transform::print_diagnostics&lt;Nullable, Action&gt;();</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        }</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, nullable Nullable, <span class="keyword">typename</span>... Steps&gt;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        [[nodiscard]]</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_null(Action&amp;&amp; action, Nullable&amp;&amp; opt, Steps&amp;&amp;... steps)</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Nullable, Action&gt;)</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            {</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="keywordflow">return</span> transform::on_null(</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                    std::forward&lt;Action&gt;(action),</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    std::forward&lt;Nullable&gt;(opt),</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    std::forward&lt;Steps&gt;(steps)...);</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            }</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>            {</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keywordflow">return</span> *transform::print_diagnostics&lt;Nullable, Action&gt;();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(detail::has_value(opt), <span class="stringliteral">&quot;Nullable is empty while it&#39;s expected to contain a value.&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Nullable, Action&gt;)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <span class="keywordflow">return</span> transform::on_value(</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    std::forward&lt;Action&gt;(action),</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                    std::forward&lt;Nullable&gt;(opt),</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                    std::forward&lt;Steps&gt;(steps)...);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                <span class="keywordflow">return</span> *transform::print_diagnostics&lt;Nullable, Action&gt;();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action, nullable Nullable, <span class="keyword">typename</span>... Steps&gt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        [[nodiscard]]</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_null(Action&amp;&amp; action, Nullable&amp;&amp; opt, Steps&amp;&amp;... steps)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(!detail::has_value(opt), <span class="stringliteral">&quot;Nullable contains a value while it&#39;s expected to be empty.&quot;</span>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Nullable, Action&gt;)</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                <span class="keywordflow">return</span> transform::on_null(</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                    std::forward&lt;Action&gt;(action),</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                    std::forward&lt;Nullable&gt;(opt),</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                    std::forward&lt;Steps&gt;(steps)...);</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            }</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    };</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keyword">namespace </span><a class="code hl_namespace" href="../../d6/d90/namespacegimo.html">gimo</a></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>{</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keyword">namespace </span>detail</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    {</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action&gt;</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keyword">using </span>transform_t = BasicAlgorithm&lt;transform::traits, std::remove_cvref_t&lt;Action&gt;&gt;;</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span></div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action&gt;</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    [[nodiscard]]</div>
-<div class="foldopen" id="foldopen00162" data-start="{" data-end="}">
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">  162</a></span>    <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">transform</a>(Action&amp;&amp; action)</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    {</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keyword">using </span>Algorithm = detail::transform_t&lt;Action&gt;;</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="../../d5/d89/classgimo_1_1_pipeline.html">Pipeline</a>{std::tuple&lt;Algorithm&gt;{std::forward&lt;Action&gt;(action)}};</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    }</div>
-</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>}</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keywordflow">return</span> *transform::print_diagnostics&lt;Nullable, Action&gt;();</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    };</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="keyword">namespace </span><a class="code hl_namespace" href="../../d6/d90/namespacegimo.html">gimo</a></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>{</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keyword">namespace </span>detail</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action&gt;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keyword">using </span>transform_t = BasicAlgorithm&lt;transform::traits, std::remove_cvref_t&lt;Action&gt;&gt;;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    }</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Action&gt;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    [[nodiscard]]</div>
+<div class="foldopen" id="foldopen00166" data-start="{" data-end="}">
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">  166</a></span>    <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_function" href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">transform</a>(Action&amp;&amp; action)</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keyword">using </span>Algorithm = detail::transform_t&lt;Action&gt;;</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="../../d5/d89/classgimo_1_1_pipeline.html">Pipeline</a>{std::tuple&lt;Algorithm&gt;{std::forward&lt;Action&gt;(action)}};</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    }</div>
+</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>}</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="a_basic_algorithm_8hpp_html"><div class="ttname"><a href="../../de/dca/_basic_algorithm_8hpp.html">BasicAlgorithm.hpp</a></div></div>
 <div class="ttc" id="a_common_8hpp_html"><div class="ttname"><a href="../../d3/d58/_common_8hpp.html">Common.hpp</a></div></div>
+<div class="ttc" id="a_config_8hpp_html_a733dc10e0c7f9b388e92a4951a678bea"><div class="ttname"><a href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a></div><div class="ttdeci">#define GIMO_ASSERT(condition, msg,...)</div><div class="ttdef"><b>Definition</b> Config.hpp:11</div></div>
 <div class="ttc" id="a_pipeline_8hpp_html"><div class="ttname"><a href="../../d1/da8/_pipeline_8hpp.html">Pipeline.hpp</a></div></div>
 <div class="ttc" id="aclassgimo_1_1_pipeline_html"><div class="ttname"><a href="../../d5/d89/classgimo_1_1_pipeline.html">gimo::Pipeline</a></div><div class="ttdoc">A composite object representing a sequence of monadic operations.</div><div class="ttdef"><b>Definition</b> Pipeline.hpp:30</div></div>
-<div class="ttc" id="agroup___a_l_g_o_r_i_t_h_m_html_ga907ef2722d7fba49c368a514c6a2f7ef"><div class="ttname"><a href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">gimo::transform</a></div><div class="ttdeci">constexpr auto transform(Action &amp;&amp;action)</div><div class="ttdoc">Creates a pipeline step that transforms the underlying value.</div><div class="ttdef"><b>Definition</b> Transform.hpp:162</div></div>
-<div class="ttc" id="anamespacegimo_html"><div class="ttname"><a href="../../d6/d90/namespacegimo.html">gimo</a></div><div class="ttdef"><b>Definition</b> AndThen.hpp:21</div></div>
+<div class="ttc" id="agroup___a_l_g_o_r_i_t_h_m_html_ga907ef2722d7fba49c368a514c6a2f7ef"><div class="ttname"><a href="../../d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef">gimo::transform</a></div><div class="ttdeci">constexpr auto transform(Action &amp;&amp;action)</div><div class="ttdoc">Creates a pipeline step that transforms the underlying value.</div><div class="ttdef"><b>Definition</b> Transform.hpp:166</div></div>
+<div class="ttc" id="anamespacegimo_html"><div class="ttname"><a href="../../d6/d90/namespacegimo.html">gimo</a></div><div class="ttdef"><b>Definition</b> AndForward.hpp:21</div></div>
 <div class="ttc" id="anamespacegimo_html_aa52288768cf8d76d3cbfbdd2da6229b7"><div class="ttname"><a href="../../d6/d90/namespacegimo.html#aa52288768cf8d76d3cbfbdd2da6229b7">gimo::construct_from_value</a></div><div class="ttdeci">constexpr Nullable construct_from_value(Arg &amp;&amp;arg) noexcept(detail::nothrow_constructible_from_value&lt; Nullable, Arg &amp;&amp; &gt;)</div><div class="ttdoc">Constructs the specified Nullable with the provided value.</div><div class="ttdef"><b>Definition</b> Common.hpp:269</div></div>
 <div class="ttc" id="anamespacegimo_html_af08a266fb3e85bc739e3e8a1d895f6ee"><div class="ttname"><a href="../../d6/d90/namespacegimo.html#af08a266fb3e85bc739e3e8a1d895f6ee">gimo::rebind_value_t</a></div><div class="ttdeci">typename traits&lt; std::remove_cvref_t&lt; Nullable &gt; &gt;::template rebind_value&lt; Value &gt; rebind_value_t</div><div class="ttdoc">Helper alias to obtain the Nullable type with the rebound Value type.</div><div class="ttdef"><b>Definition</b> Common.hpp:280</div></div>
 </div><!-- fragment --></div><!-- contents -->

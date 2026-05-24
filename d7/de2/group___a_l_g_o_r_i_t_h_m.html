@@ -122,6 +122,9 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gaa1997f52559a662c3b45741bf6044184" id="r_gaa1997f52559a662c3b45741bf6044184"><td class="memTemplParams" colspan="2">template&lt;typename Action&gt; </td></tr>
+<tr class="memitem:gaa1997f52559a662c3b45741bf6044184 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="#gaa1997f52559a662c3b45741bf6044184">gimo::and_forward</a> (Action &amp;&amp;action)</td></tr>
+<tr class="memdesc:gaa1997f52559a662c3b45741bf6044184"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a terminating pipeline step that forwards the contained value to the specified action.  <br /></td></tr>
 <tr class="memitem:ga00f421df375b40d755beefbf0e1019c2" id="r_ga00f421df375b40d755beefbf0e1019c2"><td class="memTemplParams" colspan="2">template&lt;typename Action&gt; </td></tr>
 <tr class="memitem:ga00f421df375b40d755beefbf0e1019c2 template"><td class="memItemLeft">constexpr auto&#160;</td><td class="memItemRight"><a class="el" href="#ga00f421df375b40d755beefbf0e1019c2">gimo::and_then</a> (Action &amp;&amp;action)</td></tr>
 <tr class="memdesc:ga00f421df375b40d755beefbf0e1019c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a pipeline step that applies a function returning a nullable type.  <br /></td></tr>
@@ -144,6 +147,52 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Monadic algorithms. </p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="gaa1997f52559a662c3b45741bf6044184" name="gaa1997f52559a662c3b45741bf6044184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa1997f52559a662c3b45741bf6044184">&#9670;&#160;</a></span>and_forward()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Action&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto gimo::and_forward </td>
+          <td>(</td>
+          <td class="paramtype">Action &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>action</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a terminating pipeline step that forwards the contained value to the specified action. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Action</td><td>The action type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>A unary operation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../d5/d89/classgimo_1_1_pipeline.html" title="A composite object representing a sequence of monadic operations.">Pipeline</a> step containing the <span class="tt"><a class="el" href="#gaa1997f52559a662c3b45741bf6044184" title="Creates a terminating pipeline step that forwards the contained value to the specified action.">and_forward</a></span> algorithm.</dd></dl>
+<ul>
+<li><b>On Value</b>: Invokes the <span class="tt">action</span> with the underlying value of the input. Any returned value by <span class="tt">action</span> will be discarded, thus <span class="tt">action</span> may return <span class="tt">void</span>.</li>
+<li><b>On Null</b>: Silently terminates the pipeline. </li>
+</ul>
+
+</div>
+</div>
 <a id="ga00f421df375b40d755beefbf0e1019c2" name="ga00f421df375b40d755beefbf0e1019c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga00f421df375b40d755beefbf0e1019c2">&#9670;&#160;</a></span>and_then()</h2>
 

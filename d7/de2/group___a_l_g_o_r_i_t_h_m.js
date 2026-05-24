@@ -18,6 +18,7 @@ var group___a_l_g_o_r_i_t_h_m =
       [ "operator()", "d5/dfb/classgimo_1_1_basic_algorithm.html#a4590a6f1a7ec80ad708211e2197b337c", null ],
       [ "operator()", "d5/dfb/classgimo_1_1_basic_algorithm.html#acba621a3e600c3673440f3eff1899bb1", null ]
     ] ],
+    [ "gimo::and_forward", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#gaa1997f52559a662c3b45741bf6044184", null ],
     [ "gimo::and_then", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga00f421df375b40d755beefbf0e1019c2", null ],
     [ "gimo::or_else", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga1562cdcb003130aab0cdb9e52a8069ae", null ],
     [ "gimo::transform", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga907ef2722d7fba49c368a514c6a2f7ef", null ],

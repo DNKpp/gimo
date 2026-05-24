@@ -20,6 +20,7 @@ var namespacegimo =
     [ "processable_by", "d1/d5d/conceptgimo_1_1processable__by.html", null ],
     [ "rebind_error_t", "d6/d90/namespacegimo.html#a4fd99baef70bfb406fed8e99798a81c1", null ],
     [ "rebind_value_t", "d6/d90/namespacegimo.html#af08a266fb3e85bc739e3e8a1d895f6ee", null ],
+    [ "and_forward", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#gaa1997f52559a662c3b45741bf6044184", null ],
     [ "and_then", "d7/de2/group___a_l_g_o_r_i_t_h_m.html#ga00f421df375b40d755beefbf0e1019c2", null ],
     [ "apply", "d5/d89/classgimo_1_1_pipeline.html#a7d204f95db16e5b360a16091543b78d2", null ],
     [ "construct_from_value", "d6/d90/namespacegimo.html#aa52288768cf8d76d3cbfbdd2da6229b7", null ],
