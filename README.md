@@ -56,6 +56,7 @@ Therefore, gimo provides the following algorithms for all *nullable* types out o
 - `gimo::transform`
 - `gimo::value_or`
 - `gimo::value_or_else`
+- `gimo::and_forward`
 
 Additionally, for *expected-like* types, *gimo* offers `gimo::transform_error`.
 
