@@ -32,7 +32,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">gimo<span id="projectnumber">&#160;v0.3.0</span>
+   <div id="projectname">gimo<span id="projectnumber">&#160;v0.3.1</span>
    </div>
   </td>
  </tr>
@@ -203,7 +203,7 @@ $(function() {
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        [[nodiscard]]</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_value(Action&amp;&amp; action, Expected&amp;&amp; closure, Steps&amp;&amp;... steps)</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(detail::has_value(opt), <span class="stringliteral">&quot;Nullable is empty while it&#39;s expected to contain a value.&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(detail::has_value(closure), <span class="stringliteral">&quot;Nullable is empty while it&#39;s expected to contain a value.&quot;</span>);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Expected, Action&gt;)</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            {</div>
@@ -222,7 +222,7 @@ $(function() {
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        [[nodiscard]]</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> on_null(Action&amp;&amp; action, Expected&amp;&amp; closure, Steps&amp;&amp;... steps)</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(!detail::has_value(opt), <span class="stringliteral">&quot;Nullable contains a value while it&#39;s expected to be empty.&quot;</span>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <a class="code hl_define" href="../../d8/dd2/_config_8hpp.html#a733dc10e0c7f9b388e92a4951a678bea">GIMO_ASSERT</a>(!detail::has_value(closure), <span class="stringliteral">&quot;Nullable contains a value while it&#39;s expected to be empty.&quot;</span>);</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (is_applicable_on&lt;Expected, Action&gt;)</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            {</div>
