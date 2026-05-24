@@ -408,7 +408,7 @@ jobs:
 
       - name: Upload test results to Codecov
         if: ${{ steps.build.outcome == 'success' && !cancelled() }}
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           flags: >-
