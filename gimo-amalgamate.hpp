@@ -1302,7 +1302,7 @@ namespace gimo::detail::or_else
         if constexpr (std::is_void_v<std::invoke_result_t<Action>>)
         {
             std::invoke(std::forward<Action>(action));
-            return detail::construct_empty<Nullable>();
+            return detail::construct_empty<std::remove_cvref_t<Nullable>>();
         }
         else
         {
