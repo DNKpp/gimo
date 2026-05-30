@@ -10,6 +10,6 @@
 
 #define GIMO_VERSION_MAJOR 0
 #define GIMO_VERSION_MINOR 3
-#define GIMO_VERSION_PATCH 1
+#define GIMO_VERSION_PATCH 2
 
 #endif
